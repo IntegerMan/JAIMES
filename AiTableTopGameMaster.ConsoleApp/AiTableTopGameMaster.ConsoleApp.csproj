@@ -15,6 +15,7 @@
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7" />
       <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.7" />
       <PackageReference Include="Spectre.Console" Version="0.50.0" />
+      <PackageReference Include="Spectre.Console.Cli" Version="0.50.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -22,6 +23,10 @@
       <Content Include="appsettings.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Workers\" />
     </ItemGroup>
 
 </Project>
