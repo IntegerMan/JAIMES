@@ -1,11 +1,15 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using AiTableTopGameMaster.ConsoleApp.Settings;
+using AiTableTopGameMaster.ConsoleApp.Workers;
+using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Spectre.Console;
 
 IAnsiConsole console = AnsiConsole.Console;
-IHost host = Host.CreateDefaultBuilder(args)
+IHostBuilder builder = Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration((_, config) =>
     {
         config.Sources.Clear();
@@ -17,12 +21,27 @@ IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
         services.AddSingleton(console);
+        services.AddLogging();
+
+        // Add options pattern for AppSettings and OllamaSettings
         services.Configure<AppSettings>(context.Configuration);
+        services.Configure<OllamaSettings>(context.Configuration.GetSection("Ollama"));
         services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<AppSettings>>().Value);
-    })
-    .Build();
+        services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<OllamaSettings>>().Value);
 
-console.MarkupLine("[green]Welcome to the AI TableTop Game Master![/]");
+        services.AddChatClient(sp =>
+        {
+            OllamaSettings ollamaSettings = sp.GetRequiredService<OllamaSettings>();
 
-AppSettings config = host.Services.GetRequiredService<AppSettings>();
-console.MarkupLine($"[yellow]Setting1:[/] {config.Setting1}, [yellow]Setting2:[/] {config.Setting2}");
+            return new OllamaChatClient(ollamaSettings.ChatEndpoint, ollamaSettings.ChatModelId)
+                .AsBuilder()
+                .UseLogging(sp.GetRequiredService<ILoggerFactory>())
+                .UseFunctionInvocation()
+                .Build();
+        });
+        
+        services.AddHostedService<ApplicationWorker>();
+    });
+
+IHost host = builder.Build();
+await host.StartAsync();
