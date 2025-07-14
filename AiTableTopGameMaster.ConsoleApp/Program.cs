@@ -53,14 +53,14 @@ try
         .AddClasses(classes => classes.InNamespaceOf<Program>())
         .AddClasses(classes => classes.InNamespaces(
             typeof(IConsoleChatClient).Namespace!,
-            typeof(DefaultCommand).Namespace!))
+            typeof(ChatCommand).Namespace!))
         .AsSelfWithInterfaces()
         .WithScopedLifetime()
     );
 
     // Register our spectre console app
     TypeRegistrar registrar = new(services);
-    CommandApp<DefaultCommand> app = new CommandApp<DefaultCommand>(registrar);
+    CommandApp<ChatCommand> app = new CommandApp<ChatCommand>(registrar);
     app.Configure(a =>
     {
         a.SetApplicationName("AI TableTop Game Master")

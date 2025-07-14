@@ -4,27 +4,39 @@ using Spectre.Console;
 
 namespace AiTableTopGameMaster.ConsoleApp.Clients;
 
+
 [UsedImplicitly]
 public class ConsoleChatClient(IChatClient chatClient, IAnsiConsole console) : IConsoleChatClient
 {
-    public async Task<IEnumerable<ChatMessage>> ConductConversation(string systemPrompt, CancellationToken cancellationToken = default)
+    public Task<IEnumerable<ChatMessage>> ChatIndefinitelyAsync(string systemPrompt, CancellationToken cancellationToken = default)
     {
         List<ChatMessage> history = [new(ChatRole.System, systemPrompt)];
-        
-        while (true)
-        {
-            console.Markup("[blue]You:[/] ");
-            string? userInput = console.Ask<string>("Type your message (or 'exit' to quit):");
-            if (string.IsNullOrWhiteSpace(userInput) || userInput.Equals("exit", StringComparison.OrdinalIgnoreCase))
-            {
-                return history;
-            }
-            
-            history.Add(new ChatMessage(ChatRole.User, userInput));
-            await ChatAsync(history, cancellationToken);
-        }
+        return ChatIndefinitelyAsync(history, cancellationToken);
     }
-    
+
+    public async Task<IEnumerable<ChatMessage>> ChatIndefinitelyAsync(ICollection<ChatMessage> history, CancellationToken cancellationToken = default)
+    {
+        bool needsUserMessage = !history.Any() || history.Last().Role != ChatRole.User;
+        do
+        {
+            if (needsUserMessage)
+            {
+                console.Markup("[blue]You:[/] ");
+                string? userInput = console.Ask<string>("Type your message (or 'exit' to quit):");
+                if (string.IsNullOrWhiteSpace(userInput) || userInput.Equals("exit", StringComparison.OrdinalIgnoreCase))
+                {
+                    return history;
+                }
+            
+                history.Add(new ChatMessage(ChatRole.User, userInput));
+            }
+            else
+            {
+                needsUserMessage = true;
+            }
+            await ChatAsync(history, cancellationToken);
+        } while (true);
+    }    
     public Task<ICollection<ChatMessage>> ChatAsync(string message, string systemPrompt, CancellationToken cancellationToken = default) 
         => ChatAsync((List<ChatMessage>)[
             new ChatMessage(ChatRole.System, systemPrompt),
