@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiTableTopGameMaster.ConsoleApp", "AiTableTopGameMaster.ConsoleApp\AiTableTopGameMaster.ConsoleApp.csproj", "{A20BC0AF-F198-4EFA-B9D2-32F593430A63}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiTableTopGameMaster.Adventures.IslandAdventureDemo", "AiTableTopGameMaster.Adventures.IslandAdventureDemo\AiTableTopGameMaster.Adventures.IslandAdventureDemo.csproj", "{360E650E-5675-4757-A8CC-86B6C71EB7E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiTableTopGameMaster.Domain", "AiTableTopGameMaster.Domain\AiTableTopGameMaster.Domain.csproj", "{529004CE-FBD2-411D-AB90-412B1A1AF9D6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{A20BC0AF-F198-4EFA-B9D2-32F593430A63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A20BC0AF-F198-4EFA-B9D2-32F593430A63}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A20BC0AF-F198-4EFA-B9D2-32F593430A63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{360E650E-5675-4757-A8CC-86B6C71EB7E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{360E650E-5675-4757-A8CC-86B6C71EB7E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{360E650E-5675-4757-A8CC-86B6C71EB7E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{360E650E-5675-4757-A8CC-86B6C71EB7E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{529004CE-FBD2-411D-AB90-412B1A1AF9D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{529004CE-FBD2-411D-AB90-412B1A1AF9D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{529004CE-FBD2-411D-AB90-412B1A1AF9D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{529004CE-FBD2-411D-AB90-412B1A1AF9D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

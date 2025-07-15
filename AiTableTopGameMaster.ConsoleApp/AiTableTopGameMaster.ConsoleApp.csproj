@@ -31,4 +31,8 @@
       <Folder Include="Workers\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\AiTableTopGameMaster.Adventures.IslandAdventureDemo\AiTableTopGameMaster.Adventures.IslandAdventureDemo.csproj" />
+    </ItemGroup>
+
 </Project>

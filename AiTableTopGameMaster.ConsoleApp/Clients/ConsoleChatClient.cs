@@ -4,7 +4,6 @@ using Spectre.Console;
 
 namespace AiTableTopGameMaster.ConsoleApp.Clients;
 
-
 [UsedImplicitly]
 public class ConsoleChatClient(IChatClient chatClient, IAnsiConsole console) : IConsoleChatClient
 {
@@ -46,7 +45,7 @@ public class ConsoleChatClient(IChatClient chatClient, IAnsiConsole console) : I
     public async Task<ICollection<ChatMessage>> ChatAsync(ICollection<ChatMessage> history, CancellationToken cancellationToken = default)
     {
         ChatResponse? response = null;
-        await console.Status().StartAsync("Generating response", async _ =>
+        await console.Status().StartAsync("Generating...", async _ =>
         {
             response = await chatClient.GetResponseAsync(history, cancellationToken: cancellationToken);
         });
@@ -68,6 +67,8 @@ public class ConsoleChatClient(IChatClient chatClient, IAnsiConsole console) : I
             history.Add(reply);
             console.MarkupLineInterpolated($"[green]AI:[/] {reply.Text}");
         }
+
+        console.WriteLine();
 
         return history;
     }

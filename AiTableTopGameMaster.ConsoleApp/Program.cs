@@ -1,7 +1,9 @@
 ﻿using System.Globalization;
+using AiTableTopGameMaster.Adventures.IslandAdventureDemo;
 using AiTableTopGameMaster.ConsoleApp.Clients;
 using AiTableTopGameMaster.ConsoleApp.Commands;
 using AiTableTopGameMaster.ConsoleApp.Settings;
+using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +24,7 @@ try
 
     ServiceCollection services = new();
     services.AddSingleton(console);
+    services.AddScoped<Adventure, IslandAdventure>();
     services.AddLogging();
 
     // Load configuration settings and options
