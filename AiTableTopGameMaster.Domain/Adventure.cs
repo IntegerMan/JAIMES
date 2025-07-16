@@ -15,4 +15,7 @@ public abstract class Adventure
     
     public required string EncountersOverview { get; init; }
     public List<Encounter> Encounters { get; init; } = [];
+    
+    public required string GameMasterNotes { get; init; }
+    public required string NarrativeStructure { get; init; }
 }

@@ -12,6 +12,8 @@ public class IslandAdventure : Adventure
     public IslandAdventure()
     {
         Backstory = Resources.Backstory;
+        GameMasterNotes = Resources.GameMasterGuidance;
+        NarrativeStructure = Resources.NarrativeStructure;
         
         // Location Data
         LocationsOverview = Resources.Locations;
