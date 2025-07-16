@@ -1,11 +1,12 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Logging;
 using Spectre.Console;
 
 namespace AiTableTopGameMaster.ConsoleApp.Clients;
 
 [UsedImplicitly]
-public class ConsoleChatClient(IChatClient chatClient, IAnsiConsole console) : IConsoleChatClient
+public class ConsoleChatClient(IChatClient chatClient, IAnsiConsole console, ILogger<ConsoleChatClient> log) : IConsoleChatClient
 {
     public Task<IEnumerable<ChatMessage>> ChatIndefinitelyAsync(string systemPrompt, CancellationToken cancellationToken = default)
     {
@@ -22,6 +23,8 @@ public class ConsoleChatClient(IChatClient chatClient, IAnsiConsole console) : I
             {
                 console.Markup("[blue]You:[/] ");
                 string? userInput = console.Ask<string>("Type your message (or 'exit' to quit):");
+                log.LogInformation("User: {UserInput}", userInput);
+                
                 if (string.IsNullOrWhiteSpace(userInput) || userInput.Equals("exit", StringComparison.OrdinalIgnoreCase))
                 {
                     return history;

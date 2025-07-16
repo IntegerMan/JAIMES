@@ -2,6 +2,7 @@
 using AiTableTopGameMaster.Adventures.IslandAdventureDemo;
 using AiTableTopGameMaster.ConsoleApp.Clients;
 using AiTableTopGameMaster.ConsoleApp.Commands;
+using AiTableTopGameMaster.ConsoleApp.Infrastructure;
 using AiTableTopGameMaster.ConsoleApp.Settings;
 using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.AI;
@@ -11,8 +12,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using Serilog;
+using ILogger = Serilog.ILogger;
 
-IAnsiConsole console = AnsiConsole.Console;
+// Create a custom IAnsiConsole that logs output to Serilog
+IAnsiConsole console = new LoggingConsoleWrapper(AnsiConsole.Console);
 
 try
 {
@@ -20,12 +24,32 @@ try
     console.Write(new FigletText("AIGM")
         .Justify(Justify.Left)
         .Color(Color.Green));
-    console.MarkupLine("[yellow]by[/] [blue]Matt Eland[/]");
+    console.MarkupLine("[blue]by[/] [cyan]Matt Eland[/]");
+    console.MarkupLine("[blue]An AI-powered tabletop game master[/]");
+    console.WriteLine();
+    
+    // Configure Serilog for logging
+    DateTimeOffset now = DateTimeOffset.Now;
+    DateOnly today = DateOnly.FromDateTime(now.Date);
+    Guid fileId = Guid.CreateVersion7(now);
+    string logFilePath = Path.Combine(Environment.CurrentDirectory, "Logs", $"{today:O}-{fileId}.log");
+    ILogger logger = new LoggerConfiguration()
+        .MinimumLevel.Debug()
+        .WriteTo.File(logFilePath, 
+            rollingInterval: RollingInterval.Infinite, 
+            outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+        .CreateLogger();
+    Log.Logger = logger;
+    console.MarkupLineInterpolated($"Logging to [yellow]{logFilePath}[/]");
 
     ServiceCollection services = new();
     services.AddSingleton(console);
     services.AddScoped<Adventure, IslandAdventure>();
-    services.AddLogging();
+    services.AddLogging(loggingBuilder =>
+    {
+        loggingBuilder.ClearProviders();
+        loggingBuilder.AddSerilog(Log.Logger, dispose: true);
+    });
 
     // Load configuration settings and options
     IConfigurationRoot config = new ConfigurationBuilder()
@@ -89,7 +113,12 @@ try
 } 
 catch (Exception ex)
 {
+    Log.Error(ex, "An error occurred");
     console.MarkupLine($"[red]An error occurred: {ex.Message}[/]");
     console.WriteException(ex, ExceptionFormats.ShortenEverything);
     return 1;
+}
+finally
+{
+    Log.CloseAndFlush();
 }

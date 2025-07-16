@@ -1,6 +1,6 @@
-using AiTableTopGameMaster.ConsoleApp.Settings;
+namespace AiTableTopGameMaster.ConsoleApp.Settings;
 
 public class AppSettings
 {
-    public OllamaSettings Ollama { get; init; }
+    public required OllamaSettings Ollama { get; init; }
 }
