@@ -13,7 +13,6 @@ using Microsoft.Extensions.Options;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Serilog;
-using ILogger = Serilog.ILogger;
 
 // Create a custom IAnsiConsole that logs output to Serilog
 IAnsiConsole console = new LoggingConsoleWrapper(AnsiConsole.Console);
@@ -33,13 +32,17 @@ try
     DateOnly today = DateOnly.FromDateTime(now.Date);
     Guid fileId = Guid.CreateVersion7(now);
     string logFilePath = Path.Combine(Environment.CurrentDirectory, "Logs", $"{today:O}-{fileId}.log");
-    ILogger logger = new LoggerConfiguration()
+    Log.Logger = new LoggerConfiguration()
         .MinimumLevel.Debug()
-        .WriteTo.File(logFilePath, 
-            rollingInterval: RollingInterval.Infinite, 
+        .WriteTo.File(logFilePath,
+            rollingInterval: RollingInterval.Infinite,
             outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+        .WriteTo.File(
+            Path.Combine(Environment.CurrentDirectory, "Logs", $"{today:O}-{fileId}.transcript"),
+            restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
+            outputTemplate: "{Message:lj}{NewLine}",
+            rollingInterval: RollingInterval.Infinite)
         .CreateLogger();
-    Log.Logger = logger;
     console.MarkupLineInterpolated($"Logging to [yellow]{logFilePath}[/]");
 
     ServiceCollection services = new();

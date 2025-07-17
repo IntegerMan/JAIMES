@@ -21,14 +21,11 @@ public class LoggingConsoleWrapper(IAnsiConsole console) : IAnsiConsole
                 {
                     sb.Append(segment.Text);
                 }
-                Log.Information(sb.ToString());
+                Log.Debug("{Message}", sb.ToString());
                 break;
             }
-            case Text _:
-                // This is typically ignorable and represents an empty line. We can't easily get at the internal text.
-                break;
-            case ControlCode _:
-                // This is ignorable and is used for animations
+            case Text _: // Typically an empty line. We can't easily get at the internal text.
+            case ControlCode _:  // This is ignorable and is used for animations
                 break;
             default:
                 Log.Debug("Unhandled Renderable: {Renderable}", renderable.ToString());

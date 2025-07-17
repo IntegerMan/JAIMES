@@ -23,13 +23,13 @@ public class ConsoleChatClient(IChatClient chatClient, IAnsiConsole console, ILo
             {
                 console.Markup("[blue]You:[/] ");
                 string? userInput = console.Ask<string>("Type your message (or 'exit' to quit):");
-                log.LogInformation("User: {UserInput}", userInput);
                 
                 if (string.IsNullOrWhiteSpace(userInput) || userInput.Equals("exit", StringComparison.OrdinalIgnoreCase))
                 {
                     return history;
                 }
             
+                log.LogInformation("User: {UserInput}", userInput);
                 history.Add(new ChatMessage(ChatRole.User, userInput));
             }
             else
@@ -69,6 +69,7 @@ public class ConsoleChatClient(IChatClient chatClient, IAnsiConsole console, ILo
         {
             history.Add(reply);
             console.MarkupLineInterpolated($"[green]AI:[/] {reply.Text}");
+            log.LogInformation("AI: {Text}", reply.Text);
         }
 
         console.WriteLine();
