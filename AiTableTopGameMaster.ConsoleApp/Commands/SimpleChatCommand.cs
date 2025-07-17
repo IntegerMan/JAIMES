@@ -1,13 +1,12 @@
 using AiTableTopGameMaster.ConsoleApp.Clients;
 using AiTableTopGameMaster.Domain;
-using JetBrains.Annotations;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
 namespace AiTableTopGameMaster.ConsoleApp.Commands;
 
-[UsedImplicitly]
-public class ChatCommand(IConsoleChatClient consoleChat, Adventure adventure) : AsyncCommand
+public class SimpleChatCommand([FromKeyedServices(ChatClients.Simple)] IConsoleChatClient consoleChat, Adventure adventure) : AsyncCommand
 {
     public override async Task<int> ExecuteAsync(CommandContext context)
     {

@@ -67,7 +67,7 @@ try
     services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<OllamaSettings>>().Value);
 
     // Register the Ollama chat client
-    services.AddChatClient(sp =>
+    services.AddKeyedChatClient(ChatClients.Simple, sp =>
     {
         OllamaSettings ollamaSettings = sp.GetRequiredService<OllamaSettings>();
         return new OllamaChatClient(ollamaSettings.ChatEndpoint, ollamaSettings.ChatModelId)
@@ -77,20 +77,27 @@ try
             .Build();
     });
 
+    Func<IServiceProvider, object?, IConsoleChatClient> chatClientFactory = (sp, key) =>
+    {
+        IChatClient chatClient = sp.GetRequiredKeyedService<IChatClient>(key);
+        return new ConsoleChatClient(chatClient, sp.GetRequiredService<IAnsiConsole>(), sp.GetRequiredService<ILogger<ConsoleChatClient>>());
+    };
+    services.AddKeyedTransient(ChatClients.Simple, chatClientFactory);
+    services.AddKeyedTransient(ChatClients.SimpleSemanticKernel, chatClientFactory);
+
     // Auto-register interfaces and their implementations in this namespace using Scrutor
     services.Scan(scan => scan
         .FromAssemblyOf<Program>()
         .AddClasses(classes => classes.InNamespaceOf<Program>())
         .AddClasses(classes => classes.InNamespaces(
-            typeof(IConsoleChatClient).Namespace!,
-            typeof(ChatCommand).Namespace!))
+            typeof(SimpleChatCommand).Namespace!))
         .AsSelfWithInterfaces()
         .WithScopedLifetime()
     );
 
     // Register our spectre console app
     TypeRegistrar registrar = new(services);
-    CommandApp<ChatCommand> app = new CommandApp<ChatCommand>(registrar);
+    CommandApp<SimpleChatCommand> app = new CommandApp<SimpleChatCommand>(registrar);
     app.Configure(a =>
     {
         a.SetApplicationName("AI TableTop Game Master")
