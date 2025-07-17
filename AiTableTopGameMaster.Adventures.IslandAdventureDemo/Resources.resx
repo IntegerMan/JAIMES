@@ -94,4 +94,93 @@ Tone: Keep the horror elements atmospheric and whimsical—this is a rogue’s s
 
 Resolution: The session should end after the ritual—whether stopped, disrupted, or completed. Leave the outcome ambiguous or plant a clear hook for a follow-up adventure (e.g., the coral idol whispers, something follows them off the island, or the sea calls again).</value>
     </data>
+    <data name="CharacterSheetRogue" xml:space="preserve">
+        <value>Name: Emcee
+Species: Halfling
+Level 1: Rogue (1)
+
+Strength (STR): 10 (+0 Modifier, +0 Saving Throw)
+Dexterity (DEX): 16 (+3 Modifier, +5 Saving Throw)
+Constitution (CON): 14 (+2 Modifier, +2 Saving Throw)
+Intelligence (INT): 10 (+0 Modifier, +2 Saving Throw)
+Wisdom (WIS): 14 (+2 Modifier, +2 Saving Throw)
+Charisma (CHA): 12 (+1 Modifier, +1 Saving Throw)
+
+Passive Perception: 16
+Passive Investigation: 12
+Passive Insight: 12
+
+Initiative: +5
+Proficiency Bonus: +2
+Walking Speed: 30 feet
+Size: Small
+Armor Class (AC): 14
+Max Hit Points: 10
+Background: Criminal
+Alignment: Neutral
+
+Proficiencies:
+    - Light Armor
+    - Crossbow
+    - Hand
+    - Rapier
+    - Scimitar
+    - Shortsword
+    - Simple Weapons
+    - Whip
+    - Forgery Kit
+    - Thieves' Tools
+    
+Languages:
+    - Common
+    - Dwarvish
+    - Gnomish
+    - Halfling
+    - Thieves' Cant
+    
+Skills
+    - Acrobatics (+3)
+    - Animal Handling (+2)
+    - Arcana (+0)
+    - Athletics (+0)
+    - Deception (+3) with Proficiency
+    - History (+0)
+    - Insight (+2)
+    - Intimidation (+1)
+    - Investigation (+2) with Proficiency
+    - Medicine (+2)
+    - Nature (+0)
+    - Perception (+6) with Expertise
+    - Performance (+1)
+    - Persuasion (+3) with Proficiency
+    - Religion (+0)
+    - Sleight of Hand (+5) with Proficiency
+    - Stealth (+7) with Expertise
+    - Survival (+2)
+    
+Inventory
+    - Light Crossbow (+5 to Hit, 1d8+3 Piercing)
+    - Dagger x4 (+5 to Hit, 1d4+3 Piercing) 
+    - Crowbar x2
+    - Light Leather Armor (Worn)
+    - Thieves' Tools
+    - Traveler's Clothes (Worn)
+    - Ball Bearings
+    - Bell
+    - Candle
+    - Forgery Kit
+    - Hooded Lantern
+    - Oil
+    - Rations
+    - Rope
+    - Shortsword (+5 to Hit, 1d6+3 Piercing)
+    - Tinderbox
+    - Waterskin 
+    
+Features
+    Halfling Nimbleness
+    Luck
+    Naturally Stealthy
+    Alert (Initiative Proficiency, Initiative Swap)</value>
+    </data>
 </root>

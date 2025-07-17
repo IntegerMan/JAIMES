@@ -140,5 +140,11 @@ namespace AiTableTopGameMaster.ConsoleApp {
                 return ResourceManager.GetString("GameMasterGuidance", resourceCulture);
             }
         }
+        
+        internal static string CharacterSheetRogue {
+            get {
+                return ResourceManager.GetString("CharacterSheetRogue", resourceCulture);
+            }
+        }
     }
 }

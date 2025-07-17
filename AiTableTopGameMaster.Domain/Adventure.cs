@@ -1,4 +1,6 @@
-﻿namespace AiTableTopGameMaster.Domain;
+﻿using Microsoft.Extensions.AI;
+
+namespace AiTableTopGameMaster.Domain;
 
 public abstract class Adventure
 {
@@ -18,4 +20,6 @@ public abstract class Adventure
     
     public required string GameMasterNotes { get; init; }
     public required string NarrativeStructure { get; init; }
+    public required string CharacterSheet { get; init; }
+    public abstract ICollection<ChatMessage> GenerateInitialHistory();
 }

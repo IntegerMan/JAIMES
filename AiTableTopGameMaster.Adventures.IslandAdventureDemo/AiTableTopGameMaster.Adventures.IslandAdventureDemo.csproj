@@ -25,4 +25,10 @@
       <ProjectReference Include="..\AiTableTopGameMaster.Domain\AiTableTopGameMaster.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Reference Include="Microsoft.Extensions.AI.Abstractions">
+        <HintPath>..\..\..\.nuget\packages\microsoft.extensions.ai.abstractions\9.7.0\lib\net9.0\Microsoft.Extensions.AI.Abstractions.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
 </Project>
