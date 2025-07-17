@@ -146,5 +146,17 @@ namespace AiTableTopGameMaster.ConsoleApp {
                 return ResourceManager.GetString("CharacterSheetRogue", resourceCulture);
             }
         }
+        
+        internal static string GameMasterSystemPrompt {
+            get {
+                return ResourceManager.GetString("GameMasterSystemPrompt", resourceCulture);
+            }
+        }
+        
+        internal static string InitialGreetingPrompt {
+            get {
+                return ResourceManager.GetString("InitialGreetingPrompt", resourceCulture);
+            }
+        }
     }
 }

@@ -12,12 +12,11 @@ public class IslandAdventure : Adventure
 
     public override ICollection<ChatMessage> GenerateInitialHistory() 
         => [
-        new(ChatRole.System,
- $"You are an AI game master for a tabletop role-playing game of Dungeons and Dragons 5th Edition. You will interact with the player, who is a human, and provide responses to their queries and actions. You are working through a short demonstration adventure called {Name} by {Author}, but have liberty to improvise and create new content as needed. Keep things fair and challenging and drive the story forward. Let the player tell you what they want, then interpret their response. Do not suggestion actions to the player or take actions on their behalf unless they are blatantly obvious."),
+        new(ChatRole.System, Resources.GameMasterSystemPrompt),
         new(ChatRole.Tool, $"Here is the adventure backstory: {Backstory}"),
-        new(ChatRole.User, $"Hello, here's my character sheet at the start of our adventure: \r\n {CharacterSheet}"),
+        new(ChatRole.Tool, $"Here's the player's character sheet: {CharacterSheet}"),
         new(ChatRole.Tool, $"Here is the game master guidance: {GameMasterNotes}"),
-        new(ChatRole.User, "Please start the adventure."),
+        new(ChatRole.User, Resources.InitialGreetingPrompt),
     ];
 
     public IslandAdventure()

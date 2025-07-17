@@ -21,8 +21,7 @@ public class ConsoleChatClient(IChatClient chatClient, IAnsiConsole console, ILo
         {
             if (needsUserMessage)
             {
-                console.Markup("[blue]You:[/] ");
-                string? userInput = console.Ask<string>("Type your message (or 'exit' to quit):");
+                string? userInput = console.Prompt(new TextPrompt<string?>("[blue]You:[/] ").AllowEmpty());
                 
                 if (string.IsNullOrWhiteSpace(userInput) || userInput.Equals("exit", StringComparison.OrdinalIgnoreCase))
                 {
