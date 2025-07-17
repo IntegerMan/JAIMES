@@ -12,12 +12,31 @@ Wizards of the Coast has released a free version of the Dungeons & Dragons rules
 
 The following tasks are planned for the project:
 
-- [ ] Manage games by having their data live in the same directory
-- [ ] Serialize games to JSON files
-- [ ] Add a Resume Game command that loads a game state
+### Semantic Kernel
+
 - [ ] Add Semantic Kernel core
 - [ ] Add a location and location list skill to the Semantic Kernel
 - [ ] Add a player character skill to the Semantic Kernel
 - [ ] Add encounter and encounter list skills to the Semantic Kernel
+
+### Kernel Memory and RAG
+
 - [ ] Add a RAG skill to the Semantic Kernel using Kernel Memory
 - [ ] Have Kernel Memory index the free D&D ruleset
+
+### Agentic Mode
+
+- [ ] Design an agentic layout for the game's AI
+
+### Quality and Testing
+
+- [ ] Add in Evaluation
+- [ ] Add in Unit Tests
+- [ ] Add A/B Testing for Prompt Refinement and Model Selection
+- [ ] Add safety checks (optional)
+
+### Game Session Management
+
+- [ ] Manage games by having their data live in the same directory
+- [ ] Serialize games to JSON files
+- [ ] Add a Resume Game command that loads a game state
