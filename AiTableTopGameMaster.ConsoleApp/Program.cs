@@ -73,6 +73,14 @@ try
         return new OllamaChatClient(ollamaSettings.ChatEndpoint, ollamaSettings.ChatModelId)
             .AsBuilder()
             .UseLogging(sp.GetRequiredService<ILoggerFactory>())
+            .Build();
+    });    
+    services.AddKeyedChatClient(ChatClients.SimpleSemanticKernel, sp =>
+    {
+        OllamaSettings ollamaSettings = sp.GetRequiredService<OllamaSettings>();
+        return new OllamaChatClient(ollamaSettings.ChatEndpoint, ollamaSettings.ChatModelId)
+            .AsBuilder()
+            .UseLogging(sp.GetRequiredService<ILoggerFactory>())
             .UseFunctionInvocation()
             .Build();
     });
@@ -97,7 +105,7 @@ try
 
     // Register our spectre console app
     TypeRegistrar registrar = new(services);
-    CommandApp<SimpleChatCommand> app = new CommandApp<SimpleChatCommand>(registrar);
+    CommandApp<SelectCommandCommand> app = new CommandApp<SelectCommandCommand>(registrar);
     app.Configure(a =>
     {
         a.SetApplicationName("AI TableTop Game Master")
@@ -106,6 +114,14 @@ try
             .UseAssemblyInformationalVersion()
             .ConfigureConsole(console)
             .SetApplicationCulture(CultureInfo.CurrentUICulture);
+
+        // Add commands to the application
+        a.AddCommand<SimpleChatCommand>("simple-chat")
+            .WithDescription("Start a simple chat session with the AI game master.")
+            .WithExample("simple-chat");
+        a.AddCommand<EmptySemanticKernelChatCommand>("empty-semantic-kernel-chat")
+            .WithDescription("Start a chat session with the AI game master using an empty semantic kernel chat client.")
+            .WithExample("empty-semantic-kernel-chat");
     });
 
     // Run the application
