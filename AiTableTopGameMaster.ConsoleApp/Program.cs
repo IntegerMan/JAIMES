@@ -75,11 +75,6 @@ try
     
     // Configure Semantic Kernel
     services.AddKernel();
-    services.AddKeyedTransient<ChatOptions>(ChatClients.Simple, (sp, key) => new ChatOptions()
-    {
-        AllowMultipleToolCalls = false,
-        ToolMode = ChatToolMode.None,
-    });
     services.AddKeyedTransient<ChatOptions>(ChatClients.SimpleSemanticKernel, (sp, key) => new ChatOptions()
     {
         AllowMultipleToolCalls = false,
@@ -91,10 +86,6 @@ try
         ToolMode = ChatToolMode.Auto,
     });
     //services.AddChatClient(sp => sp.GetRequiredService<IChatClient>());    
-    services.AddKeyedChatClient(ChatClients.Simple, sp =>
-    {
-        return sp.GetRequiredService<IChatClient>();
-    });
     services.AddKeyedChatClient(ChatClients.SimpleSemanticKernel, sp =>
     {
         Kernel kernel = sp.GetRequiredService<Kernel>();
@@ -113,7 +104,6 @@ try
         ChatOptions chatOptions = sp.GetRequiredKeyedService<ChatOptions>(key);
         return new ConsoleChatClient(chatClient, chatOptions, sp.GetRequiredService<IAnsiConsole>(), sp.GetRequiredService<ILogger<ConsoleChatClient>>());
     };
-    services.AddKeyedTransient(ChatClients.Simple, chatClientFactory);
     services.AddKeyedTransient(ChatClients.SimpleSemanticKernel, chatClientFactory);
     services.AddKeyedTransient(ChatClients.AdventureKernel, chatClientFactory);
 
@@ -122,7 +112,7 @@ try
         .FromAssemblyOf<Program>()
         .AddClasses(classes => classes.InNamespaceOf<Program>())
         .AddClasses(classes => classes.InNamespaces(
-            typeof(SimpleChatCommand).Namespace!))
+            typeof(AdventureKernelChatCommand).Namespace!))
         .AsSelfWithInterfaces()
         .WithScopedLifetime()
     );
@@ -140,9 +130,6 @@ try
             .SetApplicationCulture(CultureInfo.CurrentUICulture);
 
         // Add commands to the application
-        a.AddCommand<SimpleChatCommand>("simple-chat")
-            .WithDescription("Start a simple chat session with the AI game master.")
-            .WithExample("simple-chat");
         a.AddCommand<EmptySemanticKernelChatCommand>("empty-semantic-kernel-chat")
             .WithDescription("Start a chat session with the AI game master using an empty semantic kernel chat client.")
             .WithExample("empty-semantic-kernel-chat");        
