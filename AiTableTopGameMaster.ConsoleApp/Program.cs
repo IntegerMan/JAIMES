@@ -4,12 +4,14 @@ using AiTableTopGameMaster.ConsoleApp.Clients;
 using AiTableTopGameMaster.ConsoleApp.Commands;
 using AiTableTopGameMaster.ConsoleApp.Infrastructure;
 using AiTableTopGameMaster.ConsoleApp.Settings;
+using AiTableTopGameMaster.Core;
 using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.SemanticKernel;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Serilog;
@@ -76,6 +78,14 @@ try
 
         return builder;
     });
+    services.AddTransient<IKernelBuilder>(sp =>
+    {
+        OllamaSettings ollamaSettings = sp.GetRequiredService<OllamaSettings>();
+        IKernelBuilder builder = Kernel.CreateBuilder();
+        builder.AddOllamaChatClient(ollamaSettings.ChatModelId, new Uri(ollamaSettings.ChatEndpoint));
+
+        return builder;
+    });
     services.AddKeyedChatClient(ChatClients.Simple, sp =>
     {
         ChatClientBuilder builder = sp.GetRequiredService<ChatClientBuilder>();
@@ -83,10 +93,20 @@ try
     });    
     services.AddKeyedChatClient(ChatClients.SimpleSemanticKernel, sp =>
     {
-        ChatClientBuilder builder = sp.GetRequiredService<ChatClientBuilder>();
-        builder.UseFunctionInvocation();
-        return builder.Build();
+        IKernelBuilder builder = sp.GetRequiredService<IKernelBuilder>();
+        Kernel kernel = builder.Build();
+
+        return kernel.GetRequiredService<IChatClient>();
     });
+    services.AddKeyedChatClient(ChatClients.AdventureKernel, sp =>
+    {
+        Adventure adventure = sp.GetRequiredService<Adventure>();
+        IKernelBuilder builder = sp.GetRequiredService<IKernelBuilder>();
+        builder.AddAdventurePlugins(adventure);
+        Kernel kernel = builder.Build();
+
+        return kernel.GetRequiredService<IChatClient>();
+    });    
 
     Func<IServiceProvider, object?, IConsoleChatClient> chatClientFactory = (sp, key) =>
     {
@@ -95,6 +115,7 @@ try
     };
     services.AddKeyedTransient(ChatClients.Simple, chatClientFactory);
     services.AddKeyedTransient(ChatClients.SimpleSemanticKernel, chatClientFactory);
+    services.AddKeyedTransient(ChatClients.AdventureKernel, chatClientFactory);
 
     // Auto-register interfaces and their implementations in this namespace using Scrutor
     services.Scan(scan => scan
@@ -124,7 +145,10 @@ try
             .WithExample("simple-chat");
         a.AddCommand<EmptySemanticKernelChatCommand>("empty-semantic-kernel-chat")
             .WithDescription("Start a chat session with the AI game master using an empty semantic kernel chat client.")
-            .WithExample("empty-semantic-kernel-chat");
+            .WithExample("empty-semantic-kernel-chat");        
+        a.AddCommand<AdventureKernelChatCommand>("adventure-kernel-chat")
+            .WithDescription("Start a chat session with the AI game master using an semantic kernel and static adventure information.")
+            .WithExample("adventure-kernel-chat");
     });
 
     // Run the application

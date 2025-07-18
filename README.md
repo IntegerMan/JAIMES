@@ -14,7 +14,7 @@ The following tasks are planned for the project:
 
 ### Semantic Kernel
 
-- [ ] Add Semantic Kernel core
+- [/] Add Semantic Kernel core
 - [ ] Add a location and location list skill to the Semantic Kernel
 - [ ] Add a player character skill to the Semantic Kernel
 - [ ] Add encounter and encounter list skills to the Semantic Kernel

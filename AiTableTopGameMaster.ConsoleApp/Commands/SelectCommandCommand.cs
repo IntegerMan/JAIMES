@@ -17,7 +17,7 @@ public class SelectCommandCommand(IAnsiConsole console, IServiceProvider service
                 .Title("Select a command:")
                 .PageSize(5)
                 .MoreChoicesText("[grey](Move up and down to reveal more commands)[/]")
-                .AddChoices(commands.Where(c => c.GetType() != typeof(SelectCommandCommand)))
+                .AddChoices(commands.OfType<ChatCommandBase>())
                 .UseConverter(c => c.ToString()!)
         );
 
