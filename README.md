@@ -41,3 +41,4 @@ The following tasks are planned for the project:
 - [ ] Manage games by having their data live in the same directory
 - [ ] Serialize games to JSON files
 - [ ] Add a Resume Game command that loads a game state
+- [x] Allow selecting a command on startup
