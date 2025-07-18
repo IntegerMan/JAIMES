@@ -1,12 +1,18 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
+using Microsoft.SemanticKernel.ChatCompletion;
 using Spectre.Console;
 
 namespace AiTableTopGameMaster.ConsoleApp.Clients;
 
 [UsedImplicitly]
-public class ConsoleChatClient(IChatClient chatClient, IAnsiConsole console, ILogger<ConsoleChatClient> log) : IConsoleChatClient
+public class ConsoleChatClient(
+    IChatClient chatClient,
+    ChatOptions chatOptions,
+    IAnsiConsole console,
+    ILogger<ConsoleChatClient> log)
+    : IConsoleChatClient
 {
     public Task<IEnumerable<ChatMessage>> ChatIndefinitelyAsync(string systemPrompt, CancellationToken cancellationToken = default)
     {
@@ -49,7 +55,8 @@ public class ConsoleChatClient(IChatClient chatClient, IAnsiConsole console, ILo
         ChatResponse? response = null;
         await console.Status().StartAsync("Generating...", async _ =>
         {
-            response = await chatClient.GetResponseAsync(history, cancellationToken: cancellationToken);
+            // TODO: This should use SK's chat client instead of the generic one.
+            response = await chatClient.GetResponseAsync(history, options: chatOptions, cancellationToken: cancellationToken);
         });
             
         if (response == null)

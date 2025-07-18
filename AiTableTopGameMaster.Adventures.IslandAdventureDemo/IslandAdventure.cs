@@ -33,27 +33,27 @@ public class IslandAdventure : Adventure
         [
             new Location
             {
-                Id = "Wreck Site",
+                Name = "Wreck Site",
                 Description = Resources.LocationWreckSite
             },
             new Location()
             {
-                Id = "Collapsed Watchtower",
+                Name = "Collapsed Watchtower",
                 Description = Resources.LocationCollapsedWatchtower
             },
             new Location()
             {
-                Id = "Ritual Cave",
+                Name = "Ritual Cave",
                 Description = Resources.LocationRitualCave
             },
             new Location()
             {
-                Id = "Jungle Shack",
+                Name = "Jungle Shack",
                 Description = Resources.LocationJungleShack
             },
             new Location()
             {
-                Id = "Reef Circle",
+                Name = "Reef Circle",
                 Description = Resources.LocationReefCircle
             }
         ];

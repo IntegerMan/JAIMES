@@ -21,6 +21,6 @@ public class SelectCommandCommand(IAnsiConsole console, IServiceProvider service
                 .UseConverter(c => c.ToString()!)
         );
 
-        return await command.Execute(context, null);
+        return await command.Execute(context, null!);
     }
 }

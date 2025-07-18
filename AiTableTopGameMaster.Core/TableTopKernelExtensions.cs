@@ -5,11 +5,10 @@ namespace AiTableTopGameMaster.Core;
 
 public static class TableTopKernelExtensions
 {
-    public static IKernelBuilder AddAdventurePlugins(this IKernelBuilder builder, Adventure adventure)
+    public static Kernel AddAdventurePlugins(this Kernel kernel, Adventure adventure)
     {
-        // Register any services or extensions needed for the tabletop game master functionality
-        // For example, you might add custom skills, plugins, or services here.
+        kernel.Plugins.AddFromObject(new AdventureLocationsPlugin(adventure));
         
-        return builder;
+        return kernel;
     }
 }

@@ -68,50 +68,50 @@ try
     services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<AppSettings>>().Value);
     services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<OllamaSettings>>().Value);
 
-    // Register the Ollama chat client
-    services.AddTransient<ChatClientBuilder>(sp =>
+    // Configure Ollama
+    OllamaSettings ollamaSettings = config.GetSection("Ollama").Get<OllamaSettings>() 
+        ?? throw new InvalidOperationException("Ollama settings are not configured properly.");
+    services.AddOllamaChatClient(ollamaSettings.ChatModelId, new Uri(ollamaSettings.ChatEndpoint));
+    
+    // Configure Semantic Kernel
+    services.AddKernel();
+    services.AddKeyedTransient<ChatOptions>(ChatClients.Simple, (sp, key) => new ChatOptions()
     {
-        OllamaSettings ollamaSettings = sp.GetRequiredService<OllamaSettings>();
-        ChatClientBuilder builder = new OllamaChatClient(ollamaSettings.ChatEndpoint, ollamaSettings.ChatModelId)
-            .AsBuilder()
-            .UseLogging(sp.GetRequiredService<ILoggerFactory>());
-
-        return builder;
+        AllowMultipleToolCalls = false,
+        ToolMode = ChatToolMode.None,
     });
-    services.AddTransient<IKernelBuilder>(sp =>
+    services.AddKeyedTransient<ChatOptions>(ChatClients.SimpleSemanticKernel, (sp, key) => new ChatOptions()
     {
-        OllamaSettings ollamaSettings = sp.GetRequiredService<OllamaSettings>();
-        IKernelBuilder builder = Kernel.CreateBuilder();
-        builder.AddOllamaChatClient(ollamaSettings.ChatModelId, new Uri(ollamaSettings.ChatEndpoint));
-
-        return builder;
+        AllowMultipleToolCalls = false,
+        ToolMode = ChatToolMode.None,
     });
+    services.AddKeyedTransient<ChatOptions>(ChatClients.AdventureKernel, (sp, key) => new ChatOptions()
+    {
+        AllowMultipleToolCalls = true,
+        ToolMode = ChatToolMode.Auto,
+    });
+    //services.AddChatClient(sp => sp.GetRequiredService<IChatClient>());    
     services.AddKeyedChatClient(ChatClients.Simple, sp =>
     {
-        ChatClientBuilder builder = sp.GetRequiredService<ChatClientBuilder>();
-        return builder.Build();
-    });    
+        return sp.GetRequiredService<IChatClient>();
+    });
     services.AddKeyedChatClient(ChatClients.SimpleSemanticKernel, sp =>
     {
-        IKernelBuilder builder = sp.GetRequiredService<IKernelBuilder>();
-        Kernel kernel = builder.Build();
-
+        Kernel kernel = sp.GetRequiredService<Kernel>();
         return kernel.GetRequiredService<IChatClient>();
     });
     services.AddKeyedChatClient(ChatClients.AdventureKernel, sp =>
     {
-        Adventure adventure = sp.GetRequiredService<Adventure>();
-        IKernelBuilder builder = sp.GetRequiredService<IKernelBuilder>();
-        builder.AddAdventurePlugins(adventure);
-        Kernel kernel = builder.Build();
-
+        Kernel kernel = sp.GetRequiredService<Kernel>();
+        kernel.AddAdventurePlugins(sp.GetRequiredService<Adventure>());
         return kernel.GetRequiredService<IChatClient>();
     });    
 
     Func<IServiceProvider, object?, IConsoleChatClient> chatClientFactory = (sp, key) =>
     {
         IChatClient chatClient = sp.GetRequiredKeyedService<IChatClient>(key);
-        return new ConsoleChatClient(chatClient, sp.GetRequiredService<IAnsiConsole>(), sp.GetRequiredService<ILogger<ConsoleChatClient>>());
+        ChatOptions chatOptions = sp.GetRequiredKeyedService<ChatOptions>(key);
+        return new ConsoleChatClient(chatClient, chatOptions, sp.GetRequiredService<IAnsiConsole>(), sp.GetRequiredService<ILogger<ConsoleChatClient>>());
     };
     services.AddKeyedTransient(ChatClients.Simple, chatClientFactory);
     services.AddKeyedTransient(ChatClients.SimpleSemanticKernel, chatClientFactory);
