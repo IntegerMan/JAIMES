@@ -67,22 +67,25 @@ try
     services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<OllamaSettings>>().Value);
 
     // Register the Ollama chat client
-    services.AddKeyedChatClient(ChatClients.Simple, sp =>
+    services.AddTransient<ChatClientBuilder>(sp =>
     {
         OllamaSettings ollamaSettings = sp.GetRequiredService<OllamaSettings>();
-        return new OllamaChatClient(ollamaSettings.ChatEndpoint, ollamaSettings.ChatModelId)
+        ChatClientBuilder builder = new OllamaChatClient(ollamaSettings.ChatEndpoint, ollamaSettings.ChatModelId)
             .AsBuilder()
-            .UseLogging(sp.GetRequiredService<ILoggerFactory>())
-            .Build();
+            .UseLogging(sp.GetRequiredService<ILoggerFactory>());
+
+        return builder;
+    });
+    services.AddKeyedChatClient(ChatClients.Simple, sp =>
+    {
+        ChatClientBuilder builder = sp.GetRequiredService<ChatClientBuilder>();
+        return builder.Build();
     });    
     services.AddKeyedChatClient(ChatClients.SimpleSemanticKernel, sp =>
     {
-        OllamaSettings ollamaSettings = sp.GetRequiredService<OllamaSettings>();
-        return new OllamaChatClient(ollamaSettings.ChatEndpoint, ollamaSettings.ChatModelId)
-            .AsBuilder()
-            .UseLogging(sp.GetRequiredService<ILoggerFactory>())
-            .UseFunctionInvocation()
-            .Build();
+        ChatClientBuilder builder = sp.GetRequiredService<ChatClientBuilder>();
+        builder.UseFunctionInvocation();
+        return builder.Build();
     });
 
     Func<IServiceProvider, object?, IConsoleChatClient> chatClientFactory = (sp, key) =>
