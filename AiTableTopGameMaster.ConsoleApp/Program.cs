@@ -1,19 +1,14 @@
-﻿using System.Globalization;
-using AiTableTopGameMaster.Adventures.IslandAdventureDemo;
+﻿using AiTableTopGameMaster.Adventures.IslandAdventureDemo;
 using AiTableTopGameMaster.ConsoleApp.Clients;
-using AiTableTopGameMaster.ConsoleApp.Commands;
 using AiTableTopGameMaster.ConsoleApp.Infrastructure;
 using AiTableTopGameMaster.ConsoleApp.Settings;
-using AiTableTopGameMaster.Core;
 using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.SemanticKernel;
 using Spectre.Console;
-using Spectre.Console.Cli;
 using Serilog;
 
 // Create a custom IAnsiConsole that logs output to Serilog
@@ -75,81 +70,24 @@ try
     
     // Configure Semantic Kernel
     services.AddKernel();
-    services.AddKeyedTransient<ChatOptions>(ChatClients.SimpleSemanticKernel, (sp, key) => new ChatOptions()
+    services.AddTransient<ChatOptions>(_ => new ChatOptions()
     {
         AllowMultipleToolCalls = false,
         ToolMode = ChatToolMode.None,
     });
-    services.AddKeyedTransient<ChatOptions>(ChatClients.AdventureKernel, (sp, key) => new ChatOptions()
-    {
-        AllowMultipleToolCalls = true,
-        ToolMode = ChatToolMode.Auto,
-    });
-    //services.AddChatClient(sp => sp.GetRequiredService<IChatClient>());    
-    services.AddKeyedChatClient(ChatClients.SimpleSemanticKernel, sp =>
-    {
-        Kernel kernel = sp.GetRequiredService<Kernel>();
-        return kernel.GetRequiredService<IChatClient>();
-    });
-    services.AddKeyedChatClient(ChatClients.AdventureKernel, sp =>
-    {
-        Kernel kernel = sp.GetRequiredService<Kernel>();
-        kernel.AddAdventurePlugins(sp.GetRequiredService<Adventure>());
-        return kernel.GetRequiredService<IChatClient>();
-    });    
-
-    Func<IServiceProvider, object?, IConsoleChatClient> chatClientFactory = (sp, key) =>
-    {
-        IChatClient chatClient = sp.GetRequiredKeyedService<IChatClient>(key);
-        ChatOptions chatOptions = sp.GetRequiredKeyedService<ChatOptions>(key);
-        return new ConsoleChatClient(chatClient, chatOptions, sp.GetRequiredService<IAnsiConsole>(), sp.GetRequiredService<ILogger<ConsoleChatClient>>());
-    };
-    services.AddKeyedTransient(ChatClients.SimpleSemanticKernel, chatClientFactory);
-    services.AddKeyedTransient(ChatClients.AdventureKernel, chatClientFactory);
-
-    // Auto-register interfaces and their implementations in this namespace using Scrutor
-    services.Scan(scan => scan
-        .FromAssemblyOf<Program>()
-        .AddClasses(classes => classes.InNamespaceOf<Program>())
-        .AddClasses(classes => classes.InNamespaces(
-            typeof(AdventureKernelChatCommand).Namespace!))
-        .AsSelfWithInterfaces()
-        .WithScopedLifetime()
-    );
-
-    // Register our spectre console app
-    TypeRegistrar registrar = new(services);
-    CommandApp<SelectCommandCommand> app = new CommandApp<SelectCommandCommand>(registrar);
-    app.Configure(a =>
-    {
-        a.SetApplicationName("AI TableTop Game Master")
-            .CaseSensitivity(CaseSensitivity.None)
-            .PropagateExceptions()
-            .UseAssemblyInformationalVersion()
-            .ConfigureConsole(console)
-            .SetApplicationCulture(CultureInfo.CurrentUICulture);
-
-        // Add commands to the application
-        a.AddCommand<EmptySemanticKernelChatCommand>("empty-semantic-kernel-chat")
-            .WithDescription("Start a chat session with the AI game master using an empty semantic kernel chat client.")
-            .WithExample("empty-semantic-kernel-chat");        
-        a.AddCommand<AdventureKernelChatCommand>("adventure-kernel-chat")
-            .WithDescription("Start a chat session with the AI game master using an semantic kernel and static adventure information.")
-            .WithExample("adventure-kernel-chat");
-    });
-
-    // Run the application
-    int result = await app.RunAsync(args);
-    console.WriteLine();
-
-    if (result != 0)
-    {
-        console.MarkupLine("[red]An error occurred while running the application.[/]");
-        return result;
-    }
     
-    console.MarkupLine("[yellow]Thank you for using the AI TableTop Game Master![/]");
-    return result;
+    services.AddTransient<IConsoleChatClient, ConsoleChatClient>();
+
+    ServiceProvider sp = services.BuildServiceProvider();
+
+    Adventure adventure = sp.GetRequiredService<Adventure>();
+    ICollection<ChatMessage> history = adventure.GenerateInitialHistory();
+    IConsoleChatClient client =  sp.GetRequiredService<IConsoleChatClient>();
+    
+    await client.ChatIndefinitelyAsync(history);
+    
+    console.WriteLine();
+    return 0;
 } 
 catch (Exception ex)
 {
