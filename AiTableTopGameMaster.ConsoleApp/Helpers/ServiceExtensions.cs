@@ -1,12 +1,15 @@
 using AiTableTopGameMaster.Adventures.IslandAdventureDemo;
 using AiTableTopGameMaster.ConsoleApp.Clients;
+using AiTableTopGameMaster.ConsoleApp.Infrastructure;
 using AiTableTopGameMaster.ConsoleApp.Settings;
 using AiTableTopGameMaster.Core;
 using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using Serilog;
 using Spectre.Console;
 
 namespace AiTableTopGameMaster.ConsoleApp.Helpers;
@@ -26,6 +29,9 @@ public static class ServiceExtensions
         services.AddTransient<Kernel>(sp =>
         {
             IKernelBuilder builder = Kernel.CreateBuilder();
+            builder.Services.AddLogging(loggingBuilder => loggingBuilder.ConfigureSerilogLogging(disposeLogger: false));
+            builder.Services.AddSingleton(sp.GetRequiredService<IAnsiConsole>());
+            builder.Services.AddSingleton<IFunctionInvocationFilter, FunctionInvocationLoggingFilter>();
             builder.AddOllamaChatCompletion(settings.Ollama.ChatModelId, new Uri(settings.Ollama.ChatEndpoint));
             builder.AddAdventurePlugins(sp.GetRequiredService<Adventure>());
             

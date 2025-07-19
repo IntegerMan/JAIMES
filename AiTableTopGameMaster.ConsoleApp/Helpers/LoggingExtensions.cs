@@ -25,10 +25,12 @@ public static class LoggingExtensions
                 rollingInterval: RollingInterval.Infinite)
             .CreateLogger();
         
-        services.AddLogging(loggingBuilder =>
-        {
-            loggingBuilder.ClearProviders();
-            loggingBuilder.AddSerilog(Log.Logger, dispose: true);
-        });
+        services.AddLogging(loggingBuilder => loggingBuilder.ConfigureSerilogLogging(true));
+    }
+
+    public static void ConfigureSerilogLogging(this ILoggingBuilder loggingBuilder, bool disposeLogger = false)
+    {
+        loggingBuilder.ClearProviders();
+        loggingBuilder.AddSerilog(Log.Logger, dispose: disposeLogger);
     }
 }

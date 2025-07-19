@@ -12,14 +12,21 @@ IAnsiConsole console = new LoggingConsoleWrapper(AnsiConsole.Console);
 try
 {
     console.RenderAigmAppHeader();
+    console.MarkupLineInterpolated($"[dim blue]Initializing AI Table Top Game Master...[/]");
 
     ServiceProvider services = ServiceExtensions.BuildServiceProvider(console, args);
+    console.MarkupLineInterpolated($"[dim blue]Services configured successfully.[/]");
 
     Adventure adventure = services.GetRequiredService<Adventure>();
+    console.MarkupLineInterpolated($"[dim blue]Adventure loaded: {adventure.Name} by {adventure.Author}[/]");
+    
     ChatHistory history = adventure.GenerateInitialHistory()
                                    .ToChatHistory();
+    console.MarkupLineInterpolated($"[dim blue]Chat history initialized with {history.Count} message(s).[/]");
 
     IConsoleChatClient client =  services.GetRequiredService<IConsoleChatClient>();
+    console.MarkupLineInterpolated($"[dim green]Ready for adventure! Type your message below (or 'exit' to quit).[/]");
+    console.WriteLine();
     
     await client.ChatIndefinitelyAsync(history);
     
