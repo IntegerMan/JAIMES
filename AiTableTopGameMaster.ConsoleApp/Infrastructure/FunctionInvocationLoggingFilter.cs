@@ -7,11 +7,18 @@ namespace AiTableTopGameMaster.ConsoleApp.Infrastructure;
 
 public sealed class FunctionInvocationLoggingFilter(IAnsiConsole console, ILogger<FunctionInvocationLoggingFilter> logger) : IFunctionInvocationFilter
 {
+    private const string MarkupColorInvoking = "[dim blue]";
+    private const string MarkupColorSuccess = "[dim green]";
+    private const string MarkupColorFailure = "[dim red]";
+    private const string EmojiInvoking = "🔧";
+    private const string EmojiSuccess = "✅";
+    private const string EmojiFailure = "❌";
+
     public async Task OnFunctionInvocationAsync(FunctionInvocationContext context, Func<FunctionInvocationContext, Task> next)
     {
         // Before function invocation
         var stopwatch = Stopwatch.StartNew();
-        console.MarkupLineInterpolated($"[dim blue]🔧 Invoking tool: {context.Function.Name}[/]");
+        console.MarkupLineInterpolated($"{MarkupColorInvoking}{EmojiInvoking} Invoking tool: {context.Function.Name}[/]");
         logger.LogDebug("Function invoking: {FunctionName} with arguments: {Arguments}", 
             context.Function.Name, 
             string.Join(", ", context.Arguments.Select(kvp => $"{kvp.Key}={kvp.Value}")));
