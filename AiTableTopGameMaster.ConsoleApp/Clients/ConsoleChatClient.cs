@@ -44,7 +44,7 @@ public class ConsoleChatClient(
 
     public async Task<ChatHistory> ChatAsync(ChatHistory history, CancellationToken cancellationToken = default)
     {
-        console.MarkupLineInterpolated($"[yellow]Generating response...[/]");
+        console.MarkupLineInterpolated($"{YellowMarkup}Generating response...[/]");
         log.LogDebug("Starting chat completion with {MessageCount} messages in history", history.Count);
         
         try
