@@ -45,28 +45,39 @@ public class ConsoleChatClient(
     public async Task<ChatHistory> ChatAsync(ChatHistory history, CancellationToken cancellationToken = default)
     {
         console.MarkupLineInterpolated($"[yellow]Generating response...[/]");
+        log.LogDebug("Starting chat completion with {MessageCount} messages in history", history.Count);
         
-        IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
-        IReadOnlyList<ChatMessageContent>? response = await chatService.GetChatMessageContentsAsync(history, settings, kernel: kernel,
-            cancellationToken: cancellationToken);
-
-        console.MarkupLineInterpolated($"[dim yellow]Response generated.[/]");
-
-        if (response is not { Count: > 0 })
+        try
         {
-            throw new InvalidOperationException("The chat client did not return any responses.");
+            IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
+            IReadOnlyList<ChatMessageContent>? response = await chatService.GetChatMessageContentsAsync(history, settings, kernel: kernel,
+                cancellationToken: cancellationToken);
+
+            console.MarkupLineInterpolated($"[dim yellow]Response generated.[/]");
+            log.LogDebug("Chat completion returned {ResponseCount} message(s)", response?.Count ?? 0);
+
+            if (response is not { Count: > 0 })
+            {
+                throw new InvalidOperationException("The chat client did not return any responses.");
+            }
+
+            console.WriteLine();
+
+            foreach (var reply in response)
+            {
+                history.Add(reply);
+                console.MarkupLineInterpolated($"[green]AI:[/] {reply.Content}");
+                log.LogInformation("AI: {Content}", reply.Content);
+            }
+
+            console.WriteLine();
+            return history;
         }
-
-        console.WriteLine();
-
-        foreach (var reply in response)
+        catch (Exception ex)
         {
-            history.Add(reply);
-            console.MarkupLineInterpolated($"[green]AI:[/] {reply.Content}");
-            log.LogInformation("AI: {Content}", reply.Content);
+            console.MarkupLineInterpolated($"[dim red]Failed to generate response.[/]");
+            log.LogError(ex, "Error during chat completion");
+            throw;
         }
-
-        console.WriteLine();
-        return history;
     }
 }
