@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
-using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
+using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Spectre.Console;
 
@@ -8,78 +8,65 @@ namespace AiTableTopGameMaster.ConsoleApp.Clients;
 
 [UsedImplicitly]
 public class ConsoleChatClient(
-    IChatClient chatClient,
-    ChatOptions chatOptions,
+    PromptExecutionSettings settings,
     IAnsiConsole console,
+    Kernel kernel,
     ILogger<ConsoleChatClient> log)
     : IConsoleChatClient
 {
-    public Task<IEnumerable<ChatMessage>> ChatIndefinitelyAsync(string systemPrompt, CancellationToken cancellationToken = default)
+    public async Task<ChatHistory> ChatIndefinitelyAsync(ChatHistory history,
+        CancellationToken cancellationToken = default)
     {
-        List<ChatMessage> history = [new(ChatRole.System, systemPrompt)];
-        return ChatIndefinitelyAsync(history, cancellationToken);
-    }
-
-    public async Task<IEnumerable<ChatMessage>> ChatIndefinitelyAsync(ICollection<ChatMessage> history, CancellationToken cancellationToken = default)
-    {
-        bool needsUserMessage = !history.Any() || history.Last().Role != ChatRole.User;
+        bool needsUserMessage = !history.Any() || history.Last().Role != AuthorRole.User;
         do
         {
-            if (needsUserMessage)
-            {
-                string? userInput = console.Prompt(new TextPrompt<string?>("[blue]You:[/] ").AllowEmpty());
-                
-                if (string.IsNullOrWhiteSpace(userInput) || userInput.Equals("exit", StringComparison.OrdinalIgnoreCase))
-                {
-                    return history;
-                }
-            
-                log.LogInformation("User: {UserInput}", userInput);
-                history.Add(new ChatMessage(ChatRole.User, userInput));
-            }
-            else
+            if (!needsUserMessage)
             {
                 needsUserMessage = true;
             }
+            else
+            {
+                string? userInput = console.Prompt(new TextPrompt<string?>("[blue]You:[/] ").AllowEmpty());
+
+                if (string.IsNullOrWhiteSpace(userInput) ||
+                    userInput.Equals("exit", StringComparison.OrdinalIgnoreCase))
+                {
+                    return history;
+                }
+
+                log.LogInformation("User: {UserInput}", userInput);
+                history.AddUserMessage(userInput);
+            }
+
             await ChatAsync(history, cancellationToken);
         } while (true);
-    }    
-    public Task<ICollection<ChatMessage>> ChatAsync(string message, string systemPrompt, CancellationToken cancellationToken = default) 
-        => ChatAsync((List<ChatMessage>)[
-            new ChatMessage(ChatRole.System, systemPrompt),
-            new ChatMessage(ChatRole.User, message)
-        ], cancellationToken);
+    }
 
-    public async Task<ICollection<ChatMessage>> ChatAsync(ICollection<ChatMessage> history, CancellationToken cancellationToken = default)
+    public async Task<ChatHistory> ChatAsync(ChatHistory history, CancellationToken cancellationToken = default)
     {
-        ChatResponse? response = null;
+        IReadOnlyList<ChatMessageContent>? response = null;
         await console.Status().StartAsync("Generating...", async _ =>
         {
-            // TODO: This should use SK's chat client instead of the generic one.
-            response = await chatClient.GetResponseAsync(history, options: chatOptions, cancellationToken: cancellationToken);
+            IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
+            response = await chatService.GetChatMessageContentsAsync(history, settings, kernel: kernel,
+                cancellationToken: cancellationToken);
         });
-            
-        if (response == null)
-        {
-            throw new InvalidOperationException("The chat client did not return a response.");
-        }
 
-        if (!response.Messages.Any())
+        if (response is not { Count: > 0 })
         {
-            throw new InvalidOperationException("The chat client returned an empty response.");
+            throw new InvalidOperationException("The chat client did not return any responses.");
         }
 
         console.WriteLine();
-        
-        foreach (ChatMessage reply in response.Messages)
+
+        foreach (var reply in response)
         {
             history.Add(reply);
-            console.MarkupLineInterpolated($"[green]AI:[/] {reply.Text}");
-            log.LogInformation("AI: {Text}", reply.Text);
+            console.MarkupLineInterpolated($"[green]AI:[/] {reply.Content}");
+            log.LogInformation("AI: {Content}", reply.Content);
         }
 
         console.WriteLine();
-
         return history;
     }
 }

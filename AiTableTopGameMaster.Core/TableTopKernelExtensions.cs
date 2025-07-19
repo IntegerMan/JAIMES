@@ -5,10 +5,10 @@ namespace AiTableTopGameMaster.Core;
 
 public static class TableTopKernelExtensions
 {
-    public static Kernel AddAdventurePlugins(this Kernel kernel, Adventure adventure)
+    public static IKernelBuilder AddAdventurePlugins(this IKernelBuilder builder, Adventure adventure)
     {
-        kernel.Plugins.AddFromObject(new AdventureLocationsPlugin(adventure));
+        builder.Plugins.AddFromObject(new AdventureLocationsPlugin(adventure));
         
-        return kernel;
+        return builder;
     }
 }

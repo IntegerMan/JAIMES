@@ -2,8 +2,8 @@
 using AiTableTopGameMaster.ConsoleApp.Helpers;
 using AiTableTopGameMaster.ConsoleApp.Infrastructure;
 using AiTableTopGameMaster.Domain;
-using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.SemanticKernel.ChatCompletion;
 using Spectre.Console;
 using Serilog;
 
@@ -16,7 +16,9 @@ try
     ServiceProvider services = ServiceExtensions.BuildServiceProvider(console, args);
 
     Adventure adventure = services.GetRequiredService<Adventure>();
-    ICollection<ChatMessage> history = adventure.GenerateInitialHistory();
+    ChatHistory history = adventure.GenerateInitialHistory()
+                                   .ToChatHistory();
+
     IConsoleChatClient client =  services.GetRequiredService<IConsoleChatClient>();
     
     await client.ChatIndefinitelyAsync(history);

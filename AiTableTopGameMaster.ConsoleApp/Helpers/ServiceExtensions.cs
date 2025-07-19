@@ -1,9 +1,12 @@
 using AiTableTopGameMaster.Adventures.IslandAdventureDemo;
 using AiTableTopGameMaster.ConsoleApp.Clients;
 using AiTableTopGameMaster.ConsoleApp.Settings;
+using AiTableTopGameMaster.Core;
 using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
 using Spectre.Console;
 
 namespace AiTableTopGameMaster.ConsoleApp.Helpers;
@@ -19,15 +22,18 @@ public static class ServiceExtensions
         // Load configuration settings and options
         AppSettings settings = services.RegisterConfigurationAndSettings(args);
 
-        // Configure Ollama (In the future we might want to support other providers based on root config settings)
-        services.AddOllamaChatClient(settings.Ollama.ChatModelId, new Uri(settings.Ollama.ChatEndpoint));
-    
         // Configure Semantic Kernel
-        services.AddKernel();
-        services.AddTransient<ChatOptions>(_ => new ChatOptions()
+        services.AddTransient<Kernel>(sp =>
         {
-            AllowMultipleToolCalls = false,
-            ToolMode = ChatToolMode.None,
+            IKernelBuilder builder = Kernel.CreateBuilder();
+            builder.AddOllamaChatCompletion(settings.Ollama.ChatModelId, new Uri(settings.Ollama.ChatEndpoint));
+            builder.AddAdventurePlugins(sp.GetRequiredService<Adventure>());
+            
+            return builder.Build();
+        });
+        services.AddTransient<PromptExecutionSettings>(_ => new PromptExecutionSettings
+        {
+            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
         });
     
         // Configure application dependencies
