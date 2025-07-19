@@ -44,13 +44,13 @@ public class ConsoleChatClient(
 
     public async Task<ChatHistory> ChatAsync(ChatHistory history, CancellationToken cancellationToken = default)
     {
-        IReadOnlyList<ChatMessageContent>? response = null;
-        await console.Status().StartAsync("Generating...", async _ =>
-        {
-            IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
-            response = await chatService.GetChatMessageContentsAsync(history, settings, kernel: kernel,
-                cancellationToken: cancellationToken);
-        });
+        console.MarkupLineInterpolated($"[yellow]Generating response...[/]");
+        
+        IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
+        IReadOnlyList<ChatMessageContent>? response = await chatService.GetChatMessageContentsAsync(history, settings, kernel: kernel,
+            cancellationToken: cancellationToken);
+
+        console.MarkupLineInterpolated($"[dim yellow]Response generated.[/]");
 
         if (response is not { Count: > 0 })
         {
