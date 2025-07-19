@@ -5,7 +5,7 @@ using Spectre.Console;
 
 namespace AiTableTopGameMaster.ConsoleApp.Infrastructure;
 
-public class FunctionInvocationLoggingFilter(IAnsiConsole console, ILogger<FunctionInvocationLoggingFilter> logger) : IFunctionInvocationFilter
+public sealed class FunctionInvocationLoggingFilter(IAnsiConsole console, ILogger<FunctionInvocationLoggingFilter> logger) : IFunctionInvocationFilter
 {
     public async Task OnFunctionInvocationAsync(FunctionInvocationContext context, Func<FunctionInvocationContext, Task> next)
     {
