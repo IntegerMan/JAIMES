@@ -53,13 +53,14 @@ public class ConsoleChatClient(
             IReadOnlyList<ChatMessageContent>? response = await chatService.GetChatMessageContentsAsync(history, settings, kernel: kernel,
                 cancellationToken: cancellationToken);
 
-            console.MarkupLineInterpolated($"[dim yellow]Response generated.[/]");
             log.LogDebug("Chat completion returned {ResponseCount} message(s)", response?.Count ?? 0);
 
             if (response is not { Count: > 0 })
             {
                 throw new InvalidOperationException("The chat client did not return any responses.");
             }
+
+            console.MarkupLineInterpolated($"[dim yellow]Response generated.[/]");
 
             console.WriteLine();
 

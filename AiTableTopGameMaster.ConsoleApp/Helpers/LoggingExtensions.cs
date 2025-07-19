@@ -31,4 +31,10 @@ public static class LoggingExtensions
             loggingBuilder.AddSerilog(Log.Logger, dispose: true);
         });
     }
+
+    public static void ConfigureSerilogLogging(this ILoggingBuilder loggingBuilder, bool disposeLogger = false)
+    {
+        loggingBuilder.ClearProviders();
+        loggingBuilder.AddSerilog(Log.Logger, dispose: disposeLogger);
+    }
 }
