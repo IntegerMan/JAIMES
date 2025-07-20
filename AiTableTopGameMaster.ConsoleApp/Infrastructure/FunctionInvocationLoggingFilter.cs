@@ -1,52 +1,40 @@
 using System.Diagnostics;
+using AiTableTopGameMaster.ConsoleApp.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Spectre.Console;
 
 namespace AiTableTopGameMaster.ConsoleApp.Infrastructure;
 
-public sealed class FunctionInvocationLoggingFilter(IAnsiConsole console, ILogger<FunctionInvocationLoggingFilter> logger) : IFunctionInvocationFilter
+public sealed class FunctionInvocationLoggingFilter(IAnsiConsole console, ILogger<FunctionInvocationLoggingFilter> log) : IAutoFunctionInvocationFilter
 {
-    private const string MarkupColorInvoking = "[dim blue]";
-    private const string MarkupColorSuccess = "[dim green]";
-    private const string MarkupColorFailure = "[dim red]";
-    private const string EmojiInvoking = "🔧";
-    private const string EmojiSuccess = "✅";
-    private const string EmojiFailure = "❌";
-
-    public async Task OnFunctionInvocationAsync(FunctionInvocationContext context, Func<FunctionInvocationContext, Task> next)
+    public async Task OnAutoFunctionInvocationAsync(AutoFunctionInvocationContext context, Func<AutoFunctionInvocationContext, Task> next)
     {
-        // Before function invocation
-        var stopwatch = Stopwatch.StartNew();
-        console.MarkupLineInterpolated($"{MarkupColorInvoking}{EmojiInvoking} Invoking tool: {context.Function.Name}[/]");
-        logger.LogDebug("Function invoking: {FunctionName} with arguments: {Arguments}", 
+        string argsList = string.Join(", ", context.Arguments?.Select(kvp => $"{kvp.Key}: {kvp.Value}") ?? []);
+        console.MarkupLine($"{DisplayHelpers.System}🔧 Auto-invoking tool: {DisplayHelpers.ToolCall}{context.Function.PluginName}.{context.Function.Name}[/] ({argsList})[/]");
+        log.LogDebug("Auto function invoking: {PluginName}.{FunctionName} with arguments: {Arguments}",
+            context.Function.PluginName,
             context.Function.Name, 
-            string.Join(", ", context.Arguments.Select(kvp => $"{kvp.Key}={kvp.Value}")));
+            argsList);
 
-        try
-        {
-            // Invoke the function
-            await next(context);
-            
-            stopwatch.Stop();
-            
-            // After successful function invocation
-            console.MarkupLineInterpolated($"[dim green]✅ Tool completed: {context.Function.Name} ({stopwatch.ElapsedMilliseconds}ms)[/]");
-            logger.LogDebug("Function invoked: {FunctionName}, result: {Result}, duration: {Duration}ms", 
-                context.Function.Name, 
-                context.Result?.GetValue<object>()?.ToString() ?? "null",
-                stopwatch.ElapsedMilliseconds);
-        }
-        catch (Exception ex)
-        {
-            stopwatch.Stop();
-            
-            // After failed function invocation
-            console.MarkupLineInterpolated($"[dim red]❌ Tool failed: {context.Function.Name} ({stopwatch.ElapsedMilliseconds}ms)[/]");
-            logger.LogError(ex, "Function invocation failed: {FunctionName}, duration: {Duration}ms", 
-                context.Function.Name,
-                stopwatch.ElapsedMilliseconds);
-            throw;
-        }
+        // Invoke the function and measure the time taken
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        await next(context);
+        stopwatch.Stop();
+        
+        // Get our result (Note: only string results supported at the moment)
+        FunctionResult result = context.Result;
+        string output = result.ToString();
+        
+        // Log the results
+        log.LogDebug("Auto function invocation completed: {PluginName}.{FunctionName} in {ElapsedMilliseconds} ms with result: {Result}",
+            context.Function.PluginName,
+            context.Function.Name,
+            stopwatch.ElapsedMilliseconds,
+            output);
+        console.MarkupLine(string.IsNullOrWhiteSpace(output)
+            ? $"{DisplayHelpers.Error}No output returned from function invocation[/]"
+            : $"{DisplayHelpers.ToolCallResult}{output}[/]");
+        console.MarkupLine($"{DisplayHelpers.System}✅ Auto-invocation completed: {DisplayHelpers.ToolCall}{context.Function.PluginName}.{context.Function.Name}[/] in {stopwatch.ElapsedMilliseconds} ms[/]");
     }
 }

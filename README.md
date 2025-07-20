@@ -15,10 +15,10 @@ The following tasks are planned for the project:
 ### Semantic Kernel
 
 - [x] Add Semantic Kernel core
-- [ ] Show tool calls as they occur via the console
-- [ ] Log Semantic Kernel data to the diagnostic log
+- [x] Show tool calls as they occur via the console
+- [x] Log Semantic Kernel data to the diagnostic log
 - [ ] Add a story info plugin to Semantic Kernel
-- [/] Add a location and location list plugin to Semantic Kernel
+- [x] Add a location and location list plugin to Semantic Kernel
 - [ ] Add a player character plugin to the Semantic Kernel
 - [ ] Add encounter and encounter list plugin to Semantic Kernel
 

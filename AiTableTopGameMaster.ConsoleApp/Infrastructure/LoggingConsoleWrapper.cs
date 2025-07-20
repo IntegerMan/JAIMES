@@ -17,7 +17,7 @@ public class LoggingConsoleWrapper(IAnsiConsole console) : IAnsiConsole
             case Paragraph p:
             {
                 StringBuilder sb = new();
-                foreach (var segment in p.GetSegments(console))
+                foreach (Segment segment in p.GetSegments(console))
                 {
                     sb.Append(segment.Text);
                 }

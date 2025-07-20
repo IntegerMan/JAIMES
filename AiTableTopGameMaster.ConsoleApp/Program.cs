@@ -12,22 +12,21 @@ IAnsiConsole console = new LoggingConsoleWrapper(AnsiConsole.Console);
 try
 {
     console.RenderAigmAppHeader();
-    console.MarkupLineInterpolated($"[dim blue]Initializing AI Table Top Game Master...[/]");
-
+    
+    Log.Debug("Starting AI Table Top Game Master Console Application");
     ServiceProvider services = ServiceExtensions.BuildServiceProvider(console, args);
-    console.MarkupLineInterpolated($"[dim blue]Services configured successfully.[/]");
+    Log.Debug("Services configured successfully");
 
     Adventure adventure = services.GetRequiredService<Adventure>();
-    console.MarkupLineInterpolated($"[dim blue]Adventure loaded: {adventure.Name} by {adventure.Author}[/]");
+    console.MarkupLine($"{DisplayHelpers.System}Adventure loaded: {adventure.Name} by {adventure.Author}[/]");
+    Log.Debug("Adventure loaded: {Name} by {Author}", adventure.Name, adventure.Author);
     
     ChatHistory history = adventure.GenerateInitialHistory()
                                    .ToChatHistory();
-    console.MarkupLineInterpolated($"[dim blue]Chat history initialized with {history.Count} message(s).[/]");
+    Log.Debug("Initial chat history created with {MessageCount} messages", history.Count);
+    console.WriteLine();
 
     IConsoleChatClient client =  services.GetRequiredService<IConsoleChatClient>();
-    console.MarkupLineInterpolated($"[dim green]Ready for adventure! Type your message below (or 'exit' to quit).[/]");
-    console.WriteLine();
-    
     await client.ChatIndefinitelyAsync(history);
     
     console.WriteLine();
@@ -36,7 +35,7 @@ try
 catch (Exception ex)
 {
     Log.Error(ex, "An error occurred");
-    console.MarkupLine($"[red]An error occurred: {ex.Message}[/]");
+    console.MarkupLine($"{DisplayHelpers.Error}An error occurred: {ex.Message}[/]");
     console.WriteException(ex, ExceptionFormats.ShortenEverything);
     return 1;
 }

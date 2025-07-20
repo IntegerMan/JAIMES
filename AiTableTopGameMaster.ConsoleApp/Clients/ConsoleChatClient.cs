@@ -1,3 +1,4 @@
+using AiTableTopGameMaster.ConsoleApp.Helpers;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
@@ -44,7 +45,7 @@ public class ConsoleChatClient(
 
     public async Task<ChatHistory> ChatAsync(ChatHistory history, CancellationToken cancellationToken = default)
     {
-        console.MarkupLineInterpolated($"{YellowMarkup}Generating response...[/]");
+        console.MarkupLine($"{DisplayHelpers.System}Generating response...[/]");
         log.LogDebug("Starting chat completion with {MessageCount} messages in history", history.Count);
         
         try
@@ -60,11 +61,9 @@ public class ConsoleChatClient(
                 throw new InvalidOperationException("The chat client did not return any responses.");
             }
 
-            console.MarkupLineInterpolated($"[dim yellow]Response generated.[/]");
-
             console.WriteLine();
 
-            foreach (var reply in response)
+            foreach (ChatMessageContent reply in response)
             {
                 history.Add(reply);
                 console.MarkupLineInterpolated($"[green]AI:[/] {reply.Content}");

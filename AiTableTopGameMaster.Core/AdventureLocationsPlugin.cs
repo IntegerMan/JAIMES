@@ -34,7 +34,7 @@ public class AdventureLocationsPlugin(Adventure adventure)
     private void AddLocationListToResponse(StringBuilder sb)
     {
         sb.AppendLine("The following locations have been pre-scripted for the adventure:");
-        foreach (var location in adventure.Locations)
+        foreach (Location location in adventure.Locations)
         {
             sb.AppendLine($"- {location.Name}");
         }

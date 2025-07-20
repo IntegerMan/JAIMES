@@ -8,7 +8,7 @@ public static class KernelHelpers
     public static ChatHistory ToChatHistory(this IEnumerable<ChatMessage> messages)
     {
         ChatHistory history = new();
-        foreach (var message in messages)
+        foreach (ChatMessage message in messages)
         {
             if (message.Role == ChatRole.User)
             {
