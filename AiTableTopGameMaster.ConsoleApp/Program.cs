@@ -19,11 +19,14 @@ try
 
     Adventure adventure = services.GetRequiredService<Adventure>();
     console.MarkupLine($"{DisplayHelpers.System}Adventure loaded: {adventure.Name} by {adventure.Author}[/]");
+    console.WriteLine();
     Log.Debug("Adventure loaded: {Name} by {Author}", adventure.Name, adventure.Author);
     
     ChatHistory history = adventure.GenerateInitialHistory()
                                    .ToChatHistory();
     Log.Debug("Initial chat history created with {MessageCount} messages", history.Count);
+    console.DisplayHistory(history);
+
     console.WriteLine();
 
     IConsoleChatClient client =  services.GetRequiredService<IConsoleChatClient>();

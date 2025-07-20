@@ -17,10 +17,10 @@ The following tasks are planned for the project:
 - [x] Add Semantic Kernel core
 - [x] Show tool calls as they occur via the console
 - [x] Log Semantic Kernel data to the diagnostic log
-- [ ] Add a story info plugin to Semantic Kernel
+- [x] Add a story info plugin to Semantic Kernel
 - [x] Add a location and location list plugin to Semantic Kernel
-- [ ] Add a player character plugin to the Semantic Kernel
-- [ ] Add encounter and encounter list plugin to Semantic Kernel
+- [x] Add a player character plugin to the Semantic Kernel
+- [x] Add encounter and encounter list plugin to Semantic Kernel
 
 ### Kernel Memory and RAG
 
@@ -34,10 +34,10 @@ The following tasks are planned for the project:
 
 ### Quality and Testing
 
-- [ ] Add in Evaluation
 - [ ] Add in Unit Tests
+- [ ] Add in Evaluation
 - [ ] Add A/B Testing for Prompt Refinement and Model Selection
-- [ ] Add safety checks (optional)
+- [ ] Add content safety checks (optional)
 
 ### Game Session Management
 

@@ -66,8 +66,11 @@ public class ConsoleChatClient(
             foreach (ChatMessageContent reply in response)
             {
                 history.Add(reply);
-                console.MarkupLineInterpolated($"[green]AI:[/] {reply.Content}");
+                
                 log.LogInformation("AI: {Content}", reply.Content);
+                
+                console.Markup($"{DisplayHelpers.User}AI:[/] ");
+                console.MarkupLineInterpolated($"{reply.Content}");
             }
 
             console.WriteLine();

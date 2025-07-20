@@ -14,8 +14,8 @@ public class IslandAdventure : Adventure
         => [
         new(ChatRole.System, Resources.GameMasterSystemPrompt),
         new(ChatRole.Tool, $"Here is the adventure backstory: {Backstory}"),
-        new(ChatRole.Tool, $"Here's the player's character sheet: {CharacterSheet}"),
-        new(ChatRole.Tool, $"Here is the game master guidance: {GameMasterNotes}"),
+        new(ChatRole.Tool, $"Here is the adventure setting: {SettingDescription}"),
+        new(ChatRole.Tool, "The player character is Emcee, a level 1 rogue. You can check their starting character sheet via a function call if you need to."),
         new(ChatRole.User, Resources.InitialGreetingPrompt),
     ];
 
@@ -64,27 +64,27 @@ public class IslandAdventure : Adventure
         [
             new Encounter
             {
-                Id = "Crab Swarm",
+                Name = "Crab Swarm",
                 Description = Resources.EncounterCrabSwarm
             },
             new Encounter
             {
-                Id = "Kobold Patrol",
+                Name = "Kobold Patrol",
                 Description = Resources.EncounterKoboldPatrol
             },
             new Encounter
             {
-                Id = "The Ritual",
+                Name = "The Ritual",
                 Description = Resources.EncounterTheRitual
             },
             new Encounter
             {
-                Id = "Trapped Drawer",
+                Name = "Trapped Drawer",
                 Description = Resources.EncounterTrappedDrawer
             },
             new Encounter
             {
-                Id = "Visions of the Deep",
+                Name = "Visions of the Deep",
                 Description = Resources.EncounterVisionsOfTheDeep
             }
         ];

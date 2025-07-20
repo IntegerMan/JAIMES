@@ -1,3 +1,4 @@
+using Microsoft.SemanticKernel.ChatCompletion;
 using Spectre.Console;
 
 namespace AiTableTopGameMaster.ConsoleApp.Helpers;
@@ -6,6 +7,7 @@ public static class DisplayHelpers
 {
     public static string Instructions => "[bold white]";
     public static string System => "[bold yellow]";
+    public static string User => "[bold green]";
     public static string ToolCall => "[bold orange3]";
     public static string ToolCallResult => "[bold steelblue]";
     public static string Error => "[bold red]";
@@ -19,5 +21,20 @@ public static class DisplayHelpers
         console.MarkupLine($"{System}by[/] [cyan]Matt Eland[/]");
         console.MarkupLine($"{System}An AI-powered tabletop game master[/]");
         console.WriteLine();
+    }
+
+    public static void DisplayHistory(this IAnsiConsole console, ChatHistory history)
+    {
+        foreach (var message in history)
+        {
+            if (message.Role == AuthorRole.User)
+            {
+                console.MarkupLine($"{User}{message.Content}[/]");
+            }
+            else
+            {
+                console.MarkupLine($"{ToolCallResult}{message.Content}[/]");
+            }
+        }
     }
 }
