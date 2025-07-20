@@ -1,3 +1,5 @@
+using AiTableTopGameMaster.Domain;
+
 namespace AiTableTopGameMaster.ConsoleApp.Settings;
 
 public class AppSettings

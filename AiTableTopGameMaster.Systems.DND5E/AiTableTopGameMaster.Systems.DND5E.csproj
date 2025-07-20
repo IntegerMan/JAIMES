@@ -6,4 +6,20 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Reference Include="Microsoft.SemanticKernel.Abstractions">
+        <HintPath>..\..\..\.nuget\packages\microsoft.semantickernel.abstractions\1.60.0\lib\net8.0\Microsoft.SemanticKernel.Abstractions.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.KernelMemory.AI.Ollama" Version="0.98.250508.3" />
+      <PackageReference Include="Microsoft.KernelMemory.Core" Version="0.98.250508.3" />
+      <PackageReference Include="Microsoft.SemanticKernel.Core" Version="1.60.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AiTableTopGameMaster.Domain\AiTableTopGameMaster.Domain.csproj" />
+    </ItemGroup>
+
 </Project>

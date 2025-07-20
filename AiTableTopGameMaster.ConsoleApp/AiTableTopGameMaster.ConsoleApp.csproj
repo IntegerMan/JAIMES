@@ -34,6 +34,7 @@
     <ItemGroup>
       <ProjectReference Include="..\AiTableTopGameMaster.Adventures.IslandAdventureDemo\AiTableTopGameMaster.Adventures.IslandAdventureDemo.csproj" />
       <ProjectReference Include="..\AiTableTopGameMaster.Core\AiTableTopGameMaster.Core.csproj" />
+      <ProjectReference Include="..\AiTableTopGameMaster.Systems.DND5E\AiTableTopGameMaster.Systems.DND5E.csproj" />
     </ItemGroup>
 
 </Project>

@@ -29,7 +29,7 @@ try
 
     console.WriteLine();
 
-    IConsoleChatClient client =  services.GetRequiredService<IConsoleChatClient>();
+    IConsoleChatClient client = services.GetRequiredService<IConsoleChatClient>();
     await client.ChatIndefinitelyAsync(history);
     
     console.WriteLine();
