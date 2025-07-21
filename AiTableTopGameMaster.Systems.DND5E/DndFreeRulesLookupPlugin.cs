@@ -1,13 +1,14 @@
 ﻿using System.ComponentModel;
 using System.Text;
 using AiTableTopGameMaster.Domain;
+using JetBrains.Annotations;
 using Microsoft.KernelMemory;
 using Microsoft.SemanticKernel;
 
 namespace AiTableTopGameMaster.Systems.DND5E;
 
 [Description("Contains functions for looking up rules related to Dungeons & Dragons 5th Edition (DND5E)'s free ruleset.")]
-public class DndFreeRulesLookupPlugin
+public class DndFreeRulesLookupPlugin(string sourceDirectory)
 {
     private IKernelMemory? _memory;
 
@@ -19,51 +20,80 @@ public class DndFreeRulesLookupPlugin
             .WithDefaultWebScraper()
             .Build();
 
-        await IndexDocumentAsync("https://www.dndbeyond.com/sources/dnd/br-2024", "DND5EFreeRulesTableOfContents", indexCallback);
-        // TODO: Discover all links on the page and index them as well
+        // List all PDF files in the source directory
+        string[] pdfFiles = Directory.GetFiles(sourceDirectory, "*.pdf", SearchOption.AllDirectories);
+        if (pdfFiles.Length == 0)
+        {
+            throw new InvalidOperationException($"No PDF files found in directory {sourceDirectory}");
+        }
+        
+        // Index each PDF file
+        foreach (string pdfFile in pdfFiles)
+        {
+            string documentId = Path.GetFileNameWithoutExtension(pdfFile).Replace(" ", "_");
+            await IndexDocumentAsync(pdfFile, documentId, indexCallback);
+        }
     }
 
-    private async Task IndexDocumentAsync(string url, string documentId, Action<IndexingInfo>? indexCallback = null)
+    private async Task IndexDocumentAsync(string filePath, string documentId, Action<IndexingInfo>? indexCallback = null)
     {
         TagCollection tags = new()
         {
             { "Source", "DND5E Free Rules" },
             { "System", "DND5E"},
-            { "Url", url }
+            { "Location", filePath }
         };
         
-        IndexingInfo status = new(url, documentId, IsComplete: false);
+        IndexingInfo status = new(filePath, documentId, IsComplete: false);
         indexCallback?.Invoke(status);
-        string result = await _memory!.ImportWebPageAsync(url, documentId: documentId, tags, index: "DND5E");
+        string result = await _memory!.ImportDocumentAsync(filePath, documentId, tags);
         
         indexCallback?.Invoke(status with {IsComplete = true, DocumentId = result});
     }
 
-    [KernelFunction]
-    [Description("Provides the most relevant results for a rule or concept in the DND5E free ruleset.")]
-    public async Task<string> RulesSearch([Description("The string to search for")] string query)
+    [KernelFunction, UsedImplicitly]
+    [Description("Retrieves possibly helpful passages from the DND5E free ruleset based on a search query.")]
+    public async Task<string> RulesSearch([Description("A topic or question to search for")] string query)
     {
         IKernelMemory memory = _memory ?? throw new InvalidOperationException("The DND5E free rules lookup plugin has not been initialized. Call InitializeAsync() before using this function.");
 
         SearchResult results = await memory.SearchAsync(query);
-        
         if (results.NoResult)
         {
             return $"No results found for '{query}' in the DND5E free ruleset.";
         }
         
+        // Find the top 5 most relevant Partitions
+        results.Results.SelectMany(p => p.Partitions).OrderByDescending(p => p.Relevance).Take(5);
+        
+        
         StringBuilder sb = new();
-        sb.AppendLine("Most relevant results:");
-        foreach (var result in results.Results)
+        sb.AppendLine("Here are a few of the most relevant passages from the rules:");
+        foreach (var result in results.Results
+                     .SelectMany(p => p.Partitions)
+                     .OrderByDescending(p => p.Relevance)
+                     .Take(5))
         {
-            sb.AppendLine(result.DocumentId);
-            foreach (var part in result.Partitions)
-            {
-                sb.AppendLine($"- {part.Text}");
-            }
-            sb.AppendLine();
+            sb.AppendLine(result.Text);
         }
 
+        sb.AppendLine("Keep in mind that these are just the most relevant results. Use these results to respond to the player, or make up a response that feels appropriate.");
+        
         return sb.ToString();
+    }
+    
+    [KernelFunction, UsedImplicitly]
+    [Description("Asks a rules expert about a specific rule or concept in the DND5E free ruleset.")]
+    public async Task<string> ConsultRules([Description("A question for the rulebook")] string query)
+    {
+        IKernelMemory memory = _memory ?? throw new InvalidOperationException("The DND5E free rules lookup plugin has not been initialized. Call InitializeAsync() before using this function.");
+
+        MemoryAnswer results = await memory.AskAsync(query);
+        if (results.NoResult)
+        {
+            return $"No results found for '{query}' in the DND5E free ruleset: {results.NoResultReason}";
+        }
+
+        return results.Result;
     }
 }

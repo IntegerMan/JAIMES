@@ -1,3 +1,3 @@
 namespace AiTableTopGameMaster.Systems.DND5E;
 
-public record IndexingInfo(string Url, string DocumentId, bool IsComplete);
+public record IndexingInfo(string Location, string DocumentId, bool IsComplete);

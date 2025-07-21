@@ -25,7 +25,7 @@ The following tasks are planned for the project:
 ### Kernel Memory and RAG
 
 - [x] Add a RAG skill to the Semantic Kernel using Kernel Memory
-- [/] Have Kernel Memory index the free D&D ruleset
+- [x] Have Kernel Memory index the free D&D ruleset
 - [x] Display more indexing progress in the console
 - [ ] Host a free vector database locally for Kernel Memory instance
 

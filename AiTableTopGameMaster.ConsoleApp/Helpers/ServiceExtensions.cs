@@ -34,7 +34,7 @@ public static class ServiceExtensions
                 .AddOllamaChatCompletion(settings.Ollama.ChatModelId, new Uri(settings.Ollama.ChatEndpoint))
                 .AddOllamaEmbeddingGenerator(settings.Ollama.EmbeddingModelId, new Uri(settings.Ollama.EmbeddingEndpoint))
                 .AddAdventurePlugins(sp.GetRequiredService<Adventure>())
-                .AddDnd5ERulesLookup(settings.Ollama, status => DocumentIndexingCallback(console, status))
+                .AddDnd5ERulesLookup(settings.SourcebookPath, settings.Ollama, status => DocumentIndexingCallback(console, status))
                 .Build();
         });
         services.AddTransient<PromptExecutionSettings>(_ => new PromptExecutionSettings
@@ -51,11 +51,11 @@ public static class ServiceExtensions
 
     private static void DocumentIndexingCallback(IAnsiConsole console, IndexingInfo status)
     {
-        Log.Debug("Indexing {Url} as {DocumentId}: {Status}", status.Url, status.DocumentId, 
+        Log.Debug("Indexing {Url} as {DocumentId}: {Status}", status.Location, status.DocumentId, 
             status.IsComplete ? "Complete" : "In Progress");
         
         console.MarkupLine(status.IsComplete
-            ? $"{DisplayHelpers.ToolCallResult}Indexed {status.Url} as {status.DocumentId}[/]"
-            : $"{DisplayHelpers.ToolCall}Indexing {status.Url} as {status.DocumentId}...[/]");
+            ? $"{DisplayHelpers.ToolCallResult}Indexed {status.Location} as {status.DocumentId}[/]"
+            : $"{DisplayHelpers.ToolCall}Indexing {status.Location} as {status.DocumentId}...[/]");
     }
 }

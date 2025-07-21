@@ -32,9 +32,15 @@ public sealed class FunctionInvocationLoggingFilter(IAnsiConsole console, ILogge
             context.Function.Name,
             stopwatch.ElapsedMilliseconds,
             output);
-        console.MarkupLine(string.IsNullOrWhiteSpace(output)
-            ? $"{DisplayHelpers.Error}No output returned from function invocation[/]"
-            : $"{DisplayHelpers.ToolCallResult}{output}[/]");
+        if (string.IsNullOrWhiteSpace(output))
+        {
+            console.MarkupLine($"{DisplayHelpers.Error}No output returned from function invocation[/]");
+        }
+        else
+        {
+            console.MarkupLineInterpolated($"[bold lightslategrey]{output}[/]");
+        }
+
         console.MarkupLine($"{DisplayHelpers.System}✅ Auto-invocation completed: {DisplayHelpers.ToolCall}{context.Function.PluginName}.{context.Function.Name}[/] in {stopwatch.ElapsedMilliseconds} ms[/]");
     }
 }
