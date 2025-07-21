@@ -11,7 +11,7 @@ public sealed class FunctionInvocationLoggingFilter(IAnsiConsole console, ILogge
     public async Task OnAutoFunctionInvocationAsync(AutoFunctionInvocationContext context, Func<AutoFunctionInvocationContext, Task> next)
     {
         string argsList = string.Join(", ", context.Arguments?.Select(kvp => $"{kvp.Key}: {kvp.Value}") ?? []);
-        console.MarkupLine($"{DisplayHelpers.System}🔧 Auto-invoking tool: {DisplayHelpers.ToolCall}{context.Function.PluginName}.{context.Function.Name}[/] ({argsList})[/]");
+        console.MarkupLine($"{DisplayHelpers.System}🔧 Auto-invoking tool: {DisplayHelpers.ToolCall}{context.Function.PluginName}.{context.Function.Name}[/]({argsList})[/]");
         log.LogDebug("Auto function invoking: {PluginName}.{FunctionName} with arguments: {Arguments}",
             context.Function.PluginName,
             context.Function.Name, 

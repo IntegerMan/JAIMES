@@ -27,7 +27,7 @@ public class ConsoleChatClient(
             }
             else
             {
-                string? userInput = console.Prompt(new TextPrompt<string?>("[blue]You:[/] ").AllowEmpty());
+                string? userInput = console.Prompt(new TextPrompt<string?>($"{DisplayHelpers.User}You:[/] ").AllowEmpty());
 
                 if (string.IsNullOrWhiteSpace(userInput) ||
                     userInput.Equals("exit", StringComparison.OrdinalIgnoreCase))
@@ -69,7 +69,7 @@ public class ConsoleChatClient(
                 
                 log.LogInformation("AI: {Content}", reply.Content);
                 
-                console.Markup($"{DisplayHelpers.User}AI:[/] ");
+                console.Markup($"{DisplayHelpers.AI}AI:[/] ");
                 console.MarkupLineInterpolated($"{reply.Content}");
             }
 
