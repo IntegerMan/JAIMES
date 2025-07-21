@@ -7,7 +7,8 @@ public static class DisplayHelpers
 {
     public static string Instructions => "[bold white]";
     public static string System => "[bold yellow]";
-    public static string User => "[bold green]";
+    public static string Success => "[bold green]";
+    public static string User => "[bold cyan]";
     public static string ToolCall => "[bold orange3]";
     public static string ToolCallResult => "[bold steelblue]";
     public static string Error => "[bold red]";

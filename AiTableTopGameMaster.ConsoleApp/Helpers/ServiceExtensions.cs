@@ -6,8 +6,8 @@ using AiTableTopGameMaster.Core;
 using AiTableTopGameMaster.Domain;
 using AiTableTopGameMaster.Systems.DND5E;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
+using Serilog;
 using Spectre.Console;
 
 namespace AiTableTopGameMaster.ConsoleApp.Helpers;
@@ -34,7 +34,7 @@ public static class ServiceExtensions
                 .AddOllamaChatCompletion(settings.Ollama.ChatModelId, new Uri(settings.Ollama.ChatEndpoint))
                 .AddOllamaEmbeddingGenerator(settings.Ollama.EmbeddingModelId, new Uri(settings.Ollama.EmbeddingEndpoint))
                 .AddAdventurePlugins(sp.GetRequiredService<Adventure>())
-                .AddDnd5ERulesLookup(sp.GetRequiredService<ILoggerFactory>(), settings.Ollama)
+                .AddDnd5ERulesLookup(settings.Ollama, status => DocumentIndexingCallback(console, status))
                 .Build();
         });
         services.AddTransient<PromptExecutionSettings>(_ => new PromptExecutionSettings
@@ -47,5 +47,15 @@ public static class ServiceExtensions
         services.AddScoped<Adventure, IslandAdventure>(); // It'd be nice to let the user choose the adventure type
 
         return services.BuildServiceProvider();
+    }
+
+    private static void DocumentIndexingCallback(IAnsiConsole console, IndexingInfo status)
+    {
+        Log.Debug("Indexing {Url} as {DocumentId}: {Status}", status.Url, status.DocumentId, 
+            status.IsComplete ? "Complete" : "In Progress");
+        
+        console.MarkupLine(status.IsComplete
+            ? $"{DisplayHelpers.ToolCallResult}Indexed {status.Url} as {status.DocumentId}[/]"
+            : $"{DisplayHelpers.ToolCall}Indexing {status.Url} as {status.DocumentId}...[/]");
     }
 }

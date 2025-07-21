@@ -1,35 +1,29 @@
 ﻿using System.ComponentModel;
 using System.Text;
 using AiTableTopGameMaster.Domain;
-using Microsoft.Extensions.Logging;
 using Microsoft.KernelMemory;
 using Microsoft.SemanticKernel;
 
 namespace AiTableTopGameMaster.Systems.DND5E;
 
 [Description("Contains functions for looking up rules related to Dungeons & Dragons 5th Edition (DND5E)'s free ruleset.")]
-public class DndFreeRulesLookupPlugin(ILoggerFactory logger)
+public class DndFreeRulesLookupPlugin
 {
     private IKernelMemory? _memory;
-    private readonly ILogger _logger = logger.CreateLogger<DndFreeRulesLookupPlugin>();
 
-    public async Task InitializeAsync(OllamaSettings settings)
+    public async Task InitializeAsync(OllamaSettings settings, Action<IndexingInfo>? indexCallback = null)
     {
-        _logger.LogDebug("Initializing DND5E Free Rules Lookup Plugin");
         _memory = new KernelMemoryBuilder()
             .WithOllamaTextGeneration(settings.ChatModelId, settings.ChatEndpoint)
             .WithOllamaTextEmbeddingGeneration(settings.EmbeddingModelId, settings.EmbeddingEndpoint)
             .WithDefaultWebScraper()
             .Build();
 
-        _logger.LogDebug("Indexing DND5E free rules document...");
-        await IndexDocument("https://www.dndbeyond.com/sources/dnd/br-2024", "DND5EFreeRulesTableOfContents");
+        await IndexDocumentAsync("https://www.dndbeyond.com/sources/dnd/br-2024", "DND5EFreeRulesTableOfContents", indexCallback);
         // TODO: Discover all links on the page and index them as well
-        
-        _logger.LogDebug("DND5E Free Rules Lookup Plugin initialized successfully.");
     }
 
-    private async Task IndexDocument(string url, string documentId)
+    private async Task IndexDocumentAsync(string url, string documentId, Action<IndexingInfo>? indexCallback = null)
     {
         TagCollection tags = new()
         {
@@ -38,9 +32,11 @@ public class DndFreeRulesLookupPlugin(ILoggerFactory logger)
             { "Url", url }
         };
         
-        _logger.LogDebug("Indexing document from {Url} with ID {DocumentId}", url, documentId);
+        IndexingInfo status = new(url, documentId, IsComplete: false);
+        indexCallback?.Invoke(status);
         string result = await _memory!.ImportWebPageAsync(url, documentId: documentId, tags, index: "DND5E");
-        _logger.LogDebug("Document indexed successfully as {DocumentId}", result);
+        
+        indexCallback?.Invoke(status with {IsComplete = true, DocumentId = result});
     }
 
     [KernelFunction]
