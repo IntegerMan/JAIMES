@@ -1,8 +1,8 @@
-using AiTableTopGameMaster.Adventures.IslandAdventureDemo;
 using AiTableTopGameMaster.ConsoleApp.Clients;
 using AiTableTopGameMaster.ConsoleApp.Infrastructure;
 using AiTableTopGameMaster.ConsoleApp.Settings;
 using AiTableTopGameMaster.Core;
+using AiTableTopGameMaster.Core.Services;
 using AiTableTopGameMaster.Domain;
 using AiTableTopGameMaster.Systems.DND5E;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,7 +44,17 @@ public static class ServiceExtensions
 
         // Configure application dependencies
         services.AddTransient<IConsoleChatClient, ConsoleChatClient>();
-        services.AddScoped<Adventure, IslandAdventure>(); // It'd be nice to let the user choose the adventure type
+        services.AddSingleton<IAdventureLoader, AdventureLoader>();
+        
+        // Load adventure from JSON file
+        services.AddScoped<Adventure>(provider =>
+        {
+            var loader = provider.GetRequiredService<IAdventureLoader>();
+            var adventuresPath = Path.Combine(AppContext.BaseDirectory, "adventures");
+            
+            // For now, load the whispering-reef adventure. In the future, this could be configurable.
+            return loader.LoadAdventureAsync("whispering-reef", adventuresPath).GetAwaiter().GetResult();
+        });
 
         return services.BuildServiceProvider();
     }
