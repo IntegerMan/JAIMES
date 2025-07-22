@@ -1,78 +1,63 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AiTableTopGameMaster.Domain;
+using Microsoft.Extensions.Logging;
 
 namespace AiTableTopGameMaster.Core.Services;
 
-public interface IAdventureLoader
+public class AdventureLoader(ILoggerFactory loggerFactory) : IAdventureLoader
 {
-    Task<Adventure> LoadAdventureAsync(string adventurePath);
-    Task<Adventure> LoadAdventureAsync(string adventureName, string adventuresDirectory);
-    Task<IEnumerable<string>> GetAvailableAdventuresAsync(string adventuresDirectory);
-}
-
-public class AdventureLoader : IAdventureLoader
-{
-    private readonly JsonSerializerOptions _jsonOptions;
+    private readonly ILogger<AdventureLoader> _logger = loggerFactory.CreateLogger<AdventureLoader>();
     
-    public AdventureLoader()
+    private readonly JsonSerializerOptions _jsonOptions = new()
     {
-        _jsonOptions = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
-    }
-    
+        PropertyNameCaseInsensitive = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    };
+
     public async Task<Adventure> LoadAdventureAsync(string adventurePath)
     {
-        if (!File.Exists(adventurePath))
+        string jsonContent = await File.ReadAllTextAsync(adventurePath);
+        
+        _logger.LogDebug("Loading adventure from: {AdventurePath}", adventurePath);
+        Adventure? adventure = JsonSerializer.Deserialize<Adventure>(jsonContent, _jsonOptions);
+        
+        if (adventure is null)
         {
-            throw new FileNotFoundException($"Adventure file not found: {adventurePath}");
-        }
-        
-        var jsonContent = await File.ReadAllTextAsync(adventurePath);
-        
-        var adventure = JsonSerializer.Deserialize<Adventure>(jsonContent, _jsonOptions);
-        
-        if (adventure == null)
-        {
+            _logger.LogError("Failed to deserialize adventure from: {AdventurePath}", adventurePath);
             throw new InvalidOperationException($"Failed to deserialize adventure from: {adventurePath}");
         }
         
+        _logger.LogDebug("Adventure '{AdventureName}' loaded successfully from {AdventurePath}", adventure.Name, adventurePath);
         return adventure;
     }
+
     
-    public async Task<Adventure> LoadAdventureAsync(string adventureName, string adventuresDirectory)
-    {
-        var adventurePath = Path.Combine(adventuresDirectory, $"{adventureName}.json");
-        return await LoadAdventureAsync(adventurePath);
-    }
-    
-    public async Task<IEnumerable<string>> GetAvailableAdventuresAsync(string adventuresDirectory)
+    public async Task<IEnumerable<Adventure>> GetAdventuresAsync(string adventuresDirectory)
     {
         if (!Directory.Exists(adventuresDirectory))
         {
-            return Enumerable.Empty<string>();
+            _logger.LogWarning("Adventure directory does not exist: {AdventuresDirectory}", adventuresDirectory);
+            return [];
         }
         
-        var jsonFiles = Directory.GetFiles(adventuresDirectory, "*.json");
-        var adventures = new List<string>();
+        string[] jsonFiles = Directory.GetFiles(adventuresDirectory, "*.json");
+        List<Adventure> adventures = [];
         
         foreach (var file in jsonFiles)
         {
             try
             {
-                var adventure = await LoadAdventureAsync(file);
-                adventures.Add(adventure.Name);
+                adventures.Add(await LoadAdventureAsync(file));
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Failed to load adventure from file: {FilePath}. It may be invalid or corrupted.", file);
                 // Skip invalid adventure files
             }
         }
-        
+
         return adventures;
     }
 }

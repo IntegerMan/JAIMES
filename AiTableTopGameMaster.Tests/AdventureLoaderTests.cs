@@ -1,20 +1,17 @@
 ﻿using AiTableTopGameMaster.Core.Services;
 using AiTableTopGameMaster.Domain;
-using Microsoft.Extensions.AI;
 using Shouldly;
 using System.Text.Json;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace AiTableTopGameMaster.Tests;
 
 public class AdventureLoaderTests
 {
-    private readonly IAdventureLoader _adventureLoader;
-    
-    public AdventureLoaderTests()
-    {
-        _adventureLoader = new AdventureLoader();
-    }
-    
+    private readonly IAdventureLoader _adventureLoader = new AdventureLoader(new NullLoggerFactory());
+
     [Fact]
     public async Task LoadAdventureAsync_ValidJsonFile_LoadsAdventureCorrectly()
     {
@@ -40,10 +37,15 @@ public class AdventureLoaderTests
               "description": "A test encounter description"
             }
           ],
-          "characters": [],
+          "characters": [
+            {
+                "name": "TestCharacter",
+                "specialization": "Level 1 Unit test",
+                "characterSheet": "Test character sheet"
+            }
+          ],
           "gameMasterNotes": "Test GM notes",
           "narrativeStructure": "Test narrative structure",
-          "characterSheet": "Test character sheet",
           "gameMasterSystemPrompt": "Test system prompt",
           "initialGreetingPrompt": "Test greeting prompt"
         }
@@ -72,7 +74,10 @@ public class AdventureLoaderTests
             adventure.Encounters.First().Name.ShouldBe("Test Encounter");
             adventure.GameMasterNotes.ShouldBe("Test GM notes");
             adventure.NarrativeStructure.ShouldBe("Test narrative structure");
-            adventure.CharacterSheet.ShouldBe("Test character sheet");
+            Character character = adventure.Characters.Single();
+            character.Name.ShouldBe("TestCharacter");
+            character.Specialization.ShouldBe("Level 1 Unit test");
+            character.CharacterSheet.ShouldBe("Test character sheet");
             adventure.GameMasterSystemPrompt.ShouldBe("Test system prompt");
             adventure.InitialGreetingPrompt.ShouldBe("Test greeting prompt");
         }
@@ -170,7 +175,7 @@ public class AdventureLoaderTests
         try
         {
             // Act
-            Adventure adventure = await _adventureLoader.LoadAdventureAsync("test-adventure", tempDir);
+            Adventure adventure = await _adventureLoader.LoadAdventureAsync(adventureFile);
             
             // Assert
             adventure.ShouldNotBeNull();
@@ -186,7 +191,13 @@ public class AdventureLoaderTests
     public void GenerateInitialHistory_CreatesCorrectChatHistory()
     {
         // Arrange
-        Adventure adventure = new Adventure
+        Character character = new()
+        {
+            Name = "TestCharacter",
+            Specialization = "Level 1 fighter",
+            CharacterSheet = "Test character",
+        };
+        Adventure adventure = new()
         {
             Name = "Test Adventure",
             Author = "Test Author", 
@@ -197,45 +208,41 @@ public class AdventureLoaderTests
             EncountersOverview = "Test encounters",
             GameMasterNotes = "Test notes",
             NarrativeStructure = "Test structure",
-            CharacterSheet = "Test character",
             GameMasterSystemPrompt = "Test system prompt",
             InitialGreetingPrompt = "Test greeting",
             Characters = 
             [
-                new Character
-                {
-                    Name = "TestCharacter",
-                    Description = "A test character",
-                    Level = "level 1",
-                    Class = "fighter",
-                    IsPlayerCharacter = true
-                }
+                character
             ]
         };
         
         // Act
-        ICollection<ChatMessage> history = adventure.GenerateInitialHistory();
+        ChatHistory history = adventure.StartGame(character);
         
         // Assert
         history.ShouldNotBeNull();
         history.Count.ShouldBe(5);
         
-        ChatMessage[] messages = history.ToArray();
-        messages[0].Role.ShouldBe(ChatRole.System);
-        messages[0].Text.ShouldContain("Test system prompt");
+        ChatMessageContent[] messages = history.ToArray();
+        messages[0].Role.ShouldBe(AuthorRole.System);
+        messages[0].Content.ShouldNotBeNull();
+        messages[0].Content!.ShouldContain("Test system prompt");
         
-        messages[1].Role.ShouldBe(ChatRole.Tool);
-        messages[1].Text.ShouldContain("Test backstory");
+        messages[1].Role.ShouldBe(AuthorRole.System);
+        messages[1].Content.ShouldNotBeNull();
+        messages[1].Content!.ShouldContain("Test backstory");
         
-        messages[2].Role.ShouldBe(ChatRole.Tool);
-        messages[2].Text.ShouldContain("Test setting");
+        messages[2].Role.ShouldBe(AuthorRole.System);
+        messages[2].Content.ShouldNotBeNull();
+        messages[2].Content!.ShouldContain("Test setting");
         
-        messages[3].Role.ShouldBe(ChatRole.Tool);
-        messages[3].Text.ShouldContain("TestCharacter");
-        messages[3].Text.ShouldContain("level 1");
-        messages[3].Text.ShouldContain("fighter");
+        messages[3].Role.ShouldBe(AuthorRole.System);
+        messages[3].Content.ShouldNotBeNull();
+        messages[3].Content!.ShouldContain("TestCharacter");
+        messages[3].Content!.ShouldContain("level 1 fighter");
         
-        messages[4].Role.ShouldBe(ChatRole.User);
-        messages[4].Text.ShouldContain("Test greeting");
+        messages[4].Role.ShouldBe(AuthorRole.User);
+        messages[4].Content.ShouldNotBeNull();
+        messages[4].Content!.ShouldContain("Test greeting");
     }
 }

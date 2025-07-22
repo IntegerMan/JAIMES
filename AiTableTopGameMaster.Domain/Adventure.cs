@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.AI;
+﻿using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace AiTableTopGameMaster.Domain;
 
@@ -20,29 +20,24 @@ public class Adventure
     
     public required string GameMasterNotes { get; init; }
     public required string NarrativeStructure { get; init; }
-    public required string CharacterSheet { get; init; }
     public required string GameMasterSystemPrompt { get; init; }
     public required string InitialGreetingPrompt { get; init; }
     
     public List<Character> Characters { get; init; } = [];
     
-    public ICollection<ChatMessage> GenerateInitialHistory() 
+    public ChatHistory StartGame(Character playerCharacter)
     {
-        var messages = new List<ChatMessage>
-        {
-            new(ChatRole.System, GameMasterSystemPrompt),
-            new(ChatRole.Tool, $"Here is the adventure backstory: {Backstory}"),
-            new(ChatRole.Tool, $"Here is the adventure setting: {SettingDescription}")
-        };
-
-        var playerCharacter = Characters.FirstOrDefault(c => c.IsPlayerCharacter);
-        if (playerCharacter != null)
-        {
-            messages.Add(new(ChatRole.Tool, $"The player character is {playerCharacter.Name}, a {playerCharacter.Level} {playerCharacter.Class}. You can check their starting character sheet via a function call if you need to."));
-        }
-
-        messages.Add(new(ChatRole.User, InitialGreetingPrompt));
+        PlayerCharacter = playerCharacter;
         
-        return messages;
+        ChatHistory history = new();
+        history.AddSystemMessage(GameMasterSystemPrompt);
+        history.AddSystemMessage($"Here is the adventure backstory: {Backstory}");
+        history.AddSystemMessage($"Here is the adventure setting: {SettingDescription}");
+        history.AddSystemMessage($"The player character is {playerCharacter.Name}, a {playerCharacter.Specialization}. You can check their starting character sheet via a function call if you need to.");
+        history.AddUserMessage(InitialGreetingPrompt);
+        
+        return history;
     }
+
+    public Character? PlayerCharacter { get; set; }
 }

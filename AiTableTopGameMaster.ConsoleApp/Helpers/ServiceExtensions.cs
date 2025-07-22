@@ -32,9 +32,11 @@ public static class ServiceExtensions
             builder.Services.AddSingleton<IAutoFunctionInvocationFilter, FunctionInvocationLoggingFilter>();
             return builder
                 .AddOllamaChatCompletion(settings.Ollama.ChatModelId, new Uri(settings.Ollama.ChatEndpoint))
-                .AddOllamaEmbeddingGenerator(settings.Ollama.EmbeddingModelId, new Uri(settings.Ollama.EmbeddingEndpoint))
+                .AddOllamaEmbeddingGenerator(settings.Ollama.EmbeddingModelId,
+                    new Uri(settings.Ollama.EmbeddingEndpoint))
                 .AddAdventurePlugins(sp.GetRequiredService<Adventure>())
-                .AddDnd5ERulesLookup(settings.SourcebookPath, settings.Ollama, status => DocumentIndexingCallback(console, status))
+                .AddDnd5ERulesLookup(settings.SourcebookPath, settings.Ollama,
+                    status => DocumentIndexingCallback(console, status))
                 .Build();
         });
         services.AddTransient<PromptExecutionSettings>(_ => new PromptExecutionSettings
@@ -45,15 +47,32 @@ public static class ServiceExtensions
         // Configure application dependencies
         services.AddTransient<IConsoleChatClient, ConsoleChatClient>();
         services.AddSingleton<IAdventureLoader, AdventureLoader>();
-        
+
         // Load adventure from JSON file
-        services.AddScoped<Adventure>(provider =>
+        services.AddScoped<Adventure>(sp =>
         {
-            var loader = provider.GetRequiredService<IAdventureLoader>();
+            var loader = sp.GetRequiredService<IAdventureLoader>();
             var adventuresPath = Path.Combine(AppContext.BaseDirectory, "adventures");
-            
-            // For now, load the whispering-reef adventure. In the future, this could be configurable.
-            return loader.LoadAdventureAsync("whispering-reef", adventuresPath).GetAwaiter().GetResult();
+
+            Adventure[] adventures = loader.GetAdventuresAsync(adventuresPath).GetAwaiter().GetResult().ToArray();
+
+            Log.Debug("Found {AdventureCount} adventure(s) in {Path}", adventures.Length, adventuresPath);
+            if (adventures.Length == 0)
+            {
+                throw new InvalidOperationException($"No adventures found in {adventuresPath}");
+            }
+
+            return console.Prompt(new SelectionPrompt<Adventure>().Title("Select an adventure:")
+                .AddChoices(adventures)
+                .UseConverter(a => $"{a.Name} by {a.Author}, v{a.Version}"));
+        });
+        services.AddScoped<Character>(sp =>
+        {
+            Adventure adventure = sp.GetRequiredService<Adventure>();
+            return console.Prompt(new SelectionPrompt<Character>()
+                .AddChoices(adventure.Characters)
+                .Title("Select a character:")
+                .UseConverter(c => $"{c.Name} - {c.Specialization}"));
         });
 
         return services.BuildServiceProvider();
@@ -61,9 +80,9 @@ public static class ServiceExtensions
 
     private static void DocumentIndexingCallback(IAnsiConsole console, IndexingInfo status)
     {
-        Log.Debug("Indexing {Url} as {DocumentId}: {Status}", status.Location, status.DocumentId, 
+        Log.Debug("Indexing {Url} as {DocumentId}: {Status}", status.Location, status.DocumentId,
             status.IsComplete ? "Complete" : "In Progress");
-        
+
         console.MarkupLine(status.IsComplete
             ? $"{DisplayHelpers.ToolCallResult}Indexed {status.Location} as {status.DocumentId}[/]"
             : $"{DisplayHelpers.ToolCall}Indexing {status.Location} as {status.DocumentId}...[/]");

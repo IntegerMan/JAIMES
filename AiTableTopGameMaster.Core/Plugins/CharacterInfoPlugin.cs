@@ -10,5 +10,5 @@ public class CharacterInfoPlugin(Adventure adventure)
 {
     [KernelFunction, UsedImplicitly]
     [Description("Gets the starting character sheet for the player character")]
-    public string GetCharacterSheet() => adventure.CharacterSheet;
+    public string GetCharacterSheet() => adventure.PlayerCharacter!.CharacterSheet;
 }
