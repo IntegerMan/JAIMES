@@ -1,6 +1,7 @@
 ﻿using AiTableTopGameMaster.Core.Services;
 using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.AI;
+using Shouldly;
 using System.Text.Json;
 
 namespace AiTableTopGameMaster.Tests;
@@ -18,7 +19,7 @@ public class AdventureLoaderTests
     public async Task LoadAdventureAsync_ValidJsonFile_LoadsAdventureCorrectly()
     {
         // Arrange
-        var testAdventureJson = """
+        string testAdventureJson = """
         {
           "name": "Test Adventure",
           "author": "Test Author",
@@ -39,6 +40,7 @@ public class AdventureLoaderTests
               "description": "A test encounter description"
             }
           ],
+          "characters": [],
           "gameMasterNotes": "Test GM notes",
           "narrativeStructure": "Test narrative structure",
           "characterSheet": "Test character sheet",
@@ -47,32 +49,32 @@ public class AdventureLoaderTests
         }
         """;
         
-        var tempFile = Path.GetTempFileName();
+        string tempFile = Path.GetTempFileName();
         await File.WriteAllTextAsync(tempFile, testAdventureJson);
         
         try
         {
             // Act
-            var adventure = await _adventureLoader.LoadAdventureAsync(tempFile);
+            Adventure adventure = await _adventureLoader.LoadAdventureAsync(tempFile);
             
             // Assert
-            Assert.NotNull(adventure);
-            Assert.Equal("Test Adventure", adventure.Name);
-            Assert.Equal("Test Author", adventure.Author);
-            Assert.Equal("1.0.0", adventure.Version);
-            Assert.Equal("A test backstory", adventure.Backstory);
-            Assert.Equal("A test setting", adventure.SettingDescription);
-            Assert.Equal("Test locations overview", adventure.LocationsOverview);
-            Assert.Single(adventure.Locations);
-            Assert.Equal("Test Location", adventure.Locations.First().Name);
-            Assert.Equal("Test encounters overview", adventure.EncountersOverview);
-            Assert.Single(adventure.Encounters);
-            Assert.Equal("Test Encounter", adventure.Encounters.First().Name);
-            Assert.Equal("Test GM notes", adventure.GameMasterNotes);
-            Assert.Equal("Test narrative structure", adventure.NarrativeStructure);
-            Assert.Equal("Test character sheet", adventure.CharacterSheet);
-            Assert.Equal("Test system prompt", adventure.GameMasterSystemPrompt);
-            Assert.Equal("Test greeting prompt", adventure.InitialGreetingPrompt);
+            adventure.ShouldNotBeNull();
+            adventure.Name.ShouldBe("Test Adventure");
+            adventure.Author.ShouldBe("Test Author");
+            adventure.Version.ShouldBe("1.0.0");
+            adventure.Backstory.ShouldBe("A test backstory");
+            adventure.SettingDescription.ShouldBe("A test setting");
+            adventure.LocationsOverview.ShouldBe("Test locations overview");
+            adventure.Locations.ShouldHaveSingleItem();
+            adventure.Locations.First().Name.ShouldBe("Test Location");
+            adventure.EncountersOverview.ShouldBe("Test encounters overview");
+            adventure.Encounters.ShouldHaveSingleItem();
+            adventure.Encounters.First().Name.ShouldBe("Test Encounter");
+            adventure.GameMasterNotes.ShouldBe("Test GM notes");
+            adventure.NarrativeStructure.ShouldBe("Test narrative structure");
+            adventure.CharacterSheet.ShouldBe("Test character sheet");
+            adventure.GameMasterSystemPrompt.ShouldBe("Test system prompt");
+            adventure.InitialGreetingPrompt.ShouldBe("Test greeting prompt");
         }
         finally
         {
@@ -84,10 +86,10 @@ public class AdventureLoaderTests
     public async Task LoadAdventureAsync_FileNotFound_ThrowsFileNotFoundException()
     {
         // Arrange
-        var nonExistentFile = Path.Combine(Path.GetTempPath(), "non-existent-file.json");
+        string nonExistentFile = Path.Combine(Path.GetTempPath(), "non-existent-file.json");
         
         // Act & Assert
-        await Assert.ThrowsAsync<FileNotFoundException>(() => 
+        await Should.ThrowAsync<FileNotFoundException>(() => 
             _adventureLoader.LoadAdventureAsync(nonExistentFile));
     }
     
@@ -95,14 +97,14 @@ public class AdventureLoaderTests
     public async Task LoadAdventureAsync_InvalidJson_ThrowsJsonException()
     {
         // Arrange
-        var invalidJson = "{ invalid json";
-        var tempFile = Path.GetTempFileName();
+        string invalidJson = "{ invalid json";
+        string tempFile = Path.GetTempFileName();
         await File.WriteAllTextAsync(tempFile, invalidJson);
         
         try
         {
             // Act & Assert
-            await Assert.ThrowsAsync<JsonException>(() => 
+            await Should.ThrowAsync<JsonException>(() => 
                 _adventureLoader.LoadAdventureAsync(tempFile));
         }
         finally
@@ -115,19 +117,19 @@ public class AdventureLoaderTests
     public async Task LoadAdventureAsync_MissingRequiredProperty_ThrowsJsonException()
     {
         // Arrange
-        var incompleteJson = """
+        string incompleteJson = """
         {
           "name": "Test Adventure"
         }
         """;
         
-        var tempFile = Path.GetTempFileName();
+        string tempFile = Path.GetTempFileName();
         await File.WriteAllTextAsync(tempFile, incompleteJson);
         
         try
         {
             // Act & Assert
-            await Assert.ThrowsAsync<JsonException>(() => 
+            await Should.ThrowAsync<JsonException>(() => 
                 _adventureLoader.LoadAdventureAsync(tempFile));
         }
         finally
@@ -140,7 +142,7 @@ public class AdventureLoaderTests
     public async Task LoadAdventureAsync_WithDirectoryAndName_LoadsCorrectly()
     {
         // Arrange
-        var testAdventureJson = """
+        string testAdventureJson = """
         {
           "name": "Directory Test Adventure",
           "author": "Test Author",
@@ -151,6 +153,7 @@ public class AdventureLoaderTests
           "locations": [],
           "encountersOverview": "Test encounters overview",
           "encounters": [],
+          "characters": [],
           "gameMasterNotes": "Test GM notes",
           "narrativeStructure": "Test narrative structure",
           "characterSheet": "Test character sheet",
@@ -159,19 +162,19 @@ public class AdventureLoaderTests
         }
         """;
         
-        var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         Directory.CreateDirectory(tempDir);
-        var adventureFile = Path.Combine(tempDir, "test-adventure.json");
+        string adventureFile = Path.Combine(tempDir, "test-adventure.json");
         await File.WriteAllTextAsync(adventureFile, testAdventureJson);
         
         try
         {
             // Act
-            var adventure = await _adventureLoader.LoadAdventureAsync("test-adventure", tempDir);
+            Adventure adventure = await _adventureLoader.LoadAdventureAsync("test-adventure", tempDir);
             
             // Assert
-            Assert.NotNull(adventure);
-            Assert.Equal("Directory Test Adventure", adventure.Name);
+            adventure.ShouldNotBeNull();
+            adventure.Name.ShouldBe("Directory Test Adventure");
         }
         finally
         {
@@ -183,7 +186,7 @@ public class AdventureLoaderTests
     public void GenerateInitialHistory_CreatesCorrectChatHistory()
     {
         // Arrange
-        var adventure = new Adventure
+        Adventure adventure = new Adventure
         {
             Name = "Test Adventure",
             Author = "Test Author", 
@@ -196,30 +199,43 @@ public class AdventureLoaderTests
             NarrativeStructure = "Test structure",
             CharacterSheet = "Test character",
             GameMasterSystemPrompt = "Test system prompt",
-            InitialGreetingPrompt = "Test greeting"
+            InitialGreetingPrompt = "Test greeting",
+            Characters = 
+            [
+                new Character
+                {
+                    Name = "TestCharacter",
+                    Description = "A test character",
+                    Level = "level 1",
+                    Class = "fighter",
+                    IsPlayerCharacter = true
+                }
+            ]
         };
         
         // Act
-        var history = adventure.GenerateInitialHistory();
+        ICollection<ChatMessage> history = adventure.GenerateInitialHistory();
         
         // Assert
-        Assert.NotNull(history);
-        Assert.Equal(5, history.Count);
+        history.ShouldNotBeNull();
+        history.Count.ShouldBe(5);
         
-        var messages = history.ToArray();
-        Assert.Equal(ChatRole.System, messages[0].Role);
-        Assert.Contains("Test system prompt", messages[0].Text);
+        ChatMessage[] messages = history.ToArray();
+        messages[0].Role.ShouldBe(ChatRole.System);
+        messages[0].Text.ShouldContain("Test system prompt");
         
-        Assert.Equal(ChatRole.Tool, messages[1].Role);
-        Assert.Contains("Test backstory", messages[1].Text);
+        messages[1].Role.ShouldBe(ChatRole.Tool);
+        messages[1].Text.ShouldContain("Test backstory");
         
-        Assert.Equal(ChatRole.Tool, messages[2].Role);
-        Assert.Contains("Test setting", messages[2].Text);
+        messages[2].Role.ShouldBe(ChatRole.Tool);
+        messages[2].Text.ShouldContain("Test setting");
         
-        Assert.Equal(ChatRole.Tool, messages[3].Role);
-        Assert.Contains("level 1 rogue", messages[3].Text);
+        messages[3].Role.ShouldBe(ChatRole.Tool);
+        messages[3].Text.ShouldContain("TestCharacter");
+        messages[3].Text.ShouldContain("level 1");
+        messages[3].Text.ShouldContain("fighter");
         
-        Assert.Equal(ChatRole.User, messages[4].Role);
-        Assert.Contains("Test greeting", messages[4].Text);
+        messages[4].Role.ShouldBe(ChatRole.User);
+        messages[4].Text.ShouldContain("Test greeting");
     }
 }
