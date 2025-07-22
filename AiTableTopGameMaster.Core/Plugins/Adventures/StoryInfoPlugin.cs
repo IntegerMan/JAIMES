@@ -3,7 +3,7 @@ using AiTableTopGameMaster.Domain;
 using JetBrains.Annotations;
 using Microsoft.SemanticKernel;
 
-namespace AiTableTopGameMaster.Core.Plugins;
+namespace AiTableTopGameMaster.Core.Plugins.Adventures;
 
 [Description("Provides information about the adventure's overall story and setting.")]
 public class StoryInfoPlugin(Adventure adventure)

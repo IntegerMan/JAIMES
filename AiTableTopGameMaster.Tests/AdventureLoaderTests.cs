@@ -21,6 +21,7 @@ public class AdventureLoaderTests
           "name": "Test Adventure",
           "author": "Test Author",
           "version": "1.0.0",
+          "ruleset": "TestRuleset",
           "backstory": "A test backstory",
           "settingDescription": "A test setting",
           "locationsOverview": "Test locations overview",
@@ -64,6 +65,7 @@ public class AdventureLoaderTests
             adventure.Name.ShouldBe("Test Adventure");
             adventure.Author.ShouldBe("Test Author");
             adventure.Version.ShouldBe("1.0.0");
+            adventure.Ruleset.ShouldBe("TestRuleset");
             adventure.Backstory.ShouldBe("A test backstory");
             adventure.SettingDescription.ShouldBe("A test setting");
             adventure.LocationsOverview.ShouldBe("Test locations overview");
@@ -152,6 +154,7 @@ public class AdventureLoaderTests
           "name": "Directory Test Adventure",
           "author": "Test Author",
           "version": "1.0.0",
+          "ruleset": "TestRuleset",
           "backstory": "A test backstory",
           "settingDescription": "A test setting",
           "locationsOverview": "Test locations overview",
@@ -202,6 +205,7 @@ public class AdventureLoaderTests
             Name = "Test Adventure",
             Author = "Test Author", 
             Version = "1.0.0",
+            Ruleset = "TestRuleset",
             Backstory = "Test backstory",
             SettingDescription = "Test setting",
             LocationsOverview = "Test locations",

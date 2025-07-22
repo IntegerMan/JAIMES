@@ -7,6 +7,7 @@ public class Adventure
     public required string Name { get; init; }
     public required string Author { get; init; }
     public required string Version { get; init; }
+    public required string Ruleset { get; set; }
     public required string Backstory { get; init; }
 
     public required string SettingDescription { get; init; }

@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiTableTopGameMaster.Consol
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiTableTopGameMaster.Domain", "AiTableTopGameMaster.Domain\AiTableTopGameMaster.Domain.csproj", "{529004CE-FBD2-411D-AB90-412B1A1AF9D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiTableTopGameMaster.Systems.DND5E", "AiTableTopGameMaster.Systems.DND5E\AiTableTopGameMaster.Systems.DND5E.csproj", "{BEE68331-C0CF-47FA-8F17-743621BBFFF9}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiTableTopGameMaster.Core", "AiTableTopGameMaster.Core\AiTableTopGameMaster.Core.csproj", "{50AD4885-B9A1-4926-8603-D503D339A68C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiTableTopGameMaster.Tests", "AiTableTopGameMaster.Tests\AiTableTopGameMaster.Tests.csproj", "{1B9F8C8D-2E3A-4F5C-8A1B-9D5E6F7A8B2C}"
@@ -32,10 +30,6 @@ Global
 		{529004CE-FBD2-411D-AB90-412B1A1AF9D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{529004CE-FBD2-411D-AB90-412B1A1AF9D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{529004CE-FBD2-411D-AB90-412B1A1AF9D6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BEE68331-C0CF-47FA-8F17-743621BBFFF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BEE68331-C0CF-47FA-8F17-743621BBFFF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BEE68331-C0CF-47FA-8F17-743621BBFFF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BEE68331-C0CF-47FA-8F17-743621BBFFF9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{50AD4885-B9A1-4926-8603-D503D339A68C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{50AD4885-B9A1-4926-8603-D503D339A68C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50AD4885-B9A1-4926-8603-D503D339A68C}.Release|Any CPU.ActiveCfg = Release|Any CPU

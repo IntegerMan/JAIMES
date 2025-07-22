@@ -8,12 +8,24 @@
 
     <ItemGroup>
       <PackageReference Include="JetBrains.Annotations" Version="2024.3.0" />
+      <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.7" />
       <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.7" />
+      <PackageReference Include="Microsoft.KernelMemory.AI.Ollama" Version="0.98.250508.3" />
+      <PackageReference Include="Microsoft.KernelMemory.Core" Version="0.98.250508.3" />
       <PackageReference Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="1.60.0-alpha" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\AiTableTopGameMaster.Domain\AiTableTopGameMaster.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.KernelMemory.Abstractions">
+        <HintPath>..\..\..\.nuget\packages\microsoft.kernelmemory.abstractions\0.98.250508.3\lib\net8.0\Microsoft.KernelMemory.Abstractions.dll</HintPath>
+      </Reference>
+      <Reference Include="Microsoft.KernelMemory.Core">
+        <HintPath>..\..\..\.nuget\packages\microsoft.kernelmemory.core\0.98.250508.3\lib\net8.0\Microsoft.KernelMemory.Core.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

@@ -2,9 +2,9 @@ using AiTableTopGameMaster.ConsoleApp.Clients;
 using AiTableTopGameMaster.ConsoleApp.Infrastructure;
 using AiTableTopGameMaster.ConsoleApp.Settings;
 using AiTableTopGameMaster.Core;
+using AiTableTopGameMaster.Core.Plugins.Sourcebooks;
 using AiTableTopGameMaster.Core.Services;
 using AiTableTopGameMaster.Domain;
-using AiTableTopGameMaster.Systems.DND5E;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Serilog;
@@ -26,6 +26,7 @@ public static class ServiceExtensions
         // Configure Semantic Kernel
         services.AddTransient<Kernel>(sp =>
         {
+            Adventure adventure = sp.GetRequiredService<Adventure>();
             IKernelBuilder builder = Kernel.CreateBuilder();
             builder.Services.AddLogging(loggingBuilder => loggingBuilder.ConfigureSerilogLogging(disposeLogger: false));
             builder.Services.AddSingleton(sp.GetRequiredService<IAnsiConsole>());
@@ -35,7 +36,7 @@ public static class ServiceExtensions
                 .AddOllamaEmbeddingGenerator(settings.Ollama.EmbeddingModelId,
                     new Uri(settings.Ollama.EmbeddingEndpoint))
                 .AddAdventurePlugins(sp.GetRequiredService<Adventure>())
-                .AddDnd5ERulesLookup(settings.SourcebookPath, settings.Ollama,
+                .AddSourcebooks(adventure.Ruleset, settings.SourcebookPath, settings.Ollama,
                     status => DocumentIndexingCallback(console, status))
                 .Build();
         });
