@@ -25,8 +25,8 @@ public class AdventureLoader(ILoggerFactory loggerFactory) : IAdventureLoader
         
         if (adventure is null)
         {
-            _logger.LogError("Failed to deserialize adventure from: {AdventurePath}", adventurePath);
-            throw new InvalidOperationException($"Failed to deserialize adventure from: {adventurePath}");
+            _logger.LogError("Failed to deserialize adventure from: {AdventurePath}. The file may be corrupted, have invalid JSON format, or be missing required properties.", adventurePath);
+            throw new InvalidOperationException($"Failed to deserialize adventure from: {adventurePath}. The file may be corrupted, have invalid JSON format, or be missing required properties.");
         }
         
         _logger.LogDebug("Adventure '{AdventureName}' loaded successfully from {AdventurePath}", adventure.Name, adventurePath);
