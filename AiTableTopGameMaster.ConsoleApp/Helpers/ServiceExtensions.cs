@@ -7,6 +7,7 @@ using AiTableTopGameMaster.Core.Services;
 using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.Agents;
 using Serilog;
 using Spectre.Console;
 
@@ -46,6 +47,25 @@ public static class ServiceExtensions
         });
 
         // Configure application dependencies
+        services.AddTransient<GameMasterAgentFactory>();
+        services.AddTransient<Agent>(sp =>
+        {
+            var factory = sp.GetRequiredService<GameMasterAgentFactory>();
+            var adventure = sp.GetRequiredService<Adventure>();
+            var character = sp.GetRequiredService<Character>();
+            var kernel = sp.GetRequiredService<Kernel>();
+            
+            return factory.CreateGameMasterAgent(adventure, character, kernel);
+        });
+        
+        // EXTENSION POINT: Future multi-agent support could register additional agents here
+        // For example:
+        // services.AddTransient<NPCAgent>(sp => CreateNPCAgent(sp, "Merchant"));
+        // services.AddTransient<WorldAgent>(sp => CreateWorldAgent(sp));
+        
+        services.AddTransient<IAgentChatClient, AgentChatClient>();
+        
+        // Keep legacy interface for backward compatibility during transition
         services.AddTransient<IConsoleChatClient, ConsoleChatClient>();
         services.AddSingleton<IAdventureLoader, AdventureLoader>();
 

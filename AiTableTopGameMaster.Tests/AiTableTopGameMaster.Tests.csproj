@@ -10,7 +10,9 @@
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="Shouldly" Version="4.3.0" />
+    <PackageReference Include="Spectre.Console.Testing" Version="0.50.0" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
   </ItemGroup>
@@ -22,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AiTableTopGameMaster.Core\AiTableTopGameMaster.Core.csproj" />
     <ProjectReference Include="..\AiTableTopGameMaster.Domain\AiTableTopGameMaster.Domain.csproj" />
+    <ProjectReference Include="..\AiTableTopGameMaster.ConsoleApp\AiTableTopGameMaster.ConsoleApp.csproj" />
   </ItemGroup>
 
 </Project>
