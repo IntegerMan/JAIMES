@@ -7,15 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Reference Include="JetBrains.Annotations">
-        <HintPath>..\..\..\.nuget\packages\jetbrains.annotations\2024.3.0\lib\netstandard2.0\JetBrains.Annotations.dll</HintPath>
-      </Reference>
-      <Reference Include="Microsoft.SemanticKernel.Abstractions">
-        <HintPath>..\..\..\.nuget\packages\microsoft.semantickernel.abstractions\1.60.0\lib\net8.0\Microsoft.SemanticKernel.Abstractions.dll</HintPath>
-      </Reference>
-    </ItemGroup>
-
-    <ItemGroup>
+      <PackageReference Include="JetBrains.Annotations" Version="2024.3.0" />
       <PackageReference Include="Microsoft.KernelMemory.AI.Ollama" Version="0.98.250508.3" />
       <PackageReference Include="Microsoft.KernelMemory.Core" Version="0.98.250508.3" />
       <PackageReference Include="Microsoft.SemanticKernel.Core" Version="1.60.0" />

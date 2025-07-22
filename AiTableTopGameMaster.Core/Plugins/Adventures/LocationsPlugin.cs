@@ -4,7 +4,7 @@ using AiTableTopGameMaster.Domain;
 using JetBrains.Annotations;
 using Microsoft.SemanticKernel;
 
-namespace AiTableTopGameMaster.Core.Plugins;
+namespace AiTableTopGameMaster.Core.Plugins.Adventures;
 
 [Description("Provides information about the adventure's pre-scripted locations and their descriptions.")]
 public class LocationsPlugin(Adventure adventure)

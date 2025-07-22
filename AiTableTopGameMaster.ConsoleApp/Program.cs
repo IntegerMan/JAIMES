@@ -19,11 +19,15 @@ try
 
     Adventure adventure = services.GetRequiredService<Adventure>();
     console.MarkupLine($"{DisplayHelpers.System}Adventure loaded: {adventure.Name} by {adventure.Author}[/]");
-    console.WriteLine();
     Log.Debug("Adventure loaded: {Name} by {Author}", adventure.Name, adventure.Author);
     
-    ChatHistory history = adventure.GenerateInitialHistory()
-                                   .ToChatHistory();
+    Character character = services.GetRequiredService<Character>();
+    console.MarkupLine($"{DisplayHelpers.System}Playing as: {character.Name} the {character.Specialization}[/]");
+    Log.Debug("Character selected: {Name} the {Specialization}", character.Name, character.Specialization);
+
+    console.WriteLine();
+    
+    ChatHistory history = adventure.StartGame(character);
     Log.Debug("Initial chat history created with {MessageCount} messages", history.Count);
     console.DisplayHistory(history);
 

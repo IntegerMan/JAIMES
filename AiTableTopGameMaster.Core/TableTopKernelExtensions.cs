@@ -1,4 +1,5 @@
 ﻿using AiTableTopGameMaster.Core.Plugins;
+using AiTableTopGameMaster.Core.Plugins.Adventures;
 using AiTableTopGameMaster.Domain;
 using Microsoft.SemanticKernel;
 

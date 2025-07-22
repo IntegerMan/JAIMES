@@ -5,10 +5,10 @@ using JetBrains.Annotations;
 using Microsoft.KernelMemory;
 using Microsoft.SemanticKernel;
 
-namespace AiTableTopGameMaster.Systems.DND5E;
+namespace AiTableTopGameMaster.Core.Plugins.Sourcebooks;
 
 [Description("Contains functions for looking up rules related to Dungeons & Dragons 5th Edition (DND5E)'s free ruleset.")]
-public class DndFreeRulesLookupPlugin(string sourceDirectory)
+public class SourcebookLookupPlugin(string sourceDirectory, string system)
 {
     private IKernelMemory? _memory;
 
@@ -17,7 +17,6 @@ public class DndFreeRulesLookupPlugin(string sourceDirectory)
         _memory = new KernelMemoryBuilder()
             .WithOllamaTextGeneration(settings.ChatModelId, settings.ChatEndpoint)
             .WithOllamaTextEmbeddingGeneration(settings.EmbeddingModelId, settings.EmbeddingEndpoint)
-            .WithDefaultWebScraper()
             .Build();
 
         // List all PDF files in the source directory
@@ -39,8 +38,7 @@ public class DndFreeRulesLookupPlugin(string sourceDirectory)
     {
         TagCollection tags = new()
         {
-            { "Source", "DND5E Free Rules" },
-            { "System", "DND5E"},
+            { "RulesSystem", system},
             { "Location", filePath }
         };
         
@@ -83,15 +81,15 @@ public class DndFreeRulesLookupPlugin(string sourceDirectory)
     }
     
     [KernelFunction, UsedImplicitly]
-    [Description("Asks a rules expert about a specific rule or concept in the DND5E free ruleset.")]
+    [Description("Asks a rules expert about a specific rule or concept in the ruleset.")]
     public async Task<string> ConsultRules([Description("A question for the rulebook")] string query)
     {
-        IKernelMemory memory = _memory ?? throw new InvalidOperationException("The DND5E free rules lookup plugin has not been initialized. Call InitializeAsync() before using this function.");
+        IKernelMemory memory = _memory ?? throw new InvalidOperationException("The plugin has not been initialized. Call InitializeAsync() before using this function.");
 
         MemoryAnswer results = await memory.AskAsync(query);
         if (results.NoResult)
         {
-            return $"No results found for '{query}' in the DND5E free ruleset: {results.NoResultReason}";
+            return $"No results found for '{query}' in the available rules: {results.NoResultReason}";
         }
 
         return results.Result;

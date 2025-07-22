@@ -32,9 +32,14 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AiTableTopGameMaster.Adventures.IslandAdventureDemo\AiTableTopGameMaster.Adventures.IslandAdventureDemo.csproj" />
+      <None Include="../adventures/*.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Link>adventures/%(Filename)%(Extension)</Link>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\AiTableTopGameMaster.Core\AiTableTopGameMaster.Core.csproj" />
-      <ProjectReference Include="..\AiTableTopGameMaster.Systems.DND5E\AiTableTopGameMaster.Systems.DND5E.csproj" />
     </ItemGroup>
 
 </Project>

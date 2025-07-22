@@ -10,4 +10,10 @@
       <PackageReference Include="Microsoft.Extensions.AI.Abstractions" Version="9.7.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Reference Include="Microsoft.SemanticKernel.Abstractions">
+        <HintPath>..\..\..\.nuget\packages\microsoft.semantickernel.abstractions\1.60.0\lib\net8.0\Microsoft.SemanticKernel.Abstractions.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
 </Project>
