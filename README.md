@@ -1,12 +1,8 @@
 # AI Tabletop Game Master
 
-This is a project to create an AI-powered tabletop game master that can run games like Dungeons & Dragons for solo players. It's a proof of concept using LLMs, AI Orchestration tools like Semantic Kernel, and RAG with a vector database and Kernel Memory.
+This is a project to create an AI-powered tabletop game master that can run table top roleplaying games for solo players. It's a proof of concept using LLMs, AI Orchestration tools like Semantic Kernel, and RAG with a vector database and Kernel Memory.
 
 This project was created by Matt Eland for demonstration and teaching purposes. It is not intended to be a complete game system, but rather a starting point for building AI-assisted tabletop games.
-
-Dungeons & Dragons is a trademark of Wizards of the Coast, and this project is not affiliated with or endorsed by Wizards of the Coast.
-
-Wizards of the Coast has released a free version of the Dungeons & Dragons ruleset, which is used in this project. The ruleset can be found at [DNDBeyond.com](https://www.dndbeyond.com/sources/dnd/br-2024?&icid_medium=organic&icid_source=editorial&icid_campaign=dnd_free_rules_2024&icid_content=article_1804).
 
 ## Tasks
 
@@ -35,10 +31,25 @@ The following tasks are planned for the project:
 
 ### Quality and Testing
 
-- [ ] Add in Unit Tests
-- [ ] Add in Evaluation
+- [x] Add unit test project
+- [ ] Generate sample transcripts for testing
+- [ ] Add in Unit Tests around Semantic Kernel
+- [ ] Add in Evaluation for common game scenarios
 - [ ] Add A/B Testing for Prompt Refinement and Model Selection
 - [ ] Add content safety checks (optional)
+
+### Content
+
+- [x] Load games and characters from JSON files
+- [ ] Add a second character to the beach game
+- [ ] Add a second adventure
+- [ ] Optionally, separate characters from adventures
+
+### User Interface
+
+- [x] Add a console UI for the game
+- [ ] Add configuration options for disabling displaying certain events
+- [ ] Add an Uno Platform UI for the game
 
 ### Game Session Management
 
