@@ -6,6 +6,7 @@ using AiTableTopGameMaster.Core.Plugins.Sourcebooks;
 using AiTableTopGameMaster.Core.Services;
 using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.Connectors.Ollama;
@@ -63,6 +64,9 @@ public static class ServiceExtensions
                 Arguments = new KernelArguments(sp.GetRequiredService<PromptExecutionSettings>())
             };
         });
+        
+        // Register output review agent
+        services.AddTransient<IOutputReviewer, OutputReviewAgent>();
         
         // EXTENSION POINT: Future multi-agent support could register additional agents here
         // For example:

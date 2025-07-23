@@ -1,4 +1,5 @@
 using AiTableTopGameMaster.ConsoleApp.Clients;
+using AiTableTopGameMaster.Core.Services;
 using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -19,11 +20,12 @@ public class AgentChatClientTests
     {
         // Arrange
         Mock<Agent> mockAgent = new Mock<Agent>();
+        Mock<IOutputReviewer> mockOutputReviewer = new Mock<IOutputReviewer>();
         TestConsole console = new();
         ILogger<ConsoleChatClient> logger = NullLogger<ConsoleChatClient>.Instance;
         
         // Act
-        ConsoleChatClient client = new(mockAgent.Object, console, logger);
+        ConsoleChatClient client = new(mockAgent.Object, mockOutputReviewer.Object, console, logger);
         
         // Assert
         client.ShouldNotBeNull();
