@@ -1,3 +1,4 @@
+using AiTableTopGameMaster.ConsoleApp.Agents;
 using AiTableTopGameMaster.ConsoleApp.Clients;
 using AiTableTopGameMaster.ConsoleApp.Infrastructure;
 using AiTableTopGameMaster.ConsoleApp.Settings;
@@ -6,6 +7,7 @@ using AiTableTopGameMaster.Core.Plugins.Sourcebooks;
 using AiTableTopGameMaster.Core.Services;
 using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.Connectors.Ollama;
@@ -45,31 +47,53 @@ public static class ServiceExtensions
         services.AddTransient<PromptExecutionSettings>(_ => new OllamaPromptExecutionSettings {
             FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
         });
+        // Register individual agents with proper naming
         services.AddTransient<Agent>(sp =>
         {
             Adventure adventure = sp.GetRequiredService<Adventure>();
             Character character = sp.GetRequiredService<Character>();
             Kernel kernel = sp.GetRequiredService<Kernel>();
+            KernelArguments arguments = new(sp.GetRequiredService<PromptExecutionSettings>());
             
-            // Build the system instructions combining adventure context
-            string systemInstructions = BuildSystemInstructions(adventure, character);
-            
-            return new ChatCompletionAgent
-            {
-                Name = "GameMaster",
-                Description = $"Game Master for {adventure.Name} - {adventure.Ruleset} adventure",
-                Instructions = systemInstructions,
-                Kernel = kernel,
-                Arguments = new KernelArguments(sp.GetRequiredService<PromptExecutionSettings>())
-            };
+            return PlanningAgentFactory.Create(adventure, character, kernel, arguments);
         });
         
-        // EXTENSION POINT: Future multi-agent support could register additional agents here
-        // For example:
-        // services.AddTransient<NPCAgent>(sp => CreateNPCAgent(sp, "Merchant"));
-        // services.AddTransient<WorldAgent>(sp => CreateWorldAgent(sp));
+        services.AddTransient<Agent>(sp =>
+        {
+            Adventure adventure = sp.GetRequiredService<Adventure>();
+            Character character = sp.GetRequiredService<Character>();
+            Kernel kernel = sp.GetRequiredService<Kernel>();
+            KernelArguments arguments = new(sp.GetRequiredService<PromptExecutionSettings>());
+            
+            return GameMasterAgentFactory.Create(adventure, character, kernel, arguments);
+        });
         
-        services.AddTransient<IConsoleChatClient, ConsoleChatClient>();
+        services.AddTransient<Agent>(sp =>
+        {
+            Adventure adventure = sp.GetRequiredService<Adventure>();
+            Character character = sp.GetRequiredService<Character>();
+            Kernel kernel = sp.GetRequiredService<Kernel>();
+            KernelArguments arguments = new(sp.GetRequiredService<PromptExecutionSettings>());
+            
+            return EditorAgentFactory.Create(adventure, character, kernel, arguments);
+        });
+        
+        // Register multi-agent chat client
+        services.AddTransient<MultiAgentChatClient>();
+        
+        // Register both chat client implementations
+        services.AddTransient<ConsoleChatClient>(sp =>
+        {
+            var agents = sp.GetRequiredService<IEnumerable<Agent>>().ToArray();
+            var legacyAgent = agents.FirstOrDefault(a => a.Name == "GameMaster") ?? agents[1]; // Use GameMaster agent or fallback
+            var console = sp.GetRequiredService<IAnsiConsole>();
+            var logger = sp.GetRequiredService<ILogger<ConsoleChatClient>>();
+            
+            return new ConsoleChatClient(legacyAgent, console, logger);
+        });
+        
+        // Default to multi-agent chat client
+        services.AddTransient<IConsoleChatClient>(sp => sp.GetRequiredService<MultiAgentChatClient>());
         services.AddSingleton<IAdventureLoader, AdventureLoader>();
 
         // Load adventure from JSON file
