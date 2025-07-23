@@ -1,3 +1,4 @@
+using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Spectre.Console;
 
@@ -27,7 +28,7 @@ public static class DisplayHelpers
 
     public static void DisplayHistory(this IAnsiConsole console, ChatHistory history)
     {
-        foreach (var message in history)
+        foreach (ChatMessageContent message in history)
         {
             if (message.Role == AuthorRole.User)
             {

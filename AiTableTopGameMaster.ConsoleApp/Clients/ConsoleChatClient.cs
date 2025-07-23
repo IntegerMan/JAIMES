@@ -1,17 +1,15 @@
 using AiTableTopGameMaster.ConsoleApp.Helpers;
-using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Spectre.Console;
 
 namespace AiTableTopGameMaster.ConsoleApp.Clients;
 
-[UsedImplicitly]
 public class ConsoleChatClient(
-    PromptExecutionSettings settings,
+    Agent agent,
     IAnsiConsole console,
-    Kernel kernel,
     ILogger<ConsoleChatClient> log)
     : IConsoleChatClient
 {
@@ -46,31 +44,20 @@ public class ConsoleChatClient(
     public async Task<ChatHistory> ChatAsync(ChatHistory history, CancellationToken cancellationToken = default)
     {
         console.MarkupLine($"{DisplayHelpers.System}Generating response...[/]");
-        log.LogDebug("Starting chat completion with {MessageCount} messages in history", history.Count);
+        log.LogDebug("Starting agent chat with {MessageCount} messages in history", history.Count);
         
         try
         {
-            IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
-            IReadOnlyList<ChatMessageContent>? response = await chatService.GetChatMessageContentsAsync(history, settings, kernel: kernel,
-                cancellationToken: cancellationToken);
-
-            log.LogDebug("Chat completion returned {ResponseCount} message(s)", response?.Count ?? 0);
-
-            if (response is not { Count: > 0 })
+            // Use the agent framework properly for chatting
+            await foreach (AgentResponseItem<ChatMessageContent> response in agent.InvokeAsync(history, cancellationToken: cancellationToken))
             {
-                throw new InvalidOperationException("The chat client did not return any responses.");
-            }
-
-            console.WriteLine();
-
-            foreach (ChatMessageContent reply in response)
-            {
-                history.Add(reply);
+                ChatMessageContent message = response.Message;
+                history.Add(message);
                 
-                log.LogInformation("AI: {Content}", reply.Content);
+                log.LogInformation("{Agent}: {Content}", agent.Name, message.Content);
                 
-                console.Markup($"{DisplayHelpers.AI}AI:[/] ");
-                console.MarkupLineInterpolated($"{reply.Content}");
+                console.Markup($"{DisplayHelpers.AI}{agent.Name}:[/] ");
+                console.MarkupLineInterpolated($"{message.Content}");
             }
 
             console.WriteLine();
@@ -79,7 +66,7 @@ public class ConsoleChatClient(
         catch (Exception ex)
         {
             console.MarkupLineInterpolated($"[dim red]Failed to generate response.[/]");
-            log.LogError(ex, "Error during chat completion");
+            log.LogError(ex, "Error during agent chat completion");
             throw;
         }
     }

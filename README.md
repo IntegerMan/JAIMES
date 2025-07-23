@@ -2,6 +2,25 @@
 
 This is a project to create an AI-powered tabletop game master that can run table top roleplaying games for solo players. It's a proof of concept using LLMs, AI Orchestration tools like Semantic Kernel, and RAG with a vector database and Kernel Memory.
 
+## Recent Major Update: Agents Framework Migration
+
+The application has been **successfully migrated** from direct `IChatCompletionService` usage to **Semantic Kernel's agents framework**. This provides:
+
+- ✅ **Better conversation structure and management** via ChatCompletionAgent
+- ✅ **Clear extension points for multi-agent coordination** 
+- ✅ **Improved separation of concerns** between game mechanics and AI services
+- ✅ **Future support for specialized agents** (NPCs, world description, rules enforcement)
+
+See [AGENTS_MIGRATION.md](AGENTS_MIGRATION.md) for detailed migration information and multi-agent extension points.
+
+## Features
+
+- **Agent-Based Game Master**: Uses Semantic Kernel's agents framework for intelligent conversation management
+- **Adventure Support**: JSON-based adventure definitions with locations, encounters, and NPCs
+- **Character Integration**: Character sheets and progression tracking  
+- **Plugin System**: Extensible plugins for sourcebook lookup, character management, and encounters
+- **Multi-Agent Ready**: Designed with extension points for future multi-agent coordination
+
 This project was created by Matt Eland for demonstration and teaching purposes. It is not intended to be a complete game system, but rather a starting point for building AI-assisted tabletop games.
 
 ## Tasks
@@ -27,7 +46,12 @@ The following tasks are planned for the project:
 
 ### Agentic Mode
 
-- [ ] Design an agentic layout for the game's AI
+- [x] **Design an agentic layout for the game's AI** ✅ COMPLETED
+- [x] **Migrate to Semantic Kernel's agents framework** ✅ COMPLETED
+- [x] **Create GameMaster agent with comprehensive prompts** ✅ COMPLETED
+- [x] **Add extension points for multi-agent coordination** ✅ COMPLETED
+- [ ] Implement multi-agent scenarios (NPCs, World agents, etc.)
+- [ ] Add agent-to-agent communication protocols
 
 ### Quality and Testing
 

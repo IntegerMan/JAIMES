@@ -67,7 +67,7 @@ public class SourcebookLookupPlugin(string sourceDirectory, string system)
         
         StringBuilder sb = new();
         sb.AppendLine("Here are a few of the most relevant passages from the rules:");
-        foreach (var result in results.Results
+        foreach (Citation.Partition result in results.Results
                      .SelectMany(p => p.Partitions)
                      .OrderByDescending(p => p.Relevance)
                      .Take(5))

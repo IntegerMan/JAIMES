@@ -30,7 +30,7 @@ public class EncountersPlugin(Adventure adventure)
     private void AddEncounterListToResponse(StringBuilder sb)
     {
         sb.AppendLine("The following encounters have been pre-scripted for the adventure:");
-        foreach (var encounter in adventure.Encounters)
+        foreach (Encounter encounter in adventure.Encounters)
         {
             sb.AppendLine($"- {encounter.Name}");
         }

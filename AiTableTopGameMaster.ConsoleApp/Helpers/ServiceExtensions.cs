@@ -7,6 +7,8 @@ using AiTableTopGameMaster.Core.Services;
 using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.Agents;
+using Microsoft.SemanticKernel.Connectors.Ollama;
 using Serilog;
 using Spectre.Console;
 
@@ -40,20 +42,41 @@ public static class ServiceExtensions
                     status => DocumentIndexingCallback(console, status))
                 .Build();
         });
-        services.AddTransient<PromptExecutionSettings>(_ => new PromptExecutionSettings
-        {
-            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
+        services.AddTransient<PromptExecutionSettings>(_ => new OllamaPromptExecutionSettings {
+            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
         });
-
-        // Configure application dependencies
+        services.AddTransient<Agent>(sp =>
+        {
+            Adventure adventure = sp.GetRequiredService<Adventure>();
+            Character character = sp.GetRequiredService<Character>();
+            Kernel kernel = sp.GetRequiredService<Kernel>();
+            
+            // Build the system instructions combining adventure context
+            string systemInstructions = BuildSystemInstructions(adventure, character);
+            
+            return new ChatCompletionAgent
+            {
+                Name = "GameMaster",
+                Description = $"Game Master for {adventure.Name} - {adventure.Ruleset} adventure",
+                Instructions = systemInstructions,
+                Kernel = kernel,
+                Arguments = new KernelArguments(sp.GetRequiredService<PromptExecutionSettings>())
+            };
+        });
+        
+        // EXTENSION POINT: Future multi-agent support could register additional agents here
+        // For example:
+        // services.AddTransient<NPCAgent>(sp => CreateNPCAgent(sp, "Merchant"));
+        // services.AddTransient<WorldAgent>(sp => CreateWorldAgent(sp));
+        
         services.AddTransient<IConsoleChatClient, ConsoleChatClient>();
         services.AddSingleton<IAdventureLoader, AdventureLoader>();
 
         // Load adventure from JSON file
         services.AddScoped<Adventure>(sp =>
         {
-            var loader = sp.GetRequiredService<IAdventureLoader>();
-            var adventuresPath = Path.Combine(AppContext.BaseDirectory, "adventures");
+            IAdventureLoader loader = sp.GetRequiredService<IAdventureLoader>();
+            string adventuresPath = Path.Combine(AppContext.BaseDirectory, "adventures");
 
             Adventure[] adventures = loader.GetAdventuresAsync(adventuresPath).GetAwaiter().GetResult().ToArray();
 
@@ -87,5 +110,43 @@ public static class ServiceExtensions
         console.MarkupLine(status.IsComplete
             ? $"{DisplayHelpers.ToolCallResult}Indexed {status.Location} as {status.DocumentId}[/]"
             : $"{DisplayHelpers.ToolCall}Indexing {status.Location} as {status.DocumentId}...[/]");
+    }
+    
+    /// <summary>
+    /// Builds comprehensive system instructions for the Game Master agent.
+    /// Combines adventure context, character information, and game rules.
+    /// </summary>
+    private static string BuildSystemInstructions(Adventure adventure, Character playerCharacter)
+    {
+        return $"""
+            {adventure.GameMasterSystemPrompt}
+            
+            ADVENTURE CONTEXT:
+            - Adventure: {adventure.Name} by {adventure.Author}
+            - Ruleset: {adventure.Ruleset}
+            - Backstory: {adventure.Backstory}
+            - Setting: {adventure.SettingDescription}
+            
+            PLAYER CHARACTER:
+            - Name: {playerCharacter.Name}
+            - Class/Specialization: {playerCharacter.Specialization}
+            - You can check their character sheet via function calls as needed.
+            
+            NARRATIVE STRUCTURE:
+            {adventure.NarrativeStructure}
+            
+            GAME MASTER NOTES:
+            {adventure.GameMasterNotes}
+            
+            LOCATIONS OVERVIEW:
+            {adventure.LocationsOverview}
+            
+            ENCOUNTERS OVERVIEW:
+            {adventure.EncountersOverview}
+            
+            Remember: You have access to various functions to look up character information, 
+            location details, encounter specifics, and sourcebook references. Use these tools 
+            to provide rich, accurate gameplay experiences.
+            """;
     }
 }
