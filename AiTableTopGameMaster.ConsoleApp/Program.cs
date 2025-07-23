@@ -1,6 +1,7 @@
 ﻿using AiTableTopGameMaster.ConsoleApp.Clients;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
 using AiTableTopGameMaster.ConsoleApp.Infrastructure;
+using AiTableTopGameMaster.ConsoleApp.Settings;
 using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -24,6 +25,12 @@ try
     Character character = services.GetRequiredService<Character>();
     console.MarkupLine($"{DisplayHelpers.System}Playing as: {character.Name} the {character.Specialization}[/]");
     Log.Debug("Character selected: {Name} the {Specialization}", character.Name, character.Specialization);
+
+    // Show which mode is being used
+    var settings = services.GetRequiredService<AppSettings>();
+    string mode = settings.UseMultiAgentMode ? "Multi-Agent (Planning → GameMaster → Editor)" : "Single Agent (GameMaster)";
+    console.MarkupLine($"{DisplayHelpers.System}Agent Mode: {mode}[/]");
+    Log.Debug("Using agent mode: {Mode}", mode);
 
     console.WriteLine();
     

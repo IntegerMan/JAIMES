@@ -92,8 +92,14 @@ public static class ServiceExtensions
             return new ConsoleChatClient(legacyAgent, console, logger);
         });
         
-        // Default to multi-agent chat client
-        services.AddTransient<IConsoleChatClient>(sp => sp.GetRequiredService<MultiAgentChatClient>());
+        // Choose client implementation based on configuration
+        services.AddTransient<IConsoleChatClient>(sp =>
+        {
+            var settings = sp.GetRequiredService<AppSettings>();
+            return settings.UseMultiAgentMode 
+                ? sp.GetRequiredService<MultiAgentChatClient>()
+                : sp.GetRequiredService<ConsoleChatClient>();
+        });
         services.AddSingleton<IAdventureLoader, AdventureLoader>();
 
         // Load adventure from JSON file
