@@ -33,7 +33,7 @@ try
 
     console.WriteLine();
 
-    IAgentChatClient client = services.GetRequiredService<IAgentChatClient>();
+    IConsoleChatClient client = services.GetRequiredService<IConsoleChatClient>();
     await client.ChatIndefinitelyAsync(history);
     
     console.WriteLine();

@@ -1,5 +1,4 @@
 using AiTableTopGameMaster.ConsoleApp.Clients;
-using AiTableTopGameMaster.ConsoleApp.Helpers;
 using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.SemanticKernel;
@@ -14,32 +13,36 @@ namespace AiTableTopGameMaster.Tests;
 public class AgentChatClientTests
 {
     [Fact]
-    public void AgentChatClient_ShouldHaveGameMasterAgent()
+    public void ConsoleChatClient_ShouldWorkWithAgent()
     {
         // Arrange
         var mockAgent = new Mock<Agent>();
         var console = new TestConsole();
-        var logger = NullLogger<AgentChatClient>.Instance;
+        var logger = NullLogger<ConsoleChatClient>.Instance;
         
         // Act
-        var client = new AgentChatClient(mockAgent.Object, console, logger);
+        var client = new ConsoleChatClient(mockAgent.Object, console, logger);
         
         // Assert
-        Assert.NotNull(client.GameMasterAgent);
-        Assert.Equal(mockAgent.Object, client.GameMasterAgent);
+        Assert.NotNull(client);
     }
     
     [Fact]
-    public void GameMasterAgentFactory_ShouldCreateValidAgent()
+    public void ChatCompletionAgent_ShouldBeConfiguredProperly()
     {
         // Arrange
-        var factory = new GameMasterAgentFactory(NullLogger<GameMasterAgentFactory>.Instance);
         var adventure = CreateTestAdventure();
         var character = CreateTestCharacter();
         var kernel = CreateTestKernel();
         
         // Act
-        var agent = factory.CreateGameMasterAgent(adventure, character, kernel);
+        var agent = new ChatCompletionAgent
+        {
+            Name = "GameMaster",
+            Description = $"Game Master for {adventure.Name} - {adventure.Ruleset} adventure",
+            Instructions = BuildTestSystemInstructions(adventure, character),
+            Kernel = kernel
+        };
         
         // Assert
         Assert.NotNull(agent);
@@ -82,5 +85,39 @@ public class AgentChatClientTests
     private static Kernel CreateTestKernel()
     {
         return Kernel.CreateBuilder().Build();
+    }
+    
+    private static string BuildTestSystemInstructions(Adventure adventure, Character playerCharacter)
+    {
+        return $"""
+            {adventure.GameMasterSystemPrompt}
+            
+            ADVENTURE CONTEXT:
+            - Adventure: {adventure.Name} by {adventure.Author}
+            - Ruleset: {adventure.Ruleset}
+            - Backstory: {adventure.Backstory}
+            - Setting: {adventure.SettingDescription}
+            
+            PLAYER CHARACTER:
+            - Name: {playerCharacter.Name}
+            - Class/Specialization: {playerCharacter.Specialization}
+            - You can check their character sheet via function calls as needed.
+            
+            NARRATIVE STRUCTURE:
+            {adventure.NarrativeStructure}
+            
+            GAME MASTER NOTES:
+            {adventure.GameMasterNotes}
+            
+            LOCATIONS OVERVIEW:
+            {adventure.LocationsOverview}
+            
+            ENCOUNTERS OVERVIEW:
+            {adventure.EncountersOverview}
+            
+            Remember: You have access to various functions to look up character information, 
+            location details, encounter specifics, and sourcebook references. Use these tools 
+            to provide rich, accurate gameplay experiences.
+            """;
     }
 }
