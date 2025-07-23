@@ -69,4 +69,66 @@ public class OutputReviewTests
         // Assert
         result.IsAcceptable.ShouldBeTrue();
     }
+    
+    [Theory]
+    [InlineData("The goblin attacks! You need to roll for initiative.")]
+    [InlineData("Make a Perception check to see if you notice anything unusual.")]
+    [InlineData("You explore the room carefully, looking for clues about what happened here.")]
+    public async Task OutputReviewAgent_ParseReviewResponse_AcceptableResponse_ShouldReturnAcceptable(string response)
+    {
+        // Arrange
+        Kernel kernel = Kernel.CreateBuilder().Build();
+        OutputReviewAgent agent = new(kernel, NullLogger<OutputReviewAgent>.Instance);
+        
+        // Use reflection to test the private ParseReviewResponse method
+        var method = typeof(OutputReviewAgent).GetMethod("ParseReviewResponse", 
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        
+        // Act
+        OutputReviewResult result = (OutputReviewResult)method.Invoke(agent, new object[] { "ACCEPTABLE" });
+        
+        // Assert
+        result.IsAcceptable.ShouldBeTrue();
+    }
+    
+    [Theory]
+    [InlineData("NEEDS_REVISION The response contains dice rolling on behalf of the player")]
+    [InlineData("NEEDS_REVISION You are asking the player what their character remembers")]
+    [InlineData("NEEDS_REVISION Taking actions for the player without their input")]
+    public async Task OutputReviewAgent_ParseReviewResponse_NeedsRevisionResponse_ShouldReturnNeedsRevision(string response)
+    {
+        // Arrange
+        Kernel kernel = Kernel.CreateBuilder().Build();
+        OutputReviewAgent agent = new(kernel, NullLogger<OutputReviewAgent>.Instance);
+        
+        // Use reflection to test the private ParseReviewResponse method
+        var method = typeof(OutputReviewAgent).GetMethod("ParseReviewResponse", 
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        
+        // Act
+        OutputReviewResult result = (OutputReviewResult)method.Invoke(agent, new object[] { response });
+        
+        // Assert
+        result.IsAcceptable.ShouldBeFalse();
+        result.Feedback.ShouldNotBeNull();
+        result.Issues.ShouldNotBeEmpty();
+    }
+    
+    [Fact]
+    public async Task OutputReviewAgent_ParseReviewResponse_UnexpectedFormat_ShouldReturnAcceptable()
+    {
+        // Arrange
+        Kernel kernel = Kernel.CreateBuilder().Build();
+        OutputReviewAgent agent = new(kernel, NullLogger<OutputReviewAgent>.Instance);
+        
+        // Use reflection to test the private ParseReviewResponse method
+        var method = typeof(OutputReviewAgent).GetMethod("ParseReviewResponse", 
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        
+        // Act
+        OutputReviewResult result = (OutputReviewResult)method.Invoke(agent, new object[] { "Some unexpected response format" });
+        
+        // Assert
+        result.IsAcceptable.ShouldBeTrue();
+    }
 }
