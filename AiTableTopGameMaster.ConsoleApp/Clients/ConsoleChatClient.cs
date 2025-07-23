@@ -1,4 +1,5 @@
 using AiTableTopGameMaster.ConsoleApp.Helpers;
+using AiTableTopGameMaster.Core.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
@@ -9,6 +10,7 @@ namespace AiTableTopGameMaster.ConsoleApp.Clients;
 
 public class ConsoleChatClient(
     Agent agent,
+    IOutputReviewer outputReviewer,
     IAnsiConsole console,
     ILogger<ConsoleChatClient> log)
     : IConsoleChatClient
@@ -48,16 +50,53 @@ public class ConsoleChatClient(
         
         try
         {
-            // Use the agent framework properly for chatting
-            await foreach (AgentResponseItem<ChatMessageContent> response in agent.InvokeAsync(history, cancellationToken: cancellationToken))
+            const int maxRevisionAttempts = 3;
+            int revisionAttempt = 0;
+            
+            while (revisionAttempt < maxRevisionAttempts)
             {
-                ChatMessageContent message = response.Message;
-                history.Add(message);
+                // Generate response from the game master agent
+                string gameMasterResponse = await GenerateGameMasterResponseAsync(history, cancellationToken);
                 
-                log.LogInformation("{Agent}: {Content}", agent.Name, message.Content);
+                // Review the response
+                OutputReviewResult reviewResult = await outputReviewer.ReviewOutputAsync(gameMasterResponse, cancellationToken);
                 
-                console.Markup($"{DisplayHelpers.AI}{agent.Name}:[/] ");
-                console.MarkupLineInterpolated($"{message.Content}");
+                if (reviewResult.IsAcceptable)
+                {
+                    // Response is acceptable, add to history and display to player
+                    ChatMessageContent acceptedMessage = new(AuthorRole.Assistant, gameMasterResponse);
+                    history.Add(acceptedMessage);
+                    
+                    log.LogInformation("{Agent}: {Content}", agent.Name, gameMasterResponse);
+                    console.Markup($"{DisplayHelpers.AI}{agent.Name}:[/] ");
+                    console.MarkupLineInterpolated($"{gameMasterResponse}");
+                    console.WriteLine();
+                    return history;
+                }
+                
+                // Response needs revision
+                revisionAttempt++;
+                log.LogDebug("Game master response needs revision (attempt {Attempt}/{Max}): {Issues}", 
+                    revisionAttempt, maxRevisionAttempts, string.Join(", ", reviewResult.Issues));
+                
+                if (revisionAttempt >= maxRevisionAttempts)
+                {
+                    // Max attempts reached, display the response anyway but with a warning
+                    console.MarkupLine($"{DisplayHelpers.System}[yellow]Note: Response may not fully follow game master best practices.[/]");
+                    ChatMessageContent finalMessage = new(AuthorRole.Assistant, gameMasterResponse);
+                    history.Add(finalMessage);
+                    
+                    log.LogWarning("Max revision attempts reached, displaying response anyway");
+                    console.Markup($"{DisplayHelpers.AI}{agent.Name}:[/] ");
+                    console.MarkupLineInterpolated($"{gameMasterResponse}");
+                    console.WriteLine();
+                    return history;
+                }
+                
+                // Send feedback to the game master for revision
+                string revisionPrompt = $"Please revise your previous response. {reviewResult.Feedback}";
+                history.AddSystemMessage(revisionPrompt);
+                console.MarkupLine($"{DisplayHelpers.System}Refining response...[/]");
             }
 
             console.WriteLine();
@@ -69,5 +108,17 @@ public class ConsoleChatClient(
             log.LogError(ex, "Error during agent chat completion");
             throw;
         }
+    }
+    
+    private async Task<string> GenerateGameMasterResponseAsync(ChatHistory history, CancellationToken cancellationToken)
+    {
+        string response = "";
+        
+        await foreach (AgentResponseItem<ChatMessageContent> responseItem in agent.InvokeAsync(history, cancellationToken: cancellationToken))
+        {
+            response += responseItem.Message.Content;
+        }
+        
+        return response;
     }
 }
