@@ -115,7 +115,7 @@ public class OutputReviewTests
     }
     
     [Fact]
-    public async Task OutputReviewAgent_ParseReviewResponse_UnexpectedFormat_ShouldReturnAcceptable()
+    public async Task OutputReviewAgent_ParseReviewResponse_UnexpectedFormat_ShouldReturnNeedsRevision()
     {
         // Arrange
         Kernel kernel = Kernel.CreateBuilder().Build();
@@ -129,6 +129,7 @@ public class OutputReviewTests
         OutputReviewResult result = (OutputReviewResult)method.Invoke(agent, new object[] { "Some unexpected response format" });
         
         // Assert
-        result.IsAcceptable.ShouldBeTrue();
+        result.IsAcceptable.ShouldBeFalse();
+        result.Issues.ShouldContain("Unexpected review format");
     }
 }

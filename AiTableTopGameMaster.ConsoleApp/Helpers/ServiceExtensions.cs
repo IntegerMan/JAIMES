@@ -66,12 +66,7 @@ public static class ServiceExtensions
         });
         
         // Register output review agent
-        services.AddTransient<IOutputReviewer>(sp =>
-        {
-            Kernel kernel = sp.GetRequiredService<Kernel>();
-            ILogger<OutputReviewAgent> logger = sp.GetRequiredService<ILogger<OutputReviewAgent>>();
-            return new OutputReviewAgent(kernel, logger);
-        });
+        services.AddTransient<IOutputReviewer, OutputReviewAgent>();
         
         // EXTENSION POINT: Future multi-agent support could register additional agents here
         // For example:

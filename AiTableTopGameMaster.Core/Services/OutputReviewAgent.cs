@@ -89,8 +89,11 @@ public class OutputReviewAgent : IOutputReviewer
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error during output review");
-            // On error, default to accepting the output to avoid blocking gameplay
-            return OutputReviewResult.Acceptable();
+            // On error, return needs revision to allow retry instead of accepting potentially problematic output
+            return OutputReviewResult.NeedsRevision(
+                "Review failed due to an error. Please try rephrasing your response.",
+                "Review system error"
+            );
         }
     }
     
@@ -99,7 +102,10 @@ public class OutputReviewAgent : IOutputReviewer
         if (string.IsNullOrWhiteSpace(reviewResponse))
         {
             _logger.LogWarning("Empty review response from agent");
-            return OutputReviewResult.Acceptable();
+            return OutputReviewResult.NeedsRevision(
+                "Review agent returned empty response. Please try rephrasing your response.",
+                "Empty review response"
+            );
         }
         
         reviewResponse = reviewResponse.Trim();
@@ -123,8 +129,11 @@ public class OutputReviewAgent : IOutputReviewer
             );
         }
         
-        // If response doesn't match expected format, log warning and default to acceptable
+        // If response doesn't match expected format, return needs revision instead of defaulting to acceptable
         _logger.LogWarning("Unexpected review response format: {Response}", reviewResponse);
-        return OutputReviewResult.Acceptable();
+        return OutputReviewResult.NeedsRevision(
+            "Review agent returned unexpected format. Please try rephrasing your response.",
+            "Unexpected review format"
+        );
     }
 }
