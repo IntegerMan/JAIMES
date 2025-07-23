@@ -8,6 +8,7 @@ using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
+using Microsoft.SemanticKernel.Connectors.Ollama;
 using Serilog;
 using Spectre.Console;
 
@@ -41,13 +42,14 @@ public static class ServiceExtensions
                     status => DocumentIndexingCallback(console, status))
                 .Build();
         });
-        
-        // Configure application dependencies
+        services.AddTransient<PromptExecutionSettings>(_ => new OllamaPromptExecutionSettings {
+            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
+        });
         services.AddTransient<Agent>(sp =>
         {
-            var adventure = sp.GetRequiredService<Adventure>();
-            var character = sp.GetRequiredService<Character>();
-            var kernel = sp.GetRequiredService<Kernel>();
+            Adventure adventure = sp.GetRequiredService<Adventure>();
+            Character character = sp.GetRequiredService<Character>();
+            Kernel kernel = sp.GetRequiredService<Kernel>();
             
             // Build the system instructions combining adventure context
             string systemInstructions = BuildSystemInstructions(adventure, character);
@@ -57,7 +59,8 @@ public static class ServiceExtensions
                 Name = "GameMaster",
                 Description = $"Game Master for {adventure.Name} - {adventure.Ruleset} adventure",
                 Instructions = systemInstructions,
-                Kernel = kernel
+                Kernel = kernel,
+                Arguments = new KernelArguments(sp.GetRequiredService<PromptExecutionSettings>())
             };
         });
         
@@ -72,8 +75,8 @@ public static class ServiceExtensions
         // Load adventure from JSON file
         services.AddScoped<Adventure>(sp =>
         {
-            var loader = sp.GetRequiredService<IAdventureLoader>();
-            var adventuresPath = Path.Combine(AppContext.BaseDirectory, "adventures");
+            IAdventureLoader loader = sp.GetRequiredService<IAdventureLoader>();
+            string adventuresPath = Path.Combine(AppContext.BaseDirectory, "adventures");
 
             Adventure[] adventures = loader.GetAdventuresAsync(adventuresPath).GetAwaiter().GetResult().ToArray();
 

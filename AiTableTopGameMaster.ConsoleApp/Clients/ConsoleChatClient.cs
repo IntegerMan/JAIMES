@@ -1,5 +1,4 @@
 using AiTableTopGameMaster.ConsoleApp.Helpers;
-using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
@@ -8,9 +7,8 @@ using Spectre.Console;
 
 namespace AiTableTopGameMaster.ConsoleApp.Clients;
 
-[UsedImplicitly]
 public class ConsoleChatClient(
-    Agent gameMasterAgent,
+    Agent agent,
     IAnsiConsole console,
     ILogger<ConsoleChatClient> log)
     : IConsoleChatClient
@@ -51,14 +49,14 @@ public class ConsoleChatClient(
         try
         {
             // Use the agent framework properly for chatting
-            await foreach (var response in gameMasterAgent.InvokeAsync(history, cancellationToken: cancellationToken))
+            await foreach (AgentResponseItem<ChatMessageContent> response in agent.InvokeAsync(history, cancellationToken: cancellationToken))
             {
-                var message = response.Message;
+                ChatMessageContent message = response.Message;
                 history.Add(message);
                 
-                log.LogInformation("AI: {Content}", message.Content);
+                log.LogInformation("{Agent}: {Content}", agent.Name, message.Content);
                 
-                console.Markup($"{DisplayHelpers.AI}AI:[/] ");
+                console.Markup($"{DisplayHelpers.AI}{agent.Name}:[/] ");
                 console.MarkupLineInterpolated($"{message.Content}");
             }
 

@@ -45,7 +45,7 @@ public class AdventureLoader(ILoggerFactory loggerFactory) : IAdventureLoader
         string[] jsonFiles = Directory.GetFiles(adventuresDirectory, "*.json");
         List<Adventure> adventures = [];
         
-        foreach (var file in jsonFiles)
+        foreach (string file in jsonFiles)
         {
             try
             {

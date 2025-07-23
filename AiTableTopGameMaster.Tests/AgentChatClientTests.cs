@@ -1,10 +1,12 @@
 using AiTableTopGameMaster.ConsoleApp.Clients;
 using AiTableTopGameMaster.Domain;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Moq;
+using Shouldly;
 using Spectre.Console.Testing;
 using Xunit;
 
@@ -16,27 +18,27 @@ public class AgentChatClientTests
     public void ConsoleChatClient_ShouldWorkWithAgent()
     {
         // Arrange
-        var mockAgent = new Mock<Agent>();
-        var console = new TestConsole();
-        var logger = NullLogger<ConsoleChatClient>.Instance;
+        Mock<Agent> mockAgent = new Mock<Agent>();
+        TestConsole console = new();
+        ILogger<ConsoleChatClient> logger = NullLogger<ConsoleChatClient>.Instance;
         
         // Act
-        var client = new ConsoleChatClient(mockAgent.Object, console, logger);
+        ConsoleChatClient client = new(mockAgent.Object, console, logger);
         
         // Assert
-        Assert.NotNull(client);
+        client.ShouldNotBeNull();
     }
     
     [Fact]
     public void ChatCompletionAgent_ShouldBeConfiguredProperly()
     {
         // Arrange
-        var adventure = CreateTestAdventure();
-        var character = CreateTestCharacter();
-        var kernel = CreateTestKernel();
+        Adventure adventure = CreateTestAdventure();
+        Character character = CreateTestCharacter();
+        Kernel kernel = CreateTestKernel();
         
         // Act
-        var agent = new ChatCompletionAgent
+        ChatCompletionAgent agent = new()
         {
             Name = "GameMaster",
             Description = $"Game Master for {adventure.Name} - {adventure.Ruleset} adventure",
@@ -45,12 +47,12 @@ public class AgentChatClientTests
         };
         
         // Assert
-        Assert.NotNull(agent);
-        Assert.Equal("GameMaster", agent.Name);
-        Assert.Contains(adventure.Name, agent.Description);
-        Assert.Contains(adventure.GameMasterSystemPrompt, agent.Instructions);
-        Assert.Contains(character.Name, agent.Instructions);
-        Assert.Equal(kernel, agent.Kernel);
+        agent.ShouldNotBeNull();
+        agent.Name.ShouldBe("GameMaster");
+        agent.Description.ShouldContain(adventure.Name);
+        agent.Instructions.ShouldContain(adventure.GameMasterSystemPrompt);
+        agent.Instructions.ShouldContain(character.Name);
+        agent.Kernel.ShouldBe(kernel);
     }
     
     private static Adventure CreateTestAdventure()
