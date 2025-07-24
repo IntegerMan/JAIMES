@@ -12,22 +12,7 @@ namespace AiTableTopGameMaster.ConsoleApp.Agents;
 /// </summary>
 public static class GameMasterAgentFactory
 {
-    public static ChatCompletionAgent Create(Adventure adventure, Character character, Kernel kernel, KernelArguments arguments, ILoggerFactory logger)
-    {
-        string instructions = BuildGameMasterInstructions(adventure, character);
-        
-        return new ChatCompletionAgent
-        {
-            Name = "GameMaster",
-            Description = $"Game Master for {adventure.Name} - delivers narrative responses to players",
-            Instructions = instructions,
-            Kernel = kernel,
-            Arguments = arguments,
-            LoggerFactory = logger,
-        };
-    }
-    
-    private static string BuildGameMasterInstructions(Adventure adventure, Character playerCharacter)
+    public static string BuildGameMasterInstructions(Adventure adventure, Character playerCharacter)
     {
         return $"""
             {adventure.GameMasterSystemPrompt}

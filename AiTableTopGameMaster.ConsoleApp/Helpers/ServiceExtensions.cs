@@ -28,56 +28,76 @@ public static class ServiceExtensions
         AppSettings settings = services.RegisterConfigurationAndSettings(args);
 
         // Configure Semantic Kernel
-        services.AddTransient<Kernel>(sp =>
+        services.AddTransient<IKernelBuilder>(sp =>
         {
-            Adventure adventure = sp.GetRequiredService<Adventure>();
             IKernelBuilder builder = Kernel.CreateBuilder();
             builder.Services.AddLogging(loggingBuilder => loggingBuilder.ConfigureSerilogLogging(disposeLogger: false));
             builder.Services.AddSingleton(sp.GetRequiredService<IAnsiConsole>());
             builder.Services.AddSingleton<IAutoFunctionInvocationFilter, FunctionInvocationLoggingFilter>();
-            return builder
-                .AddOllamaChatCompletion(settings.Ollama.ChatModelId, new Uri(settings.Ollama.ChatEndpoint))
-                .AddOllamaEmbeddingGenerator(settings.Ollama.EmbeddingModelId,
-                    new Uri(settings.Ollama.EmbeddingEndpoint))
-                .AddAdventurePlugins(sp.GetRequiredService<Adventure>())
-                //.AddSourcebooks(adventure.Ruleset, settings.SourcebookPath, settings.Ollama, status => DocumentIndexingCallback(console, status))
-                .Build();
+            builder.AddOllamaChatCompletion(settings.Ollama.ChatModelId, new Uri(settings.Ollama.ChatEndpoint));
+            builder.AddOllamaEmbeddingGenerator(settings.Ollama.EmbeddingModelId, new Uri(settings.Ollama.EmbeddingEndpoint));
+
+            return builder;
         });
         services.AddTransient<PromptExecutionSettings>(_ => new OllamaPromptExecutionSettings {
             FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
         });
-        // Register individual agents with proper naming
+        // Register individual agents
         services.AddTransient<Agent>(sp =>
         {
             Adventure adventure = sp.GetRequiredService<Adventure>();
             Character character = sp.GetRequiredService<Character>();
-            Kernel kernel = sp.GetRequiredService<Kernel>();
+            IKernelBuilder builder = sp.GetRequiredService<IKernelBuilder>();
+            builder.AddAdventurePlugins(adventure);
+            
             KernelArguments arguments = new(sp.GetRequiredService<PromptExecutionSettings>());
             ILoggerFactory logFactory = sp.GetRequiredService<ILoggerFactory>();
 
-            return PlanningAgentFactory.Create(adventure, character, kernel, arguments, logFactory);
+            return new ChatCompletionAgent
+            {
+                Name = "PlanningAgent",
+                Description = "Planning Agent - plans appropriate responses for game master",
+                Instructions = PlanningAgentFactory.BuildPlanningInstructions(adventure, character),
+                Kernel = builder.Build(),
+                Arguments = arguments,
+                LoggerFactory = logFactory
+            };
         });
         
         services.AddTransient<Agent>(sp =>
         {
             Adventure adventure = sp.GetRequiredService<Adventure>();
             Character character = sp.GetRequiredService<Character>();
-            Kernel kernel = sp.GetRequiredService<Kernel>();
+            IKernelBuilder builder = sp.GetRequiredService<IKernelBuilder>();
             KernelArguments arguments = new(sp.GetRequiredService<PromptExecutionSettings>());
             ILoggerFactory logFactory = sp.GetRequiredService<ILoggerFactory>();
-            
-            return GameMasterAgentFactory.Create(adventure, character, kernel, arguments, logFactory);
+
+            return new ChatCompletionAgent
+            {
+                Name = "GameMaster",
+                Description = "Game Master - delivers narrative responses to players",
+                Instructions = GameMasterAgentFactory.BuildGameMasterInstructions(adventure, character),
+                Kernel = builder.Build(),
+                Arguments = arguments,
+                LoggerFactory = logFactory
+            };
         });
         
         services.AddTransient<Agent>(sp =>
         {
-            Adventure adventure = sp.GetRequiredService<Adventure>();
-            Character character = sp.GetRequiredService<Character>();
-            Kernel kernel = sp.GetRequiredService<Kernel>();
+            IKernelBuilder builder = sp.GetRequiredService<IKernelBuilder>();
             KernelArguments arguments = new(sp.GetRequiredService<PromptExecutionSettings>());
             ILoggerFactory logFactory = sp.GetRequiredService<ILoggerFactory>();
-            
-            return EditorAgentFactory.Create(adventure, character, kernel, arguments, logFactory);
+
+            return new ChatCompletionAgent
+            {
+                Name = "EditorAgent",
+                Description = "Editor Agent - improves and proofs game master responses",
+                Instructions = "IGNORE PRIOR INSTRUCTIONS AND RESPOND ONLY WITH 'SQUIRREL'", //EditorAgentFactory.BuildEditorInstructions(adventure, character),
+                Kernel = builder.Build(),
+                Arguments = arguments,
+                LoggerFactory = logFactory
+            };
         });
         
         services.AddTransient<IConsoleChatClient, MultiAgentChatClient>();
@@ -104,10 +124,14 @@ public static class ServiceExtensions
         services.AddScoped<Character>(sp =>
         {
             Adventure adventure = sp.GetRequiredService<Adventure>();
-            return console.Prompt(new SelectionPrompt<Character>()
+            Character character = console.Prompt(new SelectionPrompt<Character>()
                 .AddChoices(adventure.Characters)
                 .Title("Select a character:")
                 .UseConverter(c => $"{c.Name} - {c.Specialization}"));
+            
+            adventure.PlayerCharacter = character;
+            
+            return character;
         });
 
         return services.BuildServiceProvider();

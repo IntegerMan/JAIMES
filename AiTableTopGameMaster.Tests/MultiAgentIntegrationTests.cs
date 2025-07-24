@@ -1,6 +1,7 @@
 using AiTableTopGameMaster.ConsoleApp.Agents;
 using AiTableTopGameMaster.ConsoleApp.Clients;
 using AiTableTopGameMaster.Domain;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
@@ -62,9 +63,36 @@ public class MultiAgentIntegrationTests
         var loggerFactory = NullLoggerFactory.Instance;
         
         // Act
-        var planningAgent = PlanningAgentFactory.Create(adventure, character, kernel, arguments, loggerFactory);
-        var gmAgent = GameMasterAgentFactory.Create(adventure, character, kernel, arguments, loggerFactory);
-        var editorAgent = EditorAgentFactory.Create(adventure, character, kernel, arguments, loggerFactory);
+        string instructions2 = PlanningAgentFactory.BuildPlanningInstructions(adventure, character);
+        var planningAgent = new ChatCompletionAgent
+        {
+            Name = "PlanningAgent",
+            Description = $"Planning Agent for {adventure.Name} - plans appropriate responses for game master",
+            Instructions = instructions2,
+            Kernel = kernel,
+            Arguments = arguments,
+            LoggerFactory = loggerFactory,
+        };
+        string instructions = GameMasterAgentFactory.BuildGameMasterInstructions(adventure, character);
+        var gmAgent = new ChatCompletionAgent
+        {
+            Name = "GameMaster",
+            Description = $"Game Master for {adventure.Name} - delivers narrative responses to players",
+            Instructions = instructions,
+            Kernel = kernel,
+            Arguments = arguments,
+            LoggerFactory = loggerFactory,
+        };
+        string instructions1 = EditorAgentFactory.BuildEditorInstructions(adventure, character);
+        var editorAgent = new ChatCompletionAgent
+        {
+            Name = "EditorAgent",
+            Description = $"Editor Agent for {adventure.Name} - improves and proofs game master responses",
+            Instructions = instructions1,
+            Kernel = kernel,
+            Arguments = arguments,
+            LoggerFactory = loggerFactory,
+        };
         
         // Assert
         planningAgent.Instructions.ShouldNotBeNull();
@@ -88,12 +116,39 @@ public class MultiAgentIntegrationTests
         var kernel = CreateTestKernel();
         var arguments = new KernelArguments();
         var loggerFactory = NullLoggerFactory.Instance;
-        
+
+        string instructions = GameMasterAgentFactory.BuildGameMasterInstructions(adventure, character);
+        string instructions1 = EditorAgentFactory.BuildEditorInstructions(adventure, character);
+        string instructions2 = PlanningAgentFactory.BuildPlanningInstructions(adventure, character);
         return
         [
-            PlanningAgentFactory.Create(adventure, character, kernel, arguments, loggerFactory),
-            GameMasterAgentFactory.Create(adventure, character, kernel, arguments, loggerFactory),
-            EditorAgentFactory.Create(adventure, character, kernel, arguments, loggerFactory)
+            new ChatCompletionAgent
+            {
+                Name = "PlanningAgent",
+                Description = $"Planning Agent for {adventure.Name} - plans appropriate responses for game master",
+                Instructions = instructions2,
+                Kernel = kernel,
+                Arguments = arguments,
+                LoggerFactory = loggerFactory,
+            },
+            new ChatCompletionAgent
+            {
+                Name = "GameMaster",
+                Description = $"Game Master for {adventure.Name} - delivers narrative responses to players",
+                Instructions = instructions,
+                Kernel = kernel,
+                Arguments = arguments,
+                LoggerFactory = loggerFactory,
+            },
+            new ChatCompletionAgent
+            {
+                Name = "EditorAgent",
+                Description = $"Editor Agent for {adventure.Name} - improves and proofs game master responses",
+                Instructions = instructions1,
+                Kernel = kernel,
+                Arguments = arguments,
+                LoggerFactory = loggerFactory,
+            }
         ];
     }
     

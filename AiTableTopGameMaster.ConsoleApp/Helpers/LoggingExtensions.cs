@@ -14,12 +14,13 @@ public static class LoggingExtensions
         Guid fileId = Guid.CreateVersion7(now);
 
         Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
             .WriteTo.Logger(l =>
             {
                 l.WriteTo.File(
                     new Serilog.Formatting.Json.JsonFormatter(renderMessage: true),
                     Path.Combine(Environment.CurrentDirectory, "Logs", $"{today:O}-{fileId}.json"),
-                    restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Verbose,
+                    restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Debug,
                     rollingInterval: RollingInterval.Infinite
                 );
             })

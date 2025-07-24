@@ -11,22 +11,7 @@ namespace AiTableTopGameMaster.ConsoleApp.Agents;
 /// </summary>
 public static class PlanningAgentFactory
 {
-    public static ChatCompletionAgent Create(Adventure adventure, Character character, Kernel kernel, KernelArguments arguments, ILoggerFactory loggerFactory)
-    {
-        string instructions = BuildPlanningInstructions(adventure, character);
-        
-        return new ChatCompletionAgent
-        {
-            Name = "PlanningAgent",
-            Description = $"Planning Agent for {adventure.Name} - plans appropriate responses for game master",
-            Instructions = instructions,
-            Kernel = kernel,
-            Arguments = arguments,
-            LoggerFactory = loggerFactory,
-        };
-    }
-    
-    private static string BuildPlanningInstructions(Adventure adventure, Character playerCharacter)
+    public static string BuildPlanningInstructions(Adventure adventure, Character playerCharacter)
     {
         return $"""
             You are a Planning Agent for a tabletop RPG game master. Your role is to analyze player input and create a structured plan for how the game master should respond.

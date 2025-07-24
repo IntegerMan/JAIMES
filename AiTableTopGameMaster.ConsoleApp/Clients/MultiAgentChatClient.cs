@@ -1,9 +1,12 @@
 using System.Text;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
 using Microsoft.Extensions.Logging;
+using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Spectre.Console;
+#pragma warning disable SKEXP0101
+#pragma warning disable SKEXP0001
 
 namespace AiTableTopGameMaster.ConsoleApp.Clients;
 
@@ -20,7 +23,7 @@ public class MultiAgentChatClient(
     private readonly Agent[] _agents = agents.ToArray();
     private readonly ChatHistory _history = new();
 
-    public async Task<ChatHistory> ChatIndefinitelyAsync(string? userMessage, CancellationToken cancellationToken = default)
+    public async Task<ChatHistory> ChatIndefinitelyAsync(string? userMessage)
     {
         do
         {
@@ -36,11 +39,11 @@ public class MultiAgentChatClient(
             _history.AddUserMessage(userMessage);
             userMessage = null;
 
-            await ChatAsync(cancellationToken);
+            await ChatAsync();
         } while (true);
     }
 
-    public async Task<ChatHistory> ChatAsync(CancellationToken cancellationToken = default)
+    public async Task<ChatHistory> ChatAsync()
     {
         console.MarkupLine($"{DisplayHelpers.System}Generating response...[/]");
         log.LogDebug("Starting multi-agent chat with {MessageCount} messages in history", _history.Count);
@@ -51,19 +54,60 @@ public class MultiAgentChatClient(
             string response = passHistory.LastOrDefault()?.Content ?? "Hello";
             foreach (var agent in _agents)
             {
-                log.LogDebug("Sending to {AgentName}: {Content}", agent.Name, response);
                 console.MarkupLineInterpolated($"[bold blue]{agent.Name} is thinking...[/]");
                 
-                StringBuilder sbResponse = new();
-                await foreach (var r in agent.InvokeAsync(passHistory, cancellationToken: cancellationToken))
+                ChatHistory agentHistory = new();
+                agentHistory.AddSystemMessage(agent.Instructions!);
+                foreach (var message in passHistory)
                 {
+                    log.LogDebug("{AgentName} received {Role} message: {Content}", agent.Name, message.Role, message.Content);
+                    if (message.Role == AuthorRole.User)
+                    {
+                        agentHistory.AddUserMessage(message.Content!);
+                    }
+                    else if (message.Role == AuthorRole.Assistant)
+                    {
+                        agentHistory.AddAssistantMessage(message.Content!);
+                    }
+                }
+                
+                List<AgentResponseItem<ChatMessageContent>> messages = []; // For debug purposes only
+                StringBuilder sbResponse = new();
+                AgentInvokeOptions options = new()
+                {
+                    Kernel = agent.Kernel,
+                    AdditionalInstructions = agent.Instructions!,
+                    OnIntermediateMessage = (content =>
+                    {
+                        log.LogDebug("{AgentName} intermediate response: {Content}", agent.Name, content);
+                        return Task.CompletedTask;
+                    })
+                };
+                await foreach (var r in agent.InvokeAsync(agentHistory, options: options))
+                {
+                    messages.Add(r);
                     sbResponse.Append(r.Message.Content);
                 }
 
-                response = sbResponse.ToString();
-                log.LogInformation("{AgentName}: {Response}", agent.Name, response);
-                console.MarkupLineInterpolated($"[bold blue]{agent.Name}:[/] {response}");
-                passHistory.AddAssistantMessage(response);
+                // It's possible that the agent didn't return any messages. This case could indicate no changes are needed.
+                string agentResponse = sbResponse.ToString().Trim();
+                log.LogInformation("{AgentName}: {Response}", agent.Name, agentResponse);
+                if (!string.IsNullOrWhiteSpace(agentResponse))
+                {
+                    if ("{[]}".Contains(agentResponse[0]))
+                    {
+                        log.LogWarning("{AgentName} returned a response that resembles JSON. Ignoring.", agent.Name);
+                        console.MarkupLineInterpolated($"[red]{agent.Name} returned a response that resembles JSON[/]");
+                        console.MarkupLineInterpolated($"[yellow]{agentResponse}[/]");
+                    }
+                    else
+                    {
+                        response = agentResponse.Trim();
+                        console.MarkupLineInterpolated($"[bold blue]{agent.Name}:[/] {response}");
+                        passHistory.AddAssistantMessage(response);
+                    }
+                }
+
             }
             
             // Only add the final response to the permanent history

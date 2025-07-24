@@ -11,22 +11,7 @@ namespace AiTableTopGameMaster.ConsoleApp.Agents;
 /// </summary>
 public static class EditorAgentFactory
 {
-    public static ChatCompletionAgent Create(Adventure adventure, Character character, Kernel kernel, KernelArguments arguments, ILoggerFactory loggerFactory)
-    {
-        string instructions = BuildEditorInstructions(adventure, character);
-        
-        return new ChatCompletionAgent
-        {
-            Name = "EditorAgent",
-            Description = $"Editor Agent for {adventure.Name} - improves and proofs game master responses",
-            Instructions = instructions,
-            Kernel = kernel,
-            Arguments = arguments,
-            LoggerFactory = loggerFactory,
-        };
-    }
-    
-    private static string BuildEditorInstructions(Adventure adventure, Character playerCharacter)
+    public static string BuildEditorInstructions(Adventure adventure, Character playerCharacter)
     {
         return $"""
             You are an Editor Agent specializing in tabletop RPG game master responses. Your role is to review and improve game master responses to ensure they meet high standards for tabletop gaming.
