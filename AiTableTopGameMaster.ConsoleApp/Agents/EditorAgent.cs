@@ -1,4 +1,5 @@
 using AiTableTopGameMaster.Domain;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 
@@ -10,7 +11,7 @@ namespace AiTableTopGameMaster.ConsoleApp.Agents;
 /// </summary>
 public static class EditorAgentFactory
 {
-    public static ChatCompletionAgent Create(Adventure adventure, Character character, Kernel kernel, KernelArguments arguments)
+    public static ChatCompletionAgent Create(Adventure adventure, Character character, Kernel kernel, KernelArguments arguments, ILoggerFactory loggerFactory)
     {
         string instructions = BuildEditorInstructions(adventure, character);
         
@@ -20,7 +21,8 @@ public static class EditorAgentFactory
             Description = $"Editor Agent for {adventure.Name} - improves and proofs game master responses",
             Instructions = instructions,
             Kernel = kernel,
-            Arguments = arguments
+            Arguments = arguments,
+            LoggerFactory = loggerFactory,
         };
     }
     

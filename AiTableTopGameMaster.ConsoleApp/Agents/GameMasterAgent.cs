@@ -1,6 +1,8 @@
 using AiTableTopGameMaster.Domain;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
+using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace AiTableTopGameMaster.ConsoleApp.Agents;
 
@@ -10,7 +12,7 @@ namespace AiTableTopGameMaster.ConsoleApp.Agents;
 /// </summary>
 public static class GameMasterAgentFactory
 {
-    public static ChatCompletionAgent Create(Adventure adventure, Character character, Kernel kernel, KernelArguments arguments)
+    public static ChatCompletionAgent Create(Adventure adventure, Character character, Kernel kernel, KernelArguments arguments, ILoggerFactory logger)
     {
         string instructions = BuildGameMasterInstructions(adventure, character);
         
@@ -20,7 +22,8 @@ public static class GameMasterAgentFactory
             Description = $"Game Master for {adventure.Name} - delivers narrative responses to players",
             Instructions = instructions,
             Kernel = kernel,
-            Arguments = arguments
+            Arguments = arguments,
+            LoggerFactory = logger,
         };
     }
     
@@ -30,29 +33,11 @@ public static class GameMasterAgentFactory
             {adventure.GameMasterSystemPrompt}
             
             You are the Game Master Agent for this tabletop RPG. You receive structured plans from the Planning Agent and convert them into engaging narrative responses for the player.
-
-            ADVENTURE CONTEXT:
-            - Adventure: {adventure.Name} by {adventure.Author}
-            - Ruleset: {adventure.Ruleset}
-            - Backstory: {adventure.Backstory}
-            - Setting: {adventure.SettingDescription}
             
             PLAYER CHARACTER:
             - Name: {playerCharacter.Name}
             - Class/Specialization: {playerCharacter.Specialization}
             - You can check their character sheet via function calls as needed.
-            
-            NARRATIVE STRUCTURE:
-            {adventure.NarrativeStructure}
-            
-            GAME MASTER NOTES:
-            {adventure.GameMasterNotes}
-            
-            LOCATIONS OVERVIEW:
-            {adventure.LocationsOverview}
-            
-            ENCOUNTERS OVERVIEW:
-            {adventure.EncountersOverview}
 
             YOUR RESPONSIBILITIES:
             1. Take the structured plan from the Planning Agent

@@ -1,10 +1,8 @@
 ﻿using AiTableTopGameMaster.ConsoleApp.Clients;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
 using AiTableTopGameMaster.ConsoleApp.Infrastructure;
-using AiTableTopGameMaster.ConsoleApp.Settings;
 using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.SemanticKernel.ChatCompletion;
 using Spectre.Console;
 using Serilog;
 
@@ -26,22 +24,8 @@ try
     console.MarkupLine($"{DisplayHelpers.System}Playing as: {character.Name} the {character.Specialization}[/]");
     Log.Debug("Character selected: {Name} the {Specialization}", character.Name, character.Specialization);
 
-    // Show which mode is being used
-    var settings = services.GetRequiredService<AppSettings>();
-    string mode = settings.UseMultiAgentMode ? "Multi-Agent (Planning → GameMaster → Editor)" : "Single Agent (GameMaster)";
-    console.MarkupLine($"{DisplayHelpers.System}Agent Mode: {mode}[/]");
-    Log.Debug("Using agent mode: {Mode}", mode);
-
-    console.WriteLine();
-    
-    ChatHistory history = adventure.StartGame(character);
-    Log.Debug("Initial chat history created with {MessageCount} messages", history.Count);
-    console.DisplayHistory(history);
-
-    console.WriteLine();
-
     IConsoleChatClient client = services.GetRequiredService<IConsoleChatClient>();
-    await client.ChatIndefinitelyAsync(history);
+    await client.ChatIndefinitelyAsync(adventure.InitialGreetingPrompt);
     
     console.WriteLine();
     return 0;

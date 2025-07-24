@@ -1,63 +1,16 @@
 using AiTableTopGameMaster.ConsoleApp.Agents;
 using AiTableTopGameMaster.ConsoleApp.Clients;
-using AiTableTopGameMaster.ConsoleApp.Settings;
 using AiTableTopGameMaster.Domain;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
-using Microsoft.SemanticKernel.ChatCompletion;
 using Shouldly;
 using Spectre.Console.Testing;
-using Xunit;
 
 namespace AiTableTopGameMaster.Tests;
 
 public class MultiAgentIntegrationTests
 {
-    [Fact]
-    public void AppSettings_ShouldDefaultToMultiAgentMode()
-    {
-        // Arrange & Act
-        var settings = new AppSettings
-        {
-            Ollama = new OllamaSettings
-            {
-                SystemPrompt = "Test system prompt",
-                ChatEndpoint = "http://localhost:11434",
-                ChatModelId = "test",
-                EmbeddingEndpoint = "http://localhost:11434", 
-                EmbeddingModelId = "test"
-            },
-            SourcebookPath = "/test"
-        };
-        
-        // Assert
-        settings.UseMultiAgentMode.ShouldBeTrue();
-    }
-    
-    [Fact]
-    public void AppSettings_ShouldAllowDisablingMultiAgentMode()
-    {
-        // Arrange & Act
-        var settings = new AppSettings
-        {
-            Ollama = new OllamaSettings
-            {
-                SystemPrompt = "Test system prompt",
-                ChatEndpoint = "http://localhost:11434",
-                ChatModelId = "test",
-                EmbeddingEndpoint = "http://localhost:11434",
-                EmbeddingModelId = "test"
-            },
-            SourcebookPath = "/test",
-            UseMultiAgentMode = false
-        };
-        
-        // Assert
-        settings.UseMultiAgentMode.ShouldBeFalse();
-    }
-    
     [Fact]
     public void MultiAgentChatClient_ShouldHandleAgentFlow()
     {
@@ -106,20 +59,24 @@ public class MultiAgentIntegrationTests
         var character = CreateTestCharacter();
         var kernel = CreateTestKernel();
         var arguments = new KernelArguments();
+        var loggerFactory = NullLoggerFactory.Instance;
         
         // Act
-        var planningAgent = PlanningAgentFactory.Create(adventure, character, kernel, arguments);
-        var gmAgent = GameMasterAgentFactory.Create(adventure, character, kernel, arguments);
-        var editorAgent = EditorAgentFactory.Create(adventure, character, kernel, arguments);
+        var planningAgent = PlanningAgentFactory.Create(adventure, character, kernel, arguments, loggerFactory);
+        var gmAgent = GameMasterAgentFactory.Create(adventure, character, kernel, arguments, loggerFactory);
+        var editorAgent = EditorAgentFactory.Create(adventure, character, kernel, arguments, loggerFactory);
         
         // Assert
+        planningAgent.Instructions.ShouldNotBeNull();
         planningAgent.Instructions.ShouldContain(adventure.Name);
         planningAgent.Instructions.ShouldContain(character.Name);
         
+        gmAgent.Instructions.ShouldNotBeNull();
         gmAgent.Instructions.ShouldContain(adventure.GameMasterSystemPrompt);
         gmAgent.Instructions.ShouldContain(adventure.Name);
         gmAgent.Instructions.ShouldContain(character.Name);
         
+        editorAgent.Instructions.ShouldNotBeNull();
         editorAgent.Instructions.ShouldContain(adventure.Name);
         editorAgent.Instructions.ShouldContain(character.Name);
     }
@@ -130,13 +87,14 @@ public class MultiAgentIntegrationTests
         var character = CreateTestCharacter();
         var kernel = CreateTestKernel();
         var arguments = new KernelArguments();
+        var loggerFactory = NullLoggerFactory.Instance;
         
-        return new Agent[]
-        {
-            PlanningAgentFactory.Create(adventure, character, kernel, arguments),
-            GameMasterAgentFactory.Create(adventure, character, kernel, arguments),
-            EditorAgentFactory.Create(adventure, character, kernel, arguments)
-        };
+        return
+        [
+            PlanningAgentFactory.Create(adventure, character, kernel, arguments, loggerFactory),
+            GameMasterAgentFactory.Create(adventure, character, kernel, arguments, loggerFactory),
+            EditorAgentFactory.Create(adventure, character, kernel, arguments, loggerFactory)
+        ];
     }
     
     private static Adventure CreateTestAdventure()

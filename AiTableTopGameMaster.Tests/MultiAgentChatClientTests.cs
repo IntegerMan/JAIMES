@@ -1,15 +1,11 @@
 using AiTableTopGameMaster.ConsoleApp.Agents;
 using AiTableTopGameMaster.ConsoleApp.Clients;
 using AiTableTopGameMaster.Domain;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Moq;
 using Shouldly;
 using Spectre.Console.Testing;
-using Xunit;
 
 namespace AiTableTopGameMaster.Tests;
 
@@ -38,14 +34,17 @@ public class MultiAgentChatClientTests
         var character = CreateTestCharacter();
         var kernel = CreateTestKernel();
         var arguments = new KernelArguments();
+        var loggerFactory = NullLoggerFactory.Instance;
         
         // Act
-        var agent = PlanningAgentFactory.Create(adventure, character, kernel, arguments);
+        var agent = PlanningAgentFactory.Create(adventure, character, kernel, arguments, loggerFactory);
         
         // Assert
         agent.ShouldNotBeNull();
         agent.Name.ShouldBe("PlanningAgent");
+        agent.Description.ShouldNotBeNull();
         agent.Description.ShouldContain("Planning Agent");
+        agent.Instructions.ShouldNotBeNull();
         agent.Instructions.ShouldContain("Planning Agent for a tabletop RPG");
         agent.Instructions.ShouldContain(adventure.Name);
         agent.Instructions.ShouldContain(character.Name);
@@ -59,14 +58,17 @@ public class MultiAgentChatClientTests
         var character = CreateTestCharacter();
         var kernel = CreateTestKernel();
         var arguments = new KernelArguments();
+        var loggerFactory = NullLoggerFactory.Instance;
         
         // Act
-        var agent = GameMasterAgentFactory.Create(adventure, character, kernel, arguments);
+        var agent = GameMasterAgentFactory.Create(adventure, character, kernel, arguments, loggerFactory);
         
         // Assert
         agent.ShouldNotBeNull();
         agent.Name.ShouldBe("GameMaster");
+        agent.Description.ShouldNotBeNull();
         agent.Description.ShouldContain("Game Master");
+        agent.Instructions.ShouldNotBeNull();
         agent.Instructions.ShouldContain(adventure.GameMasterSystemPrompt);
         agent.Instructions.ShouldContain(adventure.Name);
         agent.Instructions.ShouldContain(character.Name);
@@ -80,14 +82,17 @@ public class MultiAgentChatClientTests
         var character = CreateTestCharacter();
         var kernel = CreateTestKernel();
         var arguments = new KernelArguments();
+        var loggerFactory = NullLoggerFactory.Instance;
         
         // Act
-        var agent = EditorAgentFactory.Create(adventure, character, kernel, arguments);
+        var agent = EditorAgentFactory.Create(adventure, character, kernel, arguments, loggerFactory);
         
         // Assert
         agent.ShouldNotBeNull();
         agent.Name.ShouldBe("EditorAgent");
+        agent.Description.ShouldNotBeNull();
         agent.Description.ShouldContain("Editor Agent");
+        agent.Instructions.ShouldNotBeNull();
         agent.Instructions.ShouldContain("Editor Agent specializing in tabletop RPG");
         agent.Instructions.ShouldContain(adventure.Name);
         agent.Instructions.ShouldContain(character.Name);
@@ -101,15 +106,19 @@ public class MultiAgentChatClientTests
         var character = CreateTestCharacter();
         var kernel = CreateTestKernel();
         var arguments = new KernelArguments();
+        var loggerFactory = NullLoggerFactory.Instance;
         
         // Act
-        var planningAgent = PlanningAgentFactory.Create(adventure, character, kernel, arguments);
-        var gmAgent = GameMasterAgentFactory.Create(adventure, character, kernel, arguments);
-        var editorAgent = EditorAgentFactory.Create(adventure, character, kernel, arguments);
+        var planningAgent = PlanningAgentFactory.Create(adventure, character, kernel, arguments, loggerFactory);
+        var gmAgent = GameMasterAgentFactory.Create(adventure, character, kernel, arguments, loggerFactory);
+        var editorAgent = EditorAgentFactory.Create(adventure, character, kernel, arguments, loggerFactory);
         
         // Assert
+        planningAgent.Instructions.ShouldNotBeNull();
         planningAgent.Instructions.ShouldContain("NEVER roll dice for the player");
+        gmAgent.Instructions.ShouldNotBeNull();
         gmAgent.Instructions.ShouldContain("NEVER roll dice for the player");
+        editorAgent.Instructions.ShouldNotBeNull();
         editorAgent.Instructions.ShouldContain("Game master rolling dice for the player");
         
         planningAgent.Instructions.ShouldContain("NEVER take actions on behalf of the player");
@@ -123,13 +132,14 @@ public class MultiAgentChatClientTests
         var character = CreateTestCharacter();
         var kernel = CreateTestKernel();
         var arguments = new KernelArguments();
+        var loggerFactory = NullLoggerFactory.Instance;
         
-        return new Agent[]
-        {
-            PlanningAgentFactory.Create(adventure, character, kernel, arguments),
-            GameMasterAgentFactory.Create(adventure, character, kernel, arguments),
-            EditorAgentFactory.Create(adventure, character, kernel, arguments)
-        };
+        return
+        [
+            PlanningAgentFactory.Create(adventure, character, kernel, arguments, loggerFactory),
+            GameMasterAgentFactory.Create(adventure, character, kernel, arguments, loggerFactory),
+            EditorAgentFactory.Create(adventure, character, kernel, arguments, loggerFactory)
+        ];
     }
     
     private static Adventure CreateTestAdventure()

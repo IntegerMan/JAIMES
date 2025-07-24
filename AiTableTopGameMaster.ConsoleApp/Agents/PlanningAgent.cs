@@ -1,4 +1,5 @@
 using AiTableTopGameMaster.Domain;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 
@@ -10,7 +11,7 @@ namespace AiTableTopGameMaster.ConsoleApp.Agents;
 /// </summary>
 public static class PlanningAgentFactory
 {
-    public static ChatCompletionAgent Create(Adventure adventure, Character character, Kernel kernel, KernelArguments arguments)
+    public static ChatCompletionAgent Create(Adventure adventure, Character character, Kernel kernel, KernelArguments arguments, ILoggerFactory loggerFactory)
     {
         string instructions = BuildPlanningInstructions(adventure, character);
         
@@ -20,7 +21,8 @@ public static class PlanningAgentFactory
             Description = $"Planning Agent for {adventure.Name} - plans appropriate responses for game master",
             Instructions = instructions,
             Kernel = kernel,
-            Arguments = arguments
+            Arguments = arguments,
+            LoggerFactory = loggerFactory,
         };
     }
     

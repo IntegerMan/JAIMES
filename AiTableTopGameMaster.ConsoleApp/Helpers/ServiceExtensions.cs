@@ -40,8 +40,7 @@ public static class ServiceExtensions
                 .AddOllamaEmbeddingGenerator(settings.Ollama.EmbeddingModelId,
                     new Uri(settings.Ollama.EmbeddingEndpoint))
                 .AddAdventurePlugins(sp.GetRequiredService<Adventure>())
-                .AddSourcebooks(adventure.Ruleset, settings.SourcebookPath, settings.Ollama,
-                    status => DocumentIndexingCallback(console, status))
+                //.AddSourcebooks(adventure.Ruleset, settings.SourcebookPath, settings.Ollama, status => DocumentIndexingCallback(console, status))
                 .Build();
         });
         services.AddTransient<PromptExecutionSettings>(_ => new OllamaPromptExecutionSettings {
@@ -54,8 +53,9 @@ public static class ServiceExtensions
             Character character = sp.GetRequiredService<Character>();
             Kernel kernel = sp.GetRequiredService<Kernel>();
             KernelArguments arguments = new(sp.GetRequiredService<PromptExecutionSettings>());
-            
-            return PlanningAgentFactory.Create(adventure, character, kernel, arguments);
+            ILoggerFactory logFactory = sp.GetRequiredService<ILoggerFactory>();
+
+            return PlanningAgentFactory.Create(adventure, character, kernel, arguments, logFactory);
         });
         
         services.AddTransient<Agent>(sp =>
@@ -64,8 +64,9 @@ public static class ServiceExtensions
             Character character = sp.GetRequiredService<Character>();
             Kernel kernel = sp.GetRequiredService<Kernel>();
             KernelArguments arguments = new(sp.GetRequiredService<PromptExecutionSettings>());
+            ILoggerFactory logFactory = sp.GetRequiredService<ILoggerFactory>();
             
-            return GameMasterAgentFactory.Create(adventure, character, kernel, arguments);
+            return GameMasterAgentFactory.Create(adventure, character, kernel, arguments, logFactory);
         });
         
         services.AddTransient<Agent>(sp =>
@@ -74,32 +75,12 @@ public static class ServiceExtensions
             Character character = sp.GetRequiredService<Character>();
             Kernel kernel = sp.GetRequiredService<Kernel>();
             KernelArguments arguments = new(sp.GetRequiredService<PromptExecutionSettings>());
+            ILoggerFactory logFactory = sp.GetRequiredService<ILoggerFactory>();
             
-            return EditorAgentFactory.Create(adventure, character, kernel, arguments);
+            return EditorAgentFactory.Create(adventure, character, kernel, arguments, logFactory);
         });
         
-        // Register multi-agent chat client
-        services.AddTransient<MultiAgentChatClient>();
-        
-        // Register both chat client implementations
-        services.AddTransient<ConsoleChatClient>(sp =>
-        {
-            var agents = sp.GetRequiredService<IEnumerable<Agent>>().ToArray();
-            var legacyAgent = agents.FirstOrDefault(a => a.Name == "GameMaster") ?? agents[1]; // Use GameMaster agent or fallback
-            var console = sp.GetRequiredService<IAnsiConsole>();
-            var logger = sp.GetRequiredService<ILogger<ConsoleChatClient>>();
-            
-            return new ConsoleChatClient(legacyAgent, console, logger);
-        });
-        
-        // Choose client implementation based on configuration
-        services.AddTransient<IConsoleChatClient>(sp =>
-        {
-            var settings = sp.GetRequiredService<AppSettings>();
-            return settings.UseMultiAgentMode 
-                ? sp.GetRequiredService<MultiAgentChatClient>()
-                : sp.GetRequiredService<ConsoleChatClient>();
-        });
+        services.AddTransient<IConsoleChatClient, MultiAgentChatClient>();
         services.AddSingleton<IAdventureLoader, AdventureLoader>();
 
         // Load adventure from JSON file
