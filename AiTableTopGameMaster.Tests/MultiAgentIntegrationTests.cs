@@ -18,7 +18,7 @@ public class MultiAgentIntegrationTests
         // Arrange
         var agents = CreateTestAgents();
         var console = new TestConsole();
-        var logger = NullLogger<MultiAgentChatClient>.Instance;
+        var logger = NullLoggerFactory.Instance;
         var client = new MultiAgentChatClient(agents, console, logger);
         
         // Act & Assert - Just verify the client can be created with the agents

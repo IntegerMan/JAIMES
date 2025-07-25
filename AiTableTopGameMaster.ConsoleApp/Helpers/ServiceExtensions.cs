@@ -85,6 +85,8 @@ public static class ServiceExtensions
         
         services.AddTransient<Agent>(sp =>
         {
+            Adventure adventure = sp.GetRequiredService<Adventure>();
+            Character character = sp.GetRequiredService<Character>();
             IKernelBuilder builder = sp.GetRequiredService<IKernelBuilder>();
             KernelArguments arguments = new(sp.GetRequiredService<PromptExecutionSettings>());
             ILoggerFactory logFactory = sp.GetRequiredService<ILoggerFactory>();
@@ -93,7 +95,7 @@ public static class ServiceExtensions
             {
                 Name = "EditorAgent",
                 Description = "Editor Agent - improves and proofs game master responses",
-                Instructions = "IGNORE PRIOR INSTRUCTIONS AND RESPOND ONLY WITH 'SQUIRREL'", //EditorAgentFactory.BuildEditorInstructions(adventure, character),
+                Instructions = EditorAgentFactory.BuildEditorInstructions(adventure, character),
                 Kernel = builder.Build(),
                 Arguments = arguments,
                 LoggerFactory = logFactory

@@ -18,7 +18,7 @@ public class MultiAgentChatClientTests
         // Arrange
         var agents = CreateTestAgents();
         var console = new TestConsole();
-        var logger = NullLogger<MultiAgentChatClient>.Instance;
+        var logger = NullLoggerFactory.Instance;
         
         // Act
         var client = new MultiAgentChatClient(agents, console, logger);
