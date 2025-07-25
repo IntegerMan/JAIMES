@@ -16,12 +16,12 @@ public static class DisplayHelpers
     
     public static void RenderAigmAppHeader(this IAnsiConsole console)
     {
-        console.Write(new FigletText("AIGM")
+        console.Write(new FigletText("JAIMES")
             .Justify(Justify.Left)
             .Color(Color.Green));
         
         console.MarkupLine($"{System}by[/] [cyan]Matt Eland[/]");
-        console.MarkupLine($"{System}An AI-powered tabletop game master[/]");
+        console.MarkupLine($"{System}Join AI to Make Epic Stories[/]");
         console.WriteLine();
     }
 
