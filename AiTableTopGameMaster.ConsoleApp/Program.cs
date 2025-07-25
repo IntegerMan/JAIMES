@@ -3,7 +3,6 @@ using AiTableTopGameMaster.ConsoleApp.Helpers;
 using AiTableTopGameMaster.ConsoleApp.Infrastructure;
 using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.SemanticKernel.ChatCompletion;
 using Spectre.Console;
 using Serilog;
 
@@ -25,16 +24,8 @@ try
     console.MarkupLine($"{DisplayHelpers.System}Playing as: {character.Name} the {character.Specialization}[/]");
     Log.Debug("Character selected: {Name} the {Specialization}", character.Name, character.Specialization);
 
-    console.WriteLine();
-    
-    ChatHistory history = adventure.StartGame(character);
-    Log.Debug("Initial chat history created with {MessageCount} messages", history.Count);
-    console.DisplayHistory(history);
-
-    console.WriteLine();
-
     IConsoleChatClient client = services.GetRequiredService<IConsoleChatClient>();
-    await client.ChatIndefinitelyAsync(history);
+    await client.ChatIndefinitelyAsync(adventure.InitialGreetingPrompt);
     
     console.WriteLine();
     return 0;

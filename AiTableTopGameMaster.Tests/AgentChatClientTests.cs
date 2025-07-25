@@ -15,21 +15,6 @@ namespace AiTableTopGameMaster.Tests;
 public class AgentChatClientTests
 {
     [Fact]
-    public void ConsoleChatClient_ShouldWorkWithAgent()
-    {
-        // Arrange
-        Mock<Agent> mockAgent = new Mock<Agent>();
-        TestConsole console = new();
-        ILogger<ConsoleChatClient> logger = NullLogger<ConsoleChatClient>.Instance;
-        
-        // Act
-        ConsoleChatClient client = new(mockAgent.Object, console, logger);
-        
-        // Assert
-        client.ShouldNotBeNull();
-    }
-    
-    [Fact]
     public void ChatCompletionAgent_ShouldBeConfiguredProperly()
     {
         // Arrange
