@@ -57,8 +57,7 @@ public static class ServiceExtensions
                 
                 foreach (var plugin in core.Plugins)
                 {
-                    Type? pluginType = pluginTypes.FirstOrDefault(t => t.Name.Equals(plugin, StringComparison.OrdinalIgnoreCase));
-                    if (pluginType == null)
+                    if (!pluginTypeDictionary.TryGetValue(plugin, out Type? pluginType))
                     {
                         Log.Warning("Plugin {PluginName} not found in registered plugin types", plugin);
                         continue;
