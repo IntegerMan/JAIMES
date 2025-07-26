@@ -1,3 +1,4 @@
+using System.Text;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
@@ -13,7 +14,7 @@ public class AiCore(Kernel kernel, CoreInfo info, ILoggerFactory loggerFactory)
     
     public override string ToString() => $"AI Core {Name}";
     
-    public async IAsyncEnumerable<string> ChatAsync(string message, ChatHistory transcript, IDictionary<string, object> data)
+    public async Task<string> ChatAsync(string message, ChatHistory transcript, IDictionary<string, object> data)
     {
         _log.LogDebug("{CoreName}: Starting chat with message: {Message}", Name, message);
         
@@ -31,14 +32,17 @@ public class AiCore(Kernel kernel, CoreInfo info, ILoggerFactory loggerFactory)
         };
         
         _log.LogDebug("{CoreName}: Sending message to chat service", Name);
+        StringBuilder sb = new();
         foreach (var result in await chatService.GetChatMessageContentsAsync(history, settings, kernel))
         {
             string? content = result.Content;
             _log.LogDebug("{CoreName}: {Content}", Name, content);
             if (string.IsNullOrWhiteSpace(content)) continue;
-            
-            yield return content;
+
+            sb.Append(content);
         }
+
+        return sb.ToString();
     }
 
     private ChatHistory BuildChatHistory(string message, ChatHistory transcript, IDictionary<string, object> data)

@@ -19,7 +19,7 @@ The following tasks are planned for the project:
 - [x] Add a player character plugin to the Semantic Kernel
 - [x] Add encounter and encounter list plugin to Semantic Kernel
 - [x] Add a templating system
-- [ ] Handle bad tool calls by retrying
+- [x] Handle bad tool calls by retrying
 
 ### AI Core System
 
@@ -56,6 +56,7 @@ The following tasks are planned for the project:
 - [ ] Add a second character to the beach game
 - [ ] Add a second adventure
 - [ ] Separate characters from adventures
+- [ ] Move greeting out of the adventure and into the game settings. Make it an array.
 
 ### User Interface
 

@@ -16,6 +16,18 @@ public static partial class ChatExtensions
         }
     }
 
+    public static bool IsJson(this string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return false;
+        }
+
+        message = message.Trim();
+        
+        return message.StartsWith('{') || message.EndsWith('}') || message.StartsWith('[') || message.EndsWith(']');
+    }
+    
     /// <summary>
     /// Takes in a string with variable placeholders (e.g. "Hi I'm {{$Name}}") and replaces them with values from the provided data dictionary (e.g. "Hi, I'm Bob").
     /// </summary>
