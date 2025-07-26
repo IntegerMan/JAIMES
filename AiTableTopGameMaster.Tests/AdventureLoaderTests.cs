@@ -47,7 +47,6 @@ public class AdventureLoaderTests
                                      ],
                                      "gameMasterNotes": "Test GM notes",
                                      "narrativeStructure": "Test narrative structure",
-                                     "gameMasterSystemPrompt": "Test system prompt",
                                      "initialGreetingPrompt": "Test greeting prompt"
                                    }
                                    """;
@@ -80,7 +79,6 @@ public class AdventureLoaderTests
             character.Name.ShouldBe("TestCharacter");
             character.Specialization.ShouldBe("Level 1 Unit test");
             character.CharacterSheet.ShouldBe("Test character sheet");
-            adventure.GameMasterSystemPrompt.ShouldBe("Test system prompt");
             adventure.InitialGreetingPrompt.ShouldBe("Test greeting prompt");
         }
         finally
@@ -170,7 +168,6 @@ public class AdventureLoaderTests
                                    ],
                                      "gameMasterNotes": "Test GM notes",
                                      "narrativeStructure": "Test narrative structure",
-                                     "gameMasterSystemPrompt": "Test system prompt",
                                      "initialGreetingPrompt": "Test greeting prompt"
                                    }
                                    """;
@@ -217,7 +214,6 @@ public class AdventureLoaderTests
             EncountersOverview = "Test encounters",
             GameMasterNotes = "Test notes",
             NarrativeStructure = "Test structure",
-            GameMasterSystemPrompt = "Test system prompt",
             InitialGreetingPrompt = "Test greeting",
             Characters =
             [

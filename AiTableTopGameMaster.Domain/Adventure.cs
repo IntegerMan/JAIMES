@@ -21,7 +21,6 @@ public class Adventure
     
     public required string GameMasterNotes { get; init; }
     public required string NarrativeStructure { get; init; }
-    public required string GameMasterSystemPrompt { get; init; }
     public required string InitialGreetingPrompt { get; init; }
     
     public List<Character> Characters { get; init; } = [];
@@ -31,7 +30,6 @@ public class Adventure
         PlayerCharacter = playerCharacter;
         
         ChatHistory history = new();
-        history.AddSystemMessage(GameMasterSystemPrompt);
         history.AddSystemMessage($"Here is the adventure backstory: {Backstory}");
         history.AddSystemMessage($"Here is the adventure setting: {SettingDescription}");
         history.AddSystemMessage($"The player character is {playerCharacter.Name}, a {playerCharacter.Specialization}. You can check their starting character sheet via a function call if you need to.");

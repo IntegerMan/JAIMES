@@ -12,17 +12,15 @@ public class AiCore(Kernel kernel, CoreInfo info, ILoggerFactory loggerFactory)
     
     public override string ToString() => $"AI Core {Name}";
     
-    public async IAsyncEnumerable<string> ChatAsync(string message)
+    public async IAsyncEnumerable<string> ChatAsync(string message, ChatHistory transcript)
     {
         _log.LogDebug("{CoreName}: Starting chat with message: {Message}", Name, message);
         
         IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
         
-        ChatHistory history = [];
-        history.AddSystemMessage(info.Instructions);
-        history.AddUserMessage(message);
+        ChatHistory history = BuildChatHistory(message, transcript);
         history.LogHistory();
-        
+
         PromptExecutionSettings settings = new()
         {
             FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
@@ -37,5 +35,43 @@ public class AiCore(Kernel kernel, CoreInfo info, ILoggerFactory loggerFactory)
             
             yield return content;
         }
+    }
+
+    private ChatHistory BuildChatHistory(string message, ChatHistory transcript)
+    {
+        ChatHistory history = new(); 
+        history.AddSystemMessage(info.Instructions);
+
+        ChatMessageContent? lastUserMessage = transcript.LastOrDefault(t => t.Role == AuthorRole.User);
+        
+        if (info.IncludeHistory && transcript.Count > 0)
+        {
+            _log.LogDebug("{CoreName}: Including previous chat history", Name);
+            history.AddSystemMessage("Here is the previous session history:");
+            foreach (var chatMessage in transcript)
+            {
+                // If we are including player input and the last user message is the same as the current one, skip it so we don't repeat it
+                if (chatMessage == lastUserMessage && info.IncludePlayerInput) continue;
+                
+                // Only include user and assistant messages in the history. We don't need tool calls / results / other system messages
+                if (chatMessage.Role == AuthorRole.User)
+                {
+                    history.AddUserMessage(chatMessage.Content!);
+                }
+                else if (chatMessage.Role == AuthorRole.Assistant)
+                {
+                    history.AddAssistantMessage(chatMessage.Content!);
+                }
+            }
+        }
+        
+        if (info.IncludePlayerInput && lastUserMessage is not null)
+        {
+            history.AddUserMessage($"The player just said: {lastUserMessage.Content}");
+        }
+        
+        history.AddUserMessage(message);
+
+        return history;
     }
 }
