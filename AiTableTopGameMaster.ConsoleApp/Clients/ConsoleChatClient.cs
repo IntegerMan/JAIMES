@@ -1,86 +1,70 @@
+using System.Text;
+using AiTableTopGameMaster.ConsoleApp.Cores;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
-using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
 using Spectre.Console;
 
 namespace AiTableTopGameMaster.ConsoleApp.Clients;
 
-[UsedImplicitly]
 public class ConsoleChatClient(
-    PromptExecutionSettings settings,
     IAnsiConsole console,
     Kernel kernel,
-    ILogger<ConsoleChatClient> log)
-    : IConsoleChatClient
+    IEnumerable<CoreInfo> cores,
+    ILoggerFactory loggerFactory)
 {
-    public async Task<ChatHistory> ChatIndefinitelyAsync(ChatHistory history,
-        CancellationToken cancellationToken = default)
+    private readonly AiCore[] _cores = cores.Select(core => new AiCore(kernel, core, loggerFactory)).ToArray();
+    private readonly ILogger<ConsoleChatClient> _log = loggerFactory.CreateLogger<ConsoleChatClient>();
+
+    public async Task ChatIndefinitelyAsync(string? userInput = null)
     {
-        bool needsUserMessage = !history.Any() || history.Last().Role != AuthorRole.User;
         do
         {
-            if (!needsUserMessage)
+            if (string.IsNullOrWhiteSpace(userInput))
             {
-                needsUserMessage = true;
-            }
-            else
-            {
-                string? userInput = console.Prompt(new TextPrompt<string?>($"{DisplayHelpers.User}You:[/] ").AllowEmpty());
+                userInput = console.Prompt(new TextPrompt<string?>($"{DisplayHelpers.User}You:[/] ").AllowEmpty());
 
                 if (string.IsNullOrWhiteSpace(userInput) ||
                     userInput.Equals("exit", StringComparison.OrdinalIgnoreCase))
                 {
-                    return history;
+                    return;
                 }
-
-                log.LogInformation("User: {UserInput}", userInput);
-                history.AddUserMessage(userInput);
+                _log.LogInformation("User: {UserInput}", userInput);
             }
-
-            await ChatAsync(history, cancellationToken);
+            else
+            {
+                console.MarkupLine($"{DisplayHelpers.User}You:[/] {userInput}");
+                _log.LogDebug("User: {UserInput}", userInput); // This prevents the pre-scripted input from being put in the transcript file
+            }
+            await ChatAsync(userInput);
+            
+            userInput = null; // Reset user input for next iteration
         } while (true);
     }
 
-    public async Task<ChatHistory> ChatAsync(ChatHistory history, CancellationToken cancellationToken = default)
+    private async Task ChatAsync(string message)
     {
-        console.MarkupLine($"{DisplayHelpers.System}Generating response...[/]");
-        log.LogDebug("Starting chat completion with {MessageCount} messages in history", history.Count);
+        foreach (var core in _cores)
+        {
+            _log.LogInformation("Sending {Message} to {Core}", message, core.Name);
+            console.Write(new Rule($"{DisplayHelpers.AI}{core.Name}[/] {DisplayHelpers.System}is thinking...[/]")
+                .Justify(Justify.Left)
+                .RuleStyle(new Style(foreground: Color.MediumPurple3_1)));
+
+            StringBuilder sb = new();
+            await foreach (var reply in core.ChatAsync(message))
+            {
+                _log.LogDebug("{Core}: {Content}", core.Name, reply);
+                console.MarkupLine($"{DisplayHelpers.AI}{core.Name}:[/] {reply}");
+                sb.Append(reply);
+            }
+
+            console.WriteLine();
+
+            message = sb.ToString();
+        }
         
-        try
-        {
-            IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
-            IReadOnlyList<ChatMessageContent>? response = await chatService.GetChatMessageContentsAsync(history, settings, kernel: kernel,
-                cancellationToken: cancellationToken);
-
-            log.LogDebug("Chat completion returned {ResponseCount} message(s)", response?.Count ?? 0);
-
-            if (response is not { Count: > 0 })
-            {
-                throw new InvalidOperationException("The chat client did not return any responses.");
-            }
-
-            console.WriteLine();
-
-            foreach (ChatMessageContent reply in response)
-            {
-                history.Add(reply);
-                
-                log.LogInformation("AI: {Content}", reply.Content);
-                
-                console.Markup($"{DisplayHelpers.AI}AI:[/] ");
-                console.MarkupLineInterpolated($"{reply.Content}");
-            }
-
-            console.WriteLine();
-            return history;
-        }
-        catch (Exception ex)
-        {
-            console.MarkupLineInterpolated($"[dim red]Failed to generate response.[/]");
-            log.LogError(ex, "Error during chat completion");
-            throw;
-        }
+        // This gets logged to the transcript file
+        _log.LogInformation("Game Master: {Content}", message);
     }
 }

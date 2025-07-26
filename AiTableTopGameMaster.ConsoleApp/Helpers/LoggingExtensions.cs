@@ -14,6 +14,7 @@ public static class LoggingExtensions
         Guid fileId = Guid.CreateVersion7(now);
 
         Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
             .WriteTo.Logger(l =>
             {
                 l.WriteTo.File(

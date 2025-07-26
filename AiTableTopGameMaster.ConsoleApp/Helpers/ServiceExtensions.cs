@@ -1,4 +1,5 @@
 using AiTableTopGameMaster.ConsoleApp.Clients;
+using AiTableTopGameMaster.ConsoleApp.Cores;
 using AiTableTopGameMaster.ConsoleApp.Infrastructure;
 using AiTableTopGameMaster.ConsoleApp.Settings;
 using AiTableTopGameMaster.Core;
@@ -22,31 +23,43 @@ public static class ServiceExtensions
 
         // Load configuration settings and options
         AppSettings settings = services.RegisterConfigurationAndSettings(args);
-
+        
         // Configure Semantic Kernel
-        services.AddTransient<Kernel>(sp =>
+        services.AddTransient<IKernelBuilder>(sp =>
         {
-            Adventure adventure = sp.GetRequiredService<Adventure>();
             IKernelBuilder builder = Kernel.CreateBuilder();
             builder.Services.AddLogging(loggingBuilder => loggingBuilder.ConfigureSerilogLogging(disposeLogger: false));
             builder.Services.AddSingleton(sp.GetRequiredService<IAnsiConsole>());
             builder.Services.AddSingleton<IAutoFunctionInvocationFilter, FunctionInvocationLoggingFilter>();
-            return builder
-                .AddOllamaChatCompletion(settings.Ollama.ChatModelId, new Uri(settings.Ollama.ChatEndpoint))
-                .AddOllamaEmbeddingGenerator(settings.Ollama.EmbeddingModelId,
-                    new Uri(settings.Ollama.EmbeddingEndpoint))
+            builder.AddOllamaChatCompletion(settings.Ollama.ChatModelId, new Uri(settings.Ollama.ChatEndpoint));
+            builder.AddOllamaEmbeddingGenerator(settings.Ollama.EmbeddingModelId, new Uri(settings.Ollama.EmbeddingEndpoint));
+            return builder;
+        });
+        services.AddTransient<Kernel>(sp =>
+        {
+            Adventure adventure = sp.GetRequiredService<Adventure>();
+            IKernelBuilder builder = sp.GetRequiredService<IKernelBuilder>();
+            Kernel kernel = builder
                 .AddAdventurePlugins(sp.GetRequiredService<Adventure>())
-                .AddSourcebooks(adventure.Ruleset, settings.SourcebookPath, settings.Ollama,
-                    status => DocumentIndexingCallback(console, status))
+                //.AddSourcebooks(adventure.Ruleset, settings.SourcebookPath, settings.Ollama, status => DocumentIndexingCallback(console, status))
                 .Build();
+            return kernel;
         });
         services.AddTransient<PromptExecutionSettings>(_ => new PromptExecutionSettings
         {
             FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
         });
+        
+        // Configure AI Cores
+        if (settings.Cores.Count <= 0) throw new InvalidOperationException("No AI cores configured");
+        foreach (var core in settings.Cores)
+        {
+            Log.Debug("Adding AI Core: {CoreName} ({CoreId})", core.Name, core.Description);
+            services.AddScoped<CoreInfo>(_ => core);
+        }
 
         // Configure application dependencies
-        services.AddTransient<IConsoleChatClient, ConsoleChatClient>();
+        services.AddTransient<ConsoleChatClient>();
         services.AddSingleton<IAdventureLoader, AdventureLoader>();
 
         // Load adventure from JSON file
@@ -63,6 +76,13 @@ public static class ServiceExtensions
                 throw new InvalidOperationException($"No adventures found in {adventuresPath}");
             }
 
+            if (adventures.Length == 1)
+            {
+                Adventure adventure = adventures[0];
+                Log.Information("Only one adventure found, automatically selecting: {AdventureName}", adventure.Name);
+                return adventure;
+            }
+            
             return console.Prompt(new SelectionPrompt<Adventure>().Title("Select an adventure:")
                 .AddChoices(adventures)
                 .UseConverter(a => $"{a.Name} by {a.Author}, v{a.Version}"));
@@ -70,6 +90,14 @@ public static class ServiceExtensions
         services.AddScoped<Character>(sp =>
         {
             Adventure adventure = sp.GetRequiredService<Adventure>();
+            
+            if (adventure.Characters.Count == 1)
+            {
+                Character character = adventure.Characters[0];
+                Log.Information("Only one character found, automatically selecting: {CharacterName}", character.Name);
+                return character;
+            }
+            
             return console.Prompt(new SelectionPrompt<Character>()
                 .AddChoices(adventure.Characters)
                 .Title("Select a character:")
