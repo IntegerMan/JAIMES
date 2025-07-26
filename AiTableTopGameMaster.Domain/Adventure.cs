@@ -24,19 +24,6 @@ public class Adventure
     public required string InitialGreetingPrompt { get; init; }
     
     public List<Character> Characters { get; init; } = [];
-    
-    public ChatHistory StartGame(Character playerCharacter)
-    {
-        PlayerCharacter = playerCharacter;
-        
-        ChatHistory history = new();
-        history.AddSystemMessage($"Here is the adventure backstory: {Backstory}");
-        history.AddSystemMessage($"Here is the adventure setting: {SettingDescription}");
-        history.AddSystemMessage($"The player character is {playerCharacter.Name}, a {playerCharacter.Specialization}. You can check their starting character sheet via a function call if you need to.");
-        history.AddUserMessage(InitialGreetingPrompt);
-        
-        return history;
-    }
 
     public Character? PlayerCharacter { get; set; }
 }
