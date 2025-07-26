@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using AiTableTopGameMaster.ConsoleApp.Clients;
 using AiTableTopGameMaster.ConsoleApp.Cores;
 using AiTableTopGameMaster.ConsoleApp.Infrastructure;
@@ -39,7 +40,8 @@ public static class ServiceExtensions
         
         // Register Plugins
         Type[] pluginTypes = KernelExtensions.FindPluginTypesWithKernelFunctions().ToArray();
-        Log.Debug("Found {PluginCount} plugin types with kernel functions", pluginTypes.Length);
+        IDictionary<string, Type> pluginTypeDictionary = KernelExtensions.BuildPluginTypeDictionary();
+        Log.Debug("Found {PluginCount} plugin types with kernel functions", pluginTypeDictionary.Count);
         foreach (Type pluginType in pluginTypes)
         {
             Log.Debug("Registering plugin type: {PluginName}", pluginType.FullName);

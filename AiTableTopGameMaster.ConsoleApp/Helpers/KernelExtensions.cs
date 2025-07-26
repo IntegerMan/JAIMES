@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Reflection;
 using Microsoft.SemanticKernel;
 
@@ -7,14 +8,15 @@ public static class KernelExtensions
 {
     public static IEnumerable<Type> FindPluginTypesWithKernelFunctions()
     {
-        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-        foreach (var assembly in assemblies)
+        BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        
+        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
             foreach (var type in assembly.GetTypes())
             {
                 if (!type.IsAbstract &&
                     type.Name.EndsWith("Plugin") &&
-                    type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                    type.GetMethods(flags)
                         .Any(m => m.GetCustomAttributes(typeof(KernelFunctionAttribute), inherit: true).Length != 0))
                 {
                     yield return type;
@@ -22,4 +24,7 @@ public static class KernelExtensions
             }
         }
     }
+
+    public static IDictionary<string, Type> BuildPluginTypeDictionary() 
+        => FindPluginTypesWithKernelFunctions().ToFrozenDictionary(t => t.Name, t => t, StringComparer.OrdinalIgnoreCase);
 }
