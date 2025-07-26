@@ -2,18 +2,15 @@ using System.Text;
 using AiTableTopGameMaster.ConsoleApp.Cores;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
 using Microsoft.Extensions.Logging;
-using Microsoft.SemanticKernel;
 using Spectre.Console;
 
 namespace AiTableTopGameMaster.ConsoleApp.Clients;
 
 public class ConsoleChatClient(
     IAnsiConsole console,
-    Kernel kernel,
-    IEnumerable<CoreInfo> cores,
+    IEnumerable<AiCore> cores,
     ILoggerFactory loggerFactory)
 {
-    private readonly AiCore[] _cores = cores.Select(core => new AiCore(kernel, core, loggerFactory)).ToArray();
     private readonly ILogger<ConsoleChatClient> _log = loggerFactory.CreateLogger<ConsoleChatClient>();
 
     public async Task ChatIndefinitelyAsync(string? userInput = null)
@@ -44,7 +41,7 @@ public class ConsoleChatClient(
 
     private async Task ChatAsync(string message)
     {
-        foreach (var core in _cores)
+        foreach (var core in cores)
         {
             _log.LogInformation("Sending {Message} to {Core}", message, core.Name);
             console.Write(new Rule($"{DisplayHelpers.AI}{core.Name}[/] {DisplayHelpers.System}is thinking...[/]")

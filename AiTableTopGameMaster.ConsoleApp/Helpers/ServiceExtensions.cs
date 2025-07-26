@@ -7,6 +7,7 @@ using AiTableTopGameMaster.Core.Plugins.Sourcebooks;
 using AiTableTopGameMaster.Core.Services;
 using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Serilog;
 using Spectre.Console;
@@ -44,6 +45,13 @@ public static class ServiceExtensions
                 //.AddSourcebooks(adventure.Ruleset, settings.SourcebookPath, settings.Ollama, status => DocumentIndexingCallback(console, status))
                 .Build();
             return kernel;
+        });
+        services.AddScoped<IEnumerable<AiCore>>(sp =>
+        {
+            IEnumerable<CoreInfo> infos = sp.GetServices<CoreInfo>();
+            ILoggerFactory loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+            
+            return infos.Select(core => new AiCore(sp.GetRequiredService<Kernel>(), core, loggerFactory));
         });
         services.AddTransient<PromptExecutionSettings>(_ => new PromptExecutionSettings
         {
