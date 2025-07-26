@@ -77,7 +77,7 @@ public class ConsoleChatClient(
                 {
                     console.MarkupLine($"[bold red]The {core.Name} response was empty. Retrying.[/]");
                 }
-                if (reply.IsJson())
+                else if (reply.IsJson())
                 {
                     console.MarkupLine($"[bold red]The {core.Name} response appeared to be JSON. Retrying.[/]");
                 }

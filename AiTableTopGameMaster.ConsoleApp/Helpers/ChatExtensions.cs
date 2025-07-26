@@ -25,7 +25,7 @@ public static partial class ChatExtensions
 
         message = message.Trim();
         
-        return message.StartsWith('{') || message.EndsWith('}') || message.StartsWith('[') || message.EndsWith(']');
+        return (message.StartsWith('{') && message.EndsWith('}')) || (message.StartsWith('[') && message.EndsWith(']'));
     }
     
     /// <summary>
