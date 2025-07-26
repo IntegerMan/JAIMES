@@ -18,6 +18,19 @@ The following tasks are planned for the project:
 - [x] Add a location and location list plugin to Semantic Kernel
 - [x] Add a player character plugin to the Semantic Kernel
 - [x] Add encounter and encounter list plugin to Semantic Kernel
+- [x] Add a templating system
+- [ ] Handle bad tool calls by retrying
+
+### AI Core System
+
+- [x] Design an agentic layout for the game's AI
+- [x] Implement the core of the AI system
+- [x] Add a planner core
+- [/] Ensure the initial history matches the prior initial history (pre-migration)
+- [/] Allow cores to track history
+- [x] Allow cores to customize which plugins they use
+- [ ] Allow cores to customize which models they use
+- [ ] Handle long context windows by summarizing or truncating history
 
 ### Kernel Memory and RAG
 
@@ -27,17 +40,6 @@ The following tasks are planned for the project:
 - [ ] Host a free vector database locally for Kernel Memory instance
 - [ ] Index the transcript / past sessions on an ongoing or on-demand basis
 - [ ] Provide the transcript as a RAG source
-
-### AI Core System
-
-- [x] Design an agentic layout for the game's AI
-- [x] Implement the core of the AI system
-- [ ] Ensure the initial history matches the prior initial history (pre-migration)
-- [ ] Allow cores to track history
-- [ ] Allow cores to customize which plugins they use
-- [ ] Allow cores to customize which models they use
-- [ ] Add a planner core
-- [ ] Handle long context windows by summarizing or truncating history
 
 ### Quality and Testing
 
@@ -53,7 +55,7 @@ The following tasks are planned for the project:
 - [x] Load games and characters from JSON files
 - [ ] Add a second character to the beach game
 - [ ] Add a second adventure
-- [ ] Optionally, separate characters from adventures
+- [ ] Separate characters from adventures
 
 ### User Interface
 

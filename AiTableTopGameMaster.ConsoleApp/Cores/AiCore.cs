@@ -2,6 +2,7 @@ using AiTableTopGameMaster.ConsoleApp.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.Ollama;
 
 namespace AiTableTopGameMaster.ConsoleApp.Cores;
 
@@ -12,20 +13,23 @@ public class AiCore(Kernel kernel, CoreInfo info, ILoggerFactory loggerFactory)
     
     public override string ToString() => $"AI Core {Name}";
     
-    public async IAsyncEnumerable<string> ChatAsync(string message, ChatHistory transcript)
+    public async IAsyncEnumerable<string> ChatAsync(string message, ChatHistory transcript, IDictionary<string, object> data)
     {
         _log.LogDebug("{CoreName}: Starting chat with message: {Message}", Name, message);
         
         IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
         
-        ChatHistory history = BuildChatHistory(message, transcript);
+        ChatHistory history = BuildChatHistory(message, transcript, data);
         history.LogHistory();
 
-        PromptExecutionSettings settings = new()
+        OllamaPromptExecutionSettings settings = new()
         {
-            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
+            FunctionChoiceBehavior = kernel.Plugins.Count > 0 
+                ? FunctionChoiceBehavior.Auto() 
+                : FunctionChoiceBehavior.None(),
+            ExtensionData = data
         };
-
+        
         _log.LogDebug("{CoreName}: Sending message to chat service", Name);
         foreach (var result in await chatService.GetChatMessageContentsAsync(history, settings, kernel))
         {
@@ -37,10 +41,13 @@ public class AiCore(Kernel kernel, CoreInfo info, ILoggerFactory loggerFactory)
         }
     }
 
-    private ChatHistory BuildChatHistory(string message, ChatHistory transcript)
+    private ChatHistory BuildChatHistory(string message, ChatHistory transcript, IDictionary<string, object> data)
     {
-        ChatHistory history = new(); 
-        history.AddSystemMessage(info.Instructions);
+        ChatHistory history = new();
+        foreach (var instruction in info.Instructions)
+        {
+            history.AddSystemMessage(instruction.ResolveVariables(data));
+        }
 
         ChatMessageContent? lastUserMessage = transcript.LastOrDefault(t => t.Role == AuthorRole.User);
         

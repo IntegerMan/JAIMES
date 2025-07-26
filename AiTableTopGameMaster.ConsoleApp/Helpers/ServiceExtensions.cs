@@ -36,22 +36,42 @@ public static class ServiceExtensions
             builder.AddOllamaEmbeddingGenerator(settings.Ollama.EmbeddingModelId, new Uri(settings.Ollama.EmbeddingEndpoint));
             return builder;
         });
-        services.AddTransient<Kernel>(sp =>
+        
+        // Register Plugins
+        Type[] pluginTypes = KernelExtensions.FindPluginTypesWithKernelFunctions().ToArray();
+        Log.Debug("Found {PluginCount} plugin types with kernel functions", pluginTypes.Length);
+        foreach (Type pluginType in pluginTypes)
         {
-            Adventure adventure = sp.GetRequiredService<Adventure>();
-            IKernelBuilder builder = sp.GetRequiredService<IKernelBuilder>();
-            Kernel kernel = builder
-                .AddAdventurePlugins(sp.GetRequiredService<Adventure>())
-                //.AddSourcebooks(adventure.Ruleset, settings.SourcebookPath, settings.Ollama, status => DocumentIndexingCallback(console, status))
-                .Build();
-            return kernel;
-        });
+            Log.Debug("Registering plugin type: {PluginName}", pluginType.FullName);
+            services.AddScoped(pluginType);
+        }
+        
         services.AddScoped<IEnumerable<AiCore>>(sp =>
         {
             IEnumerable<CoreInfo> infos = sp.GetServices<CoreInfo>();
             ILoggerFactory loggerFactory = sp.GetRequiredService<ILoggerFactory>();
             
-            return infos.Select(core => new AiCore(sp.GetRequiredService<Kernel>(), core, loggerFactory));
+            return infos.Select(core =>
+            {
+                IKernelBuilder builder = sp.GetRequiredService<IKernelBuilder>();
+                
+                foreach (var plugin in core.Plugins)
+                {
+                    Type? pluginType = pluginTypes.FirstOrDefault(t => t.Name.Equals(plugin, StringComparison.OrdinalIgnoreCase));
+                    if (pluginType == null)
+                    {
+                        Log.Warning("Plugin {PluginName} not found in registered plugin types", plugin);
+                        continue;
+                    }
+                    Log.Debug("Adding plugin {PluginName} to AI Core {CoreName}", plugin, core.Name);
+                    object pluginInstance = sp.GetRequiredService(pluginType);
+                    builder.Plugins.AddFromObject(pluginInstance);
+                }
+
+                Kernel kernel = builder.Build();
+                
+                return new AiCore(kernel, core, loggerFactory);
+            });
         });
         services.AddTransient<PromptExecutionSettings>(_ => new PromptExecutionSettings
         {
