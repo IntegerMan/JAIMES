@@ -11,9 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="Microsoft.SemanticKernel.Abstractions">
-        <HintPath>..\..\..\.nuget\packages\microsoft.semantickernel.abstractions\1.60.0\lib\net8.0\Microsoft.SemanticKernel.Abstractions.dll</HintPath>
-      </Reference>
+      <PackageReference Include="Microsoft.SemanticKernel.Abstractions" Version="1.60.0" />
     </ItemGroup>
 
 </Project>
