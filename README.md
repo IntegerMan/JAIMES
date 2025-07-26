@@ -1,4 +1,5 @@
-# Join AI to Make Epic Stories - an AI-Powered Tabletop Game Master
+# Join AI to Make Epic Stories
+**an AI-Powered Tabletop Game Master**
 
 This is a project to create an AI-powered tabletop game master that can run table top roleplaying games for solo players. It's a proof of concept using LLMs, AI Orchestration tools like Semantic Kernel, and RAG with a vector database and Kernel Memory.
 
