@@ -9,9 +9,8 @@ public static class LoggingExtensions
 {
     public static void AddJaimesAppLogging(this ServiceCollection services)
     {
-        DateTimeOffset now = DateTimeOffset.Now;
-        DateOnly today = DateOnly.FromDateTime(now.Date);
-        Guid fileId = Guid.CreateVersion7(now);
+        string filename = "Adventure";
+        DeleteOldLogs(filename);
 
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
@@ -19,8 +18,9 @@ public static class LoggingExtensions
             {
                 l.WriteTo.File(
                     new Serilog.Formatting.Json.JsonFormatter(renderMessage: true),
-                    Path.Combine(Environment.CurrentDirectory, "Logs", $"{today:O}-{fileId}.json"),
+                    path: Path.Combine(Environment.CurrentDirectory, "Logs", $"{filename}.json"),
                     restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Verbose,
+                    retainedFileCountLimit: null,
                     rollingInterval: RollingInterval.Infinite
                 );
             })
@@ -28,7 +28,7 @@ public static class LoggingExtensions
             {
                 l.Filter.ByIncludingOnly(Matching.FromSource("AiTableTopGameMaster"))
                     .WriteTo.File(
-                        Path.Combine(Environment.CurrentDirectory, "Logs", $"{today:O}-{fileId}.transcript"),
+                        Path.Combine(Environment.CurrentDirectory, "Logs", $"{filename}.transcript"),
                         restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
                         rollingInterval: RollingInterval.Infinite,
                         outputTemplate: "{Message:lj}{NewLine}"
@@ -37,6 +37,20 @@ public static class LoggingExtensions
             .CreateLogger();
 
         services.AddLogging(b => b.ConfigureSerilogLogging(true));
+    }
+
+    private static void DeleteOldLogs(string filename)
+    {
+        FileInfo file = new(Path.Combine(Environment.CurrentDirectory, "Logs", $"{filename}.json"));
+        if (file.Exists)
+        {
+            file.Delete();
+        }
+        file = new(Path.Combine(Environment.CurrentDirectory, "Logs", $"{filename}.transcript"));
+        if (file.Exists)
+        {
+            file.Delete();
+        }
     }
 
     public static void ConfigureSerilogLogging(this ILoggingBuilder loggingBuilder, bool disposeLogger = false)
