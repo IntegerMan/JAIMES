@@ -14,7 +14,7 @@ public static class DisplayHelpers
     public static string ToolCallResult => "[bold lightslategrey]";
     public static string Error => "[bold red]";
     
-    public static void RenderAigmAppHeader(this IAnsiConsole console)
+    public static void RenderJaimesAppHeader(this IAnsiConsole console)
     {
         console.Write(new FigletText("JAIMES")
             .Justify(Justify.Left)

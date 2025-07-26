@@ -11,7 +11,7 @@ IAnsiConsole console = new LoggingConsoleWrapper(AnsiConsole.Console);
 
 try
 {
-    console.RenderAigmAppHeader();
+    console.RenderJaimesAppHeader();
     
     Log.Debug("Starting AI Table Top Game Master Console Application");
     ServiceProvider services = ServiceExtensions.BuildServiceProvider(console, args);

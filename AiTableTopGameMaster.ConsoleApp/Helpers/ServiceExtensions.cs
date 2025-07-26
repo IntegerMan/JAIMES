@@ -20,7 +20,7 @@ public static class ServiceExtensions
     {
         ServiceCollection services = new();
         services.AddSingleton(console);
-        services.AddAigmAppLogging();
+        services.AddJaimesAppLogging();
 
         // Load configuration settings and options
         AppSettings settings = services.RegisterConfigurationAndSettings(args);

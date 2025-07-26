@@ -7,7 +7,7 @@ namespace AiTableTopGameMaster.ConsoleApp.Helpers;
 
 public static class LoggingExtensions
 {
-    public static void AddAigmAppLogging(this ServiceCollection services)
+    public static void AddJaimesAppLogging(this ServiceCollection services)
     {
         DateTimeOffset now = DateTimeOffset.Now;
         DateOnly today = DateOnly.FromDateTime(now.Date);
