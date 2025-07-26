@@ -17,7 +17,6 @@ AiTableTopGameMaster.sln
 ├── AiTableTopGameMaster.ConsoleApp/     # Main console application and UI
 ├── AiTableTopGameMaster.Core/           # Core AI functionality and plugins
 ├── AiTableTopGameMaster.Domain/         # Domain models and entities
-├── AiTableTopGameMaster.Systems.DND5E/ # D&D 5E specific implementations
 ├── AiTableTopGameMaster.Tests/          # Unit tests
 └── adventures/                          # JSON-based adventure content
 ```
@@ -45,12 +44,13 @@ AiTableTopGameMaster.sln
 - **Microsoft.Extensions.*** - Dependency injection, configuration, hosting
 - **xUnit** - Unit testing framework
 - **Shouldly** - Fluent assertion library
-- **JetBrains.Annotations** - Code analysis and nullable reference types
+- **JetBrains.Annotations** - Code analysis
 
 ### Data & Configuration
 - **JSON** - Adventure definitions, character sheets, and configuration
 - **appsettings.json** - Application configuration
 - **File-based storage** - Adventures and game data
+- **Ollama models** - Local LLMs for AI responses
 
 ## Coding Conventions & Best Practices
 
@@ -61,6 +61,11 @@ AiTableTopGameMaster.sln
 - **Required properties** for ensuring object initialization
 - **Init-only properties** for immutable object creation
 - **Records and classes** with appropriate mutability patterns
+- **Pattern matching** for concise type checks and casting
+- **Async/await** for asynchronous programming, but only where necessary
+- **Target-typed new expressions** for cleaner object instantiation
+- **Expression-bodied members** for concise method definitions
+- **Avoid var** except for in foreach loops
 
 ### Code Style
 ```csharp
@@ -80,7 +85,9 @@ public static class ServiceExtensions
 {
     public static IKernelBuilder AddAdventurePlugins(this IKernelBuilder builder, Adventure adventure)
     {
-        builder.Plugins.AddFromObject(new StoryInfoPlugin(adventure));
+        StoryInfoPlugin plugin = new(adventure);
+        builder.Plugins.AddFromObject(plugin);
+        
         return builder;
     }
 }
@@ -132,14 +139,20 @@ Log.Debug("Adventure loaded: {Name} by {Author}", adventure.Name, adventure.Auth
 ```csharp
 public class AdventureLoaderTests
 {
-    private readonly IAdventureLoader _adventureLoader = new AdventureLoader(new NullLoggerFactory());
-
-    [Fact]
-    public async Task LoadAdventureAsync_ValidJsonFile_LoadsAdventureCorrectly()
+    [Theory]
+    [InlineData("adventure1.json", "Expected Name")]
+    [InlineData("adventure2.json", "Another Name")]
+    public async Task LoadAdventure_LoadsAdventureCorrectly(string path, string expectedName)
     {
-        // Arrange, Act, Assert pattern
+        // Arrange
+        AdventureLoader loader = new();
+        
+        // Act
+        Adventure? adventure = await loader.LoadAsync(path);
+        
+        // Assert
         adventure.ShouldNotBeNull();
-        adventure.Name.ShouldBe("Expected Name");
+        adventure.Name.ShouldBe(expectedName);
     }
 }
 ```
@@ -207,7 +220,7 @@ public class Character
 ```csharp
 public async Task<Adventure> LoadAdventureAsync(string path)
 {
-    var json = await File.ReadAllTextAsync(path);
+    string json = await File.ReadAllTextAsync(path);
     return JsonSerializer.Deserialize<Adventure>(json) ?? throw new JsonException();
 }
 ```
