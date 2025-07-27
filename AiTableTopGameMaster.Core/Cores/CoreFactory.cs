@@ -15,7 +15,7 @@ public class CoreFactory(IServiceProvider services)
         ModelFactory factory = services.GetRequiredService<ModelFactory>();
         
         IKernelBuilder builder = services.GetRequiredService<IKernelBuilder>();
-        factory.AddChatCompletion(builder, coreInfo.ModelId);
+        factory.ConfigureKernel(builder, coreInfo);
         
         Kernel kernel = builder.Build();
 

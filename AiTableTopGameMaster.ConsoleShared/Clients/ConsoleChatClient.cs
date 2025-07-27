@@ -13,7 +13,7 @@ public class ConsoleChatClient(
     ILoggerFactory loggerFactory)
 {
     private readonly ILogger<ConsoleChatClient> _log = loggerFactory.CreateLogger<ConsoleChatClient>();
-    public string Name { get; } = "Game Master";
+    public string Name => "Game Master";
 
     public async Task ChatIndefinitelyAsync(string? userInput, IDictionary<string, object> data)
     {
@@ -56,7 +56,7 @@ public class ConsoleChatClient(
             do
             {
                 _log.LogDebug("Sending {Message} to {Core}", message, core.Name);
-                console.Write(new Rule($"{DisplayHelpers.AI}{core.Name}[/] {DisplayHelpers.System}is thinking using {DisplayHelpers.AI}{core.ModelId}[/]...[/]")
+                console.Write(new Rule($"{DisplayHelpers.AI}{core.Name}[/] {DisplayHelpers.System}is thinking using {DisplayHelpers.AI}{core.ModelId}[/] and [white]{core.PluginCount} plugins[/]...[/]")
                     .Justify(Justify.Left)
                     .RuleStyle(new Style(foreground: Color.MediumPurple3_1)));
 

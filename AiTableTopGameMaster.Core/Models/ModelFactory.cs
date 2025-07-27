@@ -1,22 +1,34 @@
+using AiTableTopGameMaster.Core.Cores;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 
 namespace AiTableTopGameMaster.Core.Models;
 
 public class ModelFactory
 {
+    private readonly ILogger<ModelFactory> _log;
+    private readonly IServiceProvider _sp;
     private readonly IEnumerable<ModelInfo> _models;
+    private readonly IDictionary<string, Type> _pluginLookup;
 
-    public ModelFactory(IEnumerable<ModelInfo> models)
+    public ModelFactory(IEnumerable<ModelInfo> models, ILogger<ModelFactory> log, IServiceProvider sp)
     {
+        _log = log;
+        _sp = sp;
         _models = models as ModelInfo[] ?? models.ToArray();
+        
         if (!_models.Any())
         {
             throw new ArgumentException("Models collection cannot be empty.", nameof(models));
         }
+        
+        Type[] pluginTypes = AiTableTopGameMaster.Core.Helpers.KernelExtensions.FindPluginTypesWithKernelFunctions().ToArray();
+        _pluginLookup = AiTableTopGameMaster.Core.Helpers.KernelExtensions.BuildPluginTypeDictionary();
     }
 
-    public ModelInfo FindModel(string modelId) =>
+    private ModelInfo FindModel(string modelId) =>
         _models.FirstOrDefault(m => m.ModelId.Equals(modelId, StringComparison.OrdinalIgnoreCase))
         ?? throw new ArgumentException($"Model with ID '{modelId}' not found.", nameof(modelId));
 
@@ -32,11 +44,13 @@ public class ModelFactory
         };
     }
 
-    public void AddChatCompletion(IKernelBuilder builder, string modelId)
+    public void ConfigureKernel(IKernelBuilder builder, CoreInfo core)
     {
+        string modelId = core.ModelId;
         ModelInfo model = FindModel(modelId);
-        if (model.Type != ModelType.Chat) throw new ArgumentException($"Model with ID '{modelId}' is not a chat model.", nameof(modelId));
-
+        if (model.Type != ModelType.Chat) throw new InvalidOperationException($"Model with ID '{modelId}' is not a chat model but is referenced by core {core.Name}.");
+        if (core.Plugins.Length > 0 && !model.SupportsTools) throw new InvalidOperationException($"The model {modelId} does not support tools, but tools are required for this operation for core {core.Name}.");
+        
         switch (model.Provider)
         {
             case ModelProvider.Ollama:
@@ -44,7 +58,19 @@ public class ModelFactory
                 break;
             default:
                 throw new NotSupportedException($"Model provider '{model.Provider}' is not supported.");
-                break;
+        }
+        
+        // Add Plugins as requested by the core
+        foreach (var plugin in core.Plugins)
+        {
+            _log.LogDebug("Adding plugin {PluginName} to AI Core {CoreName}", plugin, core.Name);
+            if (!_pluginLookup.TryGetValue(plugin, out Type? pluginType))
+            {
+                throw new InvalidOperationException($"Plugin type not found: {plugin} for core {core.Name}");
+            }
+            
+            object pluginInstance = _sp.GetRequiredService(pluginType);
+            builder.Plugins.AddFromObject(pluginInstance);
         }
     }
 }

@@ -12,6 +12,7 @@ public class AiCore(Kernel kernel, CoreInfo info, ILoggerFactory loggerFactory)
     private readonly ILogger<AiCore> _log = loggerFactory.CreateLogger<AiCore>();
     public string Name => info.Name;
     public string ModelId => info.ModelId;
+    public int PluginCount => kernel.Plugins.Count;
 
     public override string ToString() => $"AI Core {Name}";
     
