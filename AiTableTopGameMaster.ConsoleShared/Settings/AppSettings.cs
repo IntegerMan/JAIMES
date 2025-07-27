@@ -1,7 +1,7 @@
 using AiTableTopGameMaster.Core.Cores;
-using AiTableTopGameMaster.Domain;
+using AiTableTopGameMaster.Core.Settings;
 
-namespace AiTableTopGameMaster.ConsoleApp.Settings;
+namespace AiTableTopGameMaster.ConsoleShared.Settings;
 
 public class AppSettings
 {

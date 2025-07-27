@@ -1,7 +1,9 @@
-﻿using AiTableTopGameMaster.ConsoleApp.Clients;
-using AiTableTopGameMaster.ConsoleApp.Infrastructure;
-using AiTableTopGameMaster.ConsoleShared;
-using AiTableTopGameMaster.Domain;
+﻿using AiTableTopGameMaster.ConsoleShared;
+using AiTableTopGameMaster.ConsoleShared.Clients;
+using AiTableTopGameMaster.ConsoleShared.Helpers;
+using AiTableTopGameMaster.ConsoleShared.Infrastructure;
+using AiTableTopGameMaster.Core.Domain;
+using AiTableTopGameMaster.Core.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 using Serilog;
@@ -13,7 +15,7 @@ try
     console.RenderAppHeader("JAIMES", "Join AI to Make Epic Stories");
     
     Log.Debug("Starting AI Table Top Game Master Console Application");
-    ServiceProvider services = ServiceExtensions.BuildServiceProvider(console, args);
+    ServiceProvider services = ServiceExtensions.BuildServiceProvider(console, "Adventure", args);
     Log.Debug("Services configured successfully");
 
     Adventure adventure = services.GetRequiredService<Adventure>();
@@ -29,7 +31,7 @@ try
     console.WriteLine();
     
     ConsoleChatClient client = services.GetRequiredService<ConsoleChatClient>();
-    await client.ChatIndefinitelyAsync(adventure.InitialGreetingPrompt);
+    await client.ChatIndefinitelyAsync(adventure.InitialGreetingPrompt, adventure.CreateChatData());
     
     console.WriteLine();
     return 0;

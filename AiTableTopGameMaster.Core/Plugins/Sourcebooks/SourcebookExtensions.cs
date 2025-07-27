@@ -1,4 +1,4 @@
-using AiTableTopGameMaster.Domain;
+using AiTableTopGameMaster.Core.Settings;
 using Microsoft.SemanticKernel;
 
 namespace AiTableTopGameMaster.Core.Plugins.Sourcebooks;

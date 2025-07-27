@@ -3,7 +3,7 @@ using Serilog;
 using Spectre.Console;
 using Spectre.Console.Rendering;
 
-namespace AiTableTopGameMaster.ConsoleApp.Infrastructure;
+namespace AiTableTopGameMaster.ConsoleShared.Infrastructure;
 
 public class LoggingConsoleWrapper(IAnsiConsole console) : IAnsiConsole
 {

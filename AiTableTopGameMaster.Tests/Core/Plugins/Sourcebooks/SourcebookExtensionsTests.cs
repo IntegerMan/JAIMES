@@ -1,5 +1,5 @@
 using AiTableTopGameMaster.Core.Plugins.Sourcebooks;
-using AiTableTopGameMaster.Domain;
+using AiTableTopGameMaster.Core.Settings;
 using Microsoft.SemanticKernel;
 using Shouldly;
 

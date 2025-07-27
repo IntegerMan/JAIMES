@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using AiTableTopGameMaster.Core.Domain;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.ChatCompletion;
 
@@ -56,4 +57,20 @@ public static partial class ChatExtensions
 
     [GeneratedRegex(@"\{\{\$(\w+)\}\}")]
     private static partial Regex VariableRegex();
+
+    public static IDictionary<string, object> CreateChatData(this Adventure adventure)
+    {
+        Character character = adventure.PlayerCharacter ?? throw new ArgumentNullException(nameof(adventure.PlayerCharacter), "Adventure must have a player character");
+        
+        return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["CharacterName"] = character.Name,
+            ["CharacterSpecialization"] = character.Specialization,
+            ["AdventureName"] = adventure.Name,
+            ["AdventureAuthor"] = adventure.Author,
+            ["AdventureBackstory"] = adventure.Backstory,
+            ["AdventureSetting"] = adventure.SettingDescription
+        };
+    }
+    
 }

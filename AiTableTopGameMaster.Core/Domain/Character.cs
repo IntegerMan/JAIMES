@@ -1,4 +1,4 @@
-namespace AiTableTopGameMaster.Domain;
+namespace AiTableTopGameMaster.Core.Domain;
 
 public class Character
 {

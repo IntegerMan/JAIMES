@@ -1,7 +1,7 @@
 using Microsoft.SemanticKernel.ChatCompletion;
 using Spectre.Console;
 
-namespace AiTableTopGameMaster.ConsoleShared;
+namespace AiTableTopGameMaster.ConsoleShared.Helpers;
 
 public static class DisplayHelpers
 {

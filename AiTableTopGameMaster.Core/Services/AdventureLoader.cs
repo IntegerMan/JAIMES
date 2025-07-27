@@ -1,6 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AiTableTopGameMaster.Domain;
+using AiTableTopGameMaster.Core.Domain;
 using Microsoft.Extensions.Logging;
 
 namespace AiTableTopGameMaster.Core.Services;

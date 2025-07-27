@@ -1,5 +1,4 @@
 using AiTableTopGameMaster.Core.Services;
-using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 

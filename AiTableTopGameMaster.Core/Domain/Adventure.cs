@@ -1,6 +1,4 @@
-﻿using Microsoft.SemanticKernel.ChatCompletion;
-
-namespace AiTableTopGameMaster.Domain;
+﻿namespace AiTableTopGameMaster.Core.Domain;
 
 public class Adventure
 {

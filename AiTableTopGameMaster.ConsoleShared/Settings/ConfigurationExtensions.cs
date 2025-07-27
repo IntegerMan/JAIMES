@@ -1,19 +1,21 @@
-using AiTableTopGameMaster.ConsoleApp.Settings;
-using AiTableTopGameMaster.Domain;
+using System.Reflection;
+using AiTableTopGameMaster.Core.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace AiTableTopGameMaster.ConsoleApp.Infrastructure;
+namespace AiTableTopGameMaster.ConsoleShared.Settings;
 
 public static class ConfigurationExtensions
 {
     public static AppSettings RegisterConfigurationAndSettings(this ServiceCollection services, string[] args)
     {
+        Assembly entry = Assembly.GetEntryAssembly() ?? throw new InvalidOperationException("Entry assembly not found. Ensure this is called from the main application assembly.");
+        
         IConfigurationRoot config = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
             .AddEnvironmentVariables()
-            .AddUserSecrets<Program>(optional: true)
+            .AddUserSecrets(entry, optional: true)
             .AddCommandLine(args)
             .Build();
         
