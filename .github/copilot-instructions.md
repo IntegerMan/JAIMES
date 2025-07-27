@@ -14,10 +14,12 @@ The solution follows a clean architecture pattern with clear separation of conce
 
 ```
 AiTableTopGameMaster.sln
-├── AiTableTopGameMaster.ConsoleApp/     # Main console application and UI
-├── AiTableTopGameMaster.Core/           # Core AI functionality, domain models, and plugins
-├── AiTableTopGameMaster.Tests/          # Unit tests
-└── adventures/                          # JSON-based adventure content
+├── AiTableTopGameMaster.ConsoleApp/        # Main console application and UI
+├── AiTableTopGameMaster.ConsoleShared/     # Supporting console classes for both console apps
+├── AiTableTopGameMaster.Core/              # Core AI functionality, domain models, and plugins
+├── AiTableTopGameMaster.EvaluationConsole/ # Console app for evaluating AI performance
+├── AiTableTopGameMaster.Tests/             # Unit tests
+└── adventures/                             # JSON-based adventure content
 ```
 
 ### Key Components

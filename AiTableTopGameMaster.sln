@@ -15,6 +15,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.github\copilot-instructions.md = .github\copilot-instructions.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiTableTopGameMaster.EvaluationConsole", "AiTableTopGameMaster.EvaluationConsole\AiTableTopGameMaster.EvaluationConsole.csproj", "{251755B8-A3D0-44B8-8477-D98C2C7D0050}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiTableTopGameMaster.ConsoleShared", "AiTableTopGameMaster.ConsoleShared\AiTableTopGameMaster.ConsoleShared.csproj", "{38FBD24C-D272-473C-84CC-4ED44DEE70A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{1B9F8C8D-2E3A-4F5C-8A1B-9D5E6F7A8B2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B9F8C8D-2E3A-4F5C-8A1B-9D5E6F7A8B2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B9F8C8D-2E3A-4F5C-8A1B-9D5E6F7A8B2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{251755B8-A3D0-44B8-8477-D98C2C7D0050}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{251755B8-A3D0-44B8-8477-D98C2C7D0050}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{251755B8-A3D0-44B8-8477-D98C2C7D0050}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{251755B8-A3D0-44B8-8477-D98C2C7D0050}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38FBD24C-D272-473C-84CC-4ED44DEE70A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38FBD24C-D272-473C-84CC-4ED44DEE70A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38FBD24C-D272-473C-84CC-4ED44DEE70A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38FBD24C-D272-473C-84CC-4ED44DEE70A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

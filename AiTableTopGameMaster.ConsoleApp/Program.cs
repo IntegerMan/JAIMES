@@ -1,9 +1,8 @@
 ﻿using AiTableTopGameMaster.ConsoleApp.Clients;
-using AiTableTopGameMaster.ConsoleApp.Helpers;
 using AiTableTopGameMaster.ConsoleApp.Infrastructure;
+using AiTableTopGameMaster.ConsoleShared;
 using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.SemanticKernel.ChatCompletion;
 using Spectre.Console;
 using Serilog;
 
@@ -11,7 +10,7 @@ IAnsiConsole console = new LoggingConsoleWrapper(AnsiConsole.Console);
 
 try
 {
-    console.RenderJaimesAppHeader();
+    console.RenderAppHeader("JAIMES", "Join AI to Make Epic Stories");
     
     Log.Debug("Starting AI Table Top Game Master Console Application");
     ServiceProvider services = ServiceExtensions.BuildServiceProvider(console, args);
@@ -40,13 +39,10 @@ catch (Exception ex)
     Log.Error(ex, "An error occurred");
     console.MarkupLine($"{DisplayHelpers.Error}An error occurred: {ex.Message}[/]");
     console.WriteException(ex, ExceptionFormats.ShortenEverything);
-    
-    // Wait for user to acknowledge error
-    console.MarkupLine($"{DisplayHelpers.Error}Press any key to exit...[/]");
-    console.Input.ReadKey(intercept: true);
     return 1;
 }
 finally
 {
     Log.CloseAndFlush();
+    console.WaitForKeypress();
 }

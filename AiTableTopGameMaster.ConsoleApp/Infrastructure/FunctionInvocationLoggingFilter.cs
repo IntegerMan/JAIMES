@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using AiTableTopGameMaster.ConsoleApp.Helpers;
+using AiTableTopGameMaster.ConsoleShared;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Spectre.Console;

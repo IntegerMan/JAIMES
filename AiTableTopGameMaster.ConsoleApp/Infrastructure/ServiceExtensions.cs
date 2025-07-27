@@ -1,8 +1,7 @@
 using AiTableTopGameMaster.ConsoleApp.Clients;
-using AiTableTopGameMaster.ConsoleApp.Helpers;
 using AiTableTopGameMaster.ConsoleApp.Settings;
+using AiTableTopGameMaster.ConsoleShared;
 using AiTableTopGameMaster.Core.Cores;
-using AiTableTopGameMaster.Core.Helpers;
 using AiTableTopGameMaster.Core.Plugins.Sourcebooks;
 using AiTableTopGameMaster.Core.Services;
 using AiTableTopGameMaster.Domain;

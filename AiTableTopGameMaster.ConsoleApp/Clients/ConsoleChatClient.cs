@@ -1,5 +1,4 @@
-using System.Text;
-using AiTableTopGameMaster.ConsoleApp.Helpers;
+using AiTableTopGameMaster.ConsoleShared;
 using AiTableTopGameMaster.Core.Cores;
 using AiTableTopGameMaster.Core.Helpers;
 using AiTableTopGameMaster.Domain;
