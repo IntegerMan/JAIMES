@@ -1,9 +1,10 @@
-﻿using AiTableTopGameMaster.ConsoleApp.Clients;
-using AiTableTopGameMaster.ConsoleApp.Helpers;
-using AiTableTopGameMaster.ConsoleApp.Infrastructure;
-using AiTableTopGameMaster.Domain;
+﻿using AiTableTopGameMaster.ConsoleShared;
+using AiTableTopGameMaster.ConsoleShared.Clients;
+using AiTableTopGameMaster.ConsoleShared.Helpers;
+using AiTableTopGameMaster.ConsoleShared.Infrastructure;
+using AiTableTopGameMaster.Core.Domain;
+using AiTableTopGameMaster.Core.Helpers;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.SemanticKernel.ChatCompletion;
 using Spectre.Console;
 using Serilog;
 
@@ -11,10 +12,10 @@ IAnsiConsole console = new LoggingConsoleWrapper(AnsiConsole.Console);
 
 try
 {
-    console.RenderJaimesAppHeader();
+    console.RenderAppHeader("JAIMES", "Join AI to Make Epic Stories");
     
     Log.Debug("Starting AI Table Top Game Master Console Application");
-    ServiceProvider services = ServiceExtensions.BuildServiceProvider(console, args);
+    ServiceProvider services = ServiceExtensions.BuildServiceProvider(console, "Adventure", args);
     Log.Debug("Services configured successfully");
 
     Adventure adventure = services.GetRequiredService<Adventure>();
@@ -30,7 +31,7 @@ try
     console.WriteLine();
     
     ConsoleChatClient client = services.GetRequiredService<ConsoleChatClient>();
-    await client.ChatIndefinitelyAsync(adventure.InitialGreetingPrompt);
+    await client.ChatIndefinitelyAsync(adventure.InitialGreetingPrompt, adventure.CreateChatData());
     
     console.WriteLine();
     return 0;
@@ -40,13 +41,10 @@ catch (Exception ex)
     Log.Error(ex, "An error occurred");
     console.MarkupLine($"{DisplayHelpers.Error}An error occurred: {ex.Message}[/]");
     console.WriteException(ex, ExceptionFormats.ShortenEverything);
-    
-    // Wait for user to acknowledge error
-    console.MarkupLine($"{DisplayHelpers.Error}Press any key to exit...[/]");
-    console.Input.ReadKey(intercept: true);
     return 1;
 }
 finally
 {
     Log.CloseAndFlush();
+    console.WaitForKeypress();
 }

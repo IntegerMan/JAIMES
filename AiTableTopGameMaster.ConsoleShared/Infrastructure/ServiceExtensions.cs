@@ -1,27 +1,27 @@
-using System.Collections.Frozen;
-using AiTableTopGameMaster.ConsoleApp.Clients;
-using AiTableTopGameMaster.ConsoleApp.Cores;
-using AiTableTopGameMaster.ConsoleApp.Infrastructure;
-using AiTableTopGameMaster.ConsoleApp.Settings;
-using AiTableTopGameMaster.Core;
+using AiTableTopGameMaster.ConsoleShared.Clients;
+using AiTableTopGameMaster.ConsoleShared.Helpers;
+using AiTableTopGameMaster.ConsoleShared.Settings;
+using AiTableTopGameMaster.Core.Cores;
+using AiTableTopGameMaster.Core.Domain;
 using AiTableTopGameMaster.Core.Plugins.Sourcebooks;
 using AiTableTopGameMaster.Core.Services;
-using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Serilog;
 using Spectre.Console;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
+using KernelExtensions = AiTableTopGameMaster.Core.Helpers.KernelExtensions;
 
-namespace AiTableTopGameMaster.ConsoleApp.Helpers;
+namespace AiTableTopGameMaster.ConsoleShared.Infrastructure;
 
 public static class ServiceExtensions
 {
-    public static ServiceProvider BuildServiceProvider(IAnsiConsole console, string[] args)
+    public static ServiceProvider BuildServiceProvider(IAnsiConsole console, string logFileName, string[] args)
     {
         ServiceCollection services = new();
         services.AddSingleton(console);
-        services.AddJaimesAppLogging();
+        services.AddJaimesAppLogging(logFileName);
 
         // Load configuration settings and options
         AppSettings settings = services.RegisterConfigurationAndSettings(args);
@@ -52,6 +52,7 @@ public static class ServiceExtensions
         {
             IEnumerable<CoreInfo> infos = sp.GetServices<CoreInfo>();
             ILoggerFactory loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+            ILogger log = loggerFactory.CreateLogger("AI Core Configuration");
             
             return infos.Select(core =>
             {
@@ -61,10 +62,10 @@ public static class ServiceExtensions
                 {
                     if (!pluginTypeDictionary.TryGetValue(plugin, out Type? pluginType))
                     {
-                        Log.Warning("Plugin {PluginName} not found in registered plugin types", plugin);
+                        log.LogWarning("Plugin {PluginName} not found in registered plugin types", plugin);
                         continue;
                     }
-                    Log.Debug("Adding plugin {PluginName} to AI Core {CoreName}", plugin, core.Name);
+                    log.LogDebug("Adding plugin {PluginName} to AI Core {CoreName}", plugin, core.Name);
                     object pluginInstance = sp.GetRequiredService(pluginType);
                     builder.Plugins.AddFromObject(pluginInstance);
                 }
@@ -94,12 +95,13 @@ public static class ServiceExtensions
         // Load adventure from JSON file
         services.AddScoped<Adventure>(sp =>
         {
-            var loader = sp.GetRequiredService<IAdventureLoader>();
-            var adventuresPath = Path.Combine(AppContext.BaseDirectory, "adventures");
+            IAdventureLoader loader = sp.GetRequiredService<IAdventureLoader>();
+            string adventuresPath = Path.Combine(AppContext.BaseDirectory, "adventures");
 
             Adventure[] adventures = loader.GetAdventuresAsync(adventuresPath).GetAwaiter().GetResult().ToArray();
+            ILogger log = sp.GetRequiredService<ILoggerFactory>().CreateLogger("Adventure Loading");
 
-            Log.Debug("Found {AdventureCount} adventure(s) in {Path}", adventures.Length, adventuresPath);
+            log.LogDebug("Found {AdventureCount} adventure(s) in {Path}", adventures.Length, adventuresPath);
             if (adventures.Length == 0)
             {
                 throw new InvalidOperationException($"No adventures found in {adventuresPath}");
@@ -108,7 +110,7 @@ public static class ServiceExtensions
             if (adventures.Length == 1)
             {
                 Adventure adventure = adventures[0];
-                Log.Information("Only one adventure found, automatically selecting: {AdventureName}", adventure.Name);
+                log.LogDebug("Only one adventure found, automatically selecting: {AdventureName}", adventure.Name);
                 return adventure;
             }
             
@@ -119,18 +121,23 @@ public static class ServiceExtensions
         services.AddScoped<Character>(sp =>
         {
             Adventure adventure = sp.GetRequiredService<Adventure>();
-            
+
+            Character character;
             if (adventure.Characters.Count == 1)
             {
-                Character character = adventure.Characters[0];
+                character = adventure.Characters[0];
                 Log.Information("Only one character found, automatically selecting: {CharacterName}", character.Name);
-                return character;
+            }
+            else
+            {
+                character = console.Prompt(new SelectionPrompt<Character>()
+                    .AddChoices(adventure.Characters)
+                    .Title("Select a character:")
+                    .UseConverter(c => $"{c.Name} - {c.Specialization}"));
             }
             
-            return console.Prompt(new SelectionPrompt<Character>()
-                .AddChoices(adventure.Characters)
-                .Title("Select a character:")
-                .UseConverter(c => $"{c.Name} - {c.Specialization}"));
+            adventure.PlayerCharacter = character;
+            return character;
         });
 
         return services.BuildServiceProvider();

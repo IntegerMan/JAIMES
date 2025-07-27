@@ -1,6 +1,6 @@
 using AiTableTopGameMaster.Core;
+using AiTableTopGameMaster.Core.Domain;
 using AiTableTopGameMaster.Core.Plugins.Adventures;
-using AiTableTopGameMaster.Domain;
 using Microsoft.SemanticKernel;
 using Shouldly;
 

@@ -3,13 +3,12 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Filters;
 
-namespace AiTableTopGameMaster.ConsoleApp.Helpers;
+namespace AiTableTopGameMaster.ConsoleShared.Infrastructure;
 
 public static class LoggingExtensions
 {
-    public static void AddJaimesAppLogging(this ServiceCollection services)
+    public static void AddJaimesAppLogging(this ServiceCollection services, string filename)
     {
-        string filename = "Adventure";
         DeleteOldLogs(filename);
 
         Log.Logger = new LoggerConfiguration()

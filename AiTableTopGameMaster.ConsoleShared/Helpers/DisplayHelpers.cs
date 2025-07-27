@@ -1,7 +1,7 @@
 using Microsoft.SemanticKernel.ChatCompletion;
 using Spectre.Console;
 
-namespace AiTableTopGameMaster.ConsoleApp.Helpers;
+namespace AiTableTopGameMaster.ConsoleShared.Helpers;
 
 public static class DisplayHelpers
 {
@@ -14,14 +14,14 @@ public static class DisplayHelpers
     public static string ToolCallResult => "[bold lightslategrey]";
     public static string Error => "[bold red]";
     
-    public static void RenderJaimesAppHeader(this IAnsiConsole console)
+    public static void RenderAppHeader(this IAnsiConsole console, string name, string description)
     {
-        console.Write(new FigletText("JAIMES")
+        console.Write(new FigletText(name)
             .Justify(Justify.Left)
             .Color(Color.Green));
         
         console.MarkupLine($"{System}by[/] [cyan]Matt Eland[/]");
-        console.MarkupLine($"{System}Join AI to Make Epic Stories[/]");
+        console.MarkupLine($"{System}{description}[/]");
         console.WriteLine();
     }
 
@@ -38,5 +38,11 @@ public static class DisplayHelpers
                 console.MarkupLine($"{ToolCallResult}{message.Content}[/]");
             }
         }
+    }
+
+    public static void WaitForKeypress(this IAnsiConsole console)
+    {
+        console.MarkupLine($"{DisplayHelpers.Error}Press any key to exit...[/]");
+        console.Input.ReadKey(intercept: true);
     }
 }

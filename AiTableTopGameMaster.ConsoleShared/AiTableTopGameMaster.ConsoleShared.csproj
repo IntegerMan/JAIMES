@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.SemanticKernel.Abstractions">
+        <HintPath>..\..\..\.nuget\packages\microsoft.semantickernel.abstractions\1.61.0\lib\net8.0\Microsoft.SemanticKernel.Abstractions.dll</HintPath>
+      </Reference>
+      <Reference Include="Serilog">
+        <HintPath>..\..\..\.nuget\packages\serilog\4.3.0\lib\net9.0\Serilog.dll</HintPath>
+      </Reference>
+      <Reference Include="Spectre.Console">
+        <HintPath>..\..\..\.nuget\packages\spectre.console\0.50.0\lib\net9.0\Spectre.Console.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AiTableTopGameMaster.Core\AiTableTopGameMaster.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.2" />
+      <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    </ItemGroup>
+
+</Project>

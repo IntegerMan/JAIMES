@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Text;
-using AiTableTopGameMaster.Domain;
+using AiTableTopGameMaster.Core.Settings;
 using JetBrains.Annotations;
 using Microsoft.KernelMemory;
 using Microsoft.SemanticKernel;

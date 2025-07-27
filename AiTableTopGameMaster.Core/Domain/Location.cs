@@ -1,6 +1,6 @@
-namespace AiTableTopGameMaster.Domain;
+namespace AiTableTopGameMaster.Core.Domain;
 
-public record Encounter
+public record Location
 {
     public required string Name { get; init; }
     public required string Description { get; init; }

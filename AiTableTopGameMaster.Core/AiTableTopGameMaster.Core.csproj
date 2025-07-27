@@ -16,15 +16,17 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AiTableTopGameMaster.Domain\AiTableTopGameMaster.Domain.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
       <Reference Include="Microsoft.KernelMemory.Abstractions">
         <HintPath>..\..\..\.nuget\packages\microsoft.kernelmemory.abstractions\0.98.250508.3\lib\net8.0\Microsoft.KernelMemory.Abstractions.dll</HintPath>
       </Reference>
       <Reference Include="Microsoft.KernelMemory.Core">
         <HintPath>..\..\..\.nuget\packages\microsoft.kernelmemory.core\0.98.250508.3\lib\net8.0\Microsoft.KernelMemory.Core.dll</HintPath>
+      </Reference>
+      <Reference Include="Serilog">
+        <HintPath>..\..\..\.nuget\packages\serilog\4.3.0\lib\net9.0\Serilog.dll</HintPath>
+      </Reference>
+      <Reference Include="Serilog.Sinks.File">
+        <HintPath>..\..\..\.nuget\packages\serilog.sinks.file\7.0.0\lib\net9.0\Serilog.Sinks.File.dll</HintPath>
       </Reference>
     </ItemGroup>
 

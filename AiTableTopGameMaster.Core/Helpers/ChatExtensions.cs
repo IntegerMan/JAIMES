@@ -1,18 +1,20 @@
 using System.Text.RegularExpressions;
+using AiTableTopGameMaster.Core.Domain;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Serilog;
+
 #pragma warning disable SKEXP0001
 
-namespace AiTableTopGameMaster.ConsoleApp.Helpers;
+namespace AiTableTopGameMaster.Core.Helpers;
 
 public static partial class ChatExtensions
 {
-    public static void LogHistory(this ChatHistory history)
+    public static void LogHistory(this ChatHistory history, ILogger log)
     {
-        Log.Debug("Chat History:");
+        log.LogDebug("Chat History:");
         foreach (var message in history)
         {
-            Log.Information("{Source}: {Content}", message.AuthorName ?? message.Role.ToString(), message.Content);
+            log.LogDebug("{Source}: {Content}", message.AuthorName ?? message.Role.ToString(), message.Content);
         }
     }
 
@@ -55,4 +57,20 @@ public static partial class ChatExtensions
 
     [GeneratedRegex(@"\{\{\$(\w+)\}\}")]
     private static partial Regex VariableRegex();
+
+    public static IDictionary<string, object> CreateChatData(this Adventure adventure)
+    {
+        Character character = adventure.PlayerCharacter ?? throw new ArgumentNullException(nameof(adventure.PlayerCharacter), "Adventure must have a player character");
+        
+        return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["CharacterName"] = character.Name,
+            ["CharacterSpecialization"] = character.Specialization,
+            ["AdventureName"] = adventure.Name,
+            ["AdventureAuthor"] = adventure.Author,
+            ["AdventureBackstory"] = adventure.Backstory,
+            ["AdventureSetting"] = adventure.SettingDescription
+        };
+    }
+    
 }

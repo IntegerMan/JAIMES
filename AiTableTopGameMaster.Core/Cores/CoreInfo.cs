@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 
-namespace AiTableTopGameMaster.ConsoleApp.Cores;
+namespace AiTableTopGameMaster.Core.Cores;
 
 [UsedImplicitly]
 public class CoreInfo

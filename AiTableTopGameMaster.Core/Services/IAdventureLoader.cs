@@ -1,4 +1,4 @@
-using AiTableTopGameMaster.Domain;
+using AiTableTopGameMaster.Core.Domain;
 
 namespace AiTableTopGameMaster.Core.Services;
 

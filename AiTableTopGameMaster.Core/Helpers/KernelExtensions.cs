@@ -2,7 +2,7 @@ using System.Collections.Frozen;
 using System.Reflection;
 using Microsoft.SemanticKernel;
 
-namespace AiTableTopGameMaster.ConsoleApp.Helpers;
+namespace AiTableTopGameMaster.Core.Helpers;
 
 public static class KernelExtensions
 {

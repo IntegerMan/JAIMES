@@ -1,34 +1,22 @@
-using System.Text;
-using AiTableTopGameMaster.ConsoleApp.Cores;
-using AiTableTopGameMaster.ConsoleApp.Helpers;
-using AiTableTopGameMaster.Domain;
+using AiTableTopGameMaster.ConsoleShared.Helpers;
+using AiTableTopGameMaster.Core.Cores;
+using AiTableTopGameMaster.Core.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Spectre.Console;
 
-namespace AiTableTopGameMaster.ConsoleApp.Clients;
+namespace AiTableTopGameMaster.ConsoleShared.Clients;
 
 public class ConsoleChatClient(
     IAnsiConsole console,
     IEnumerable<AiCore> cores,
-    Adventure adventure,
-    Character character,
     ILoggerFactory loggerFactory)
 {
     private readonly ILogger<ConsoleChatClient> _log = loggerFactory.CreateLogger<ConsoleChatClient>();
+    public string Name { get; } = "Game Master";
 
-    public async Task ChatIndefinitelyAsync(string? userInput = null)
+    public async Task ChatIndefinitelyAsync(string? userInput, IDictionary<string, object> data)
     {
-        Dictionary<string, object> data = new()
-        {
-            ["CharacterName"] = character.Name,
-            ["CharacterSpecialization"] = character.Specialization,
-            ["AdventureName"] = adventure.Name,
-            ["AdventureAuthor"] = adventure.Author,
-            ["AdventureBackstory"] = adventure.Backstory,
-            ["AdventureSetting"] = adventure.SettingDescription
-        };
-
         ChatHistory history = new();
         do
         {
@@ -52,11 +40,13 @@ public class ConsoleChatClient(
         } while (true);
     }
 
-    private async Task ChatAsync(string message, ChatHistory history, Dictionary<string, object> data)
+    public async Task<string> ChatAsync(string message, ChatHistory history, IDictionary<string, object> data)
     {
         _log.LogInformation("User:\r\n{Message}\r\n", message);
         history.AddUserMessage(message);
         data["UserMessage"] = message;
+
+        AiCore lastCore = cores.Last();
 
         foreach (var core in cores)
         {
@@ -82,17 +72,25 @@ public class ConsoleChatClient(
                     console.MarkupLine($"[bold red]The {core.Name} response appeared to be JSON. Retrying.[/]");
                 }
             } while (string.IsNullOrWhiteSpace(reply) || reply.IsJson());
-            
-            console.Markup($"{DisplayHelpers.AI}{core.Name}:[/] ");
-            console.WriteLine(reply);
-            console.WriteLine();
+
+            if (core != lastCore)
+            {
+                console.Markup($"{DisplayHelpers.AI}{core.Name}:[/] ");
+                console.WriteLine(reply);
+                console.WriteLine();
+            }
 
             message = reply;
         }
 
         // This gets logged to the transcript file
-        _log.LogInformation("Game Master:\r\n{Content}\r\n", message);
+        _log.LogInformation("{Agent}:\r\n{Content}\r\n", Name, message);
         history.AddAssistantMessage(message);
         data["LastReply"] = message;
+        
+        console.Markup($"{DisplayHelpers.AI}{Name}:[/] ");
+        console.WriteLine(message);
+
+        return message;
     }
 }

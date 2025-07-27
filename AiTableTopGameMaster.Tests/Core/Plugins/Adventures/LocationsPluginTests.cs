@@ -1,5 +1,5 @@
+using AiTableTopGameMaster.Core.Domain;
 using AiTableTopGameMaster.Core.Plugins.Adventures;
-using AiTableTopGameMaster.Domain;
 using Shouldly;
 
 namespace AiTableTopGameMaster.Tests.Core.Plugins.Adventures;
