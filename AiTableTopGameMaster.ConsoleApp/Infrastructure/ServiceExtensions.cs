@@ -1,9 +1,8 @@
-using System.Collections.Frozen;
 using AiTableTopGameMaster.ConsoleApp.Clients;
-using AiTableTopGameMaster.ConsoleApp.Cores;
-using AiTableTopGameMaster.ConsoleApp.Infrastructure;
+using AiTableTopGameMaster.ConsoleApp.Helpers;
 using AiTableTopGameMaster.ConsoleApp.Settings;
-using AiTableTopGameMaster.Core;
+using AiTableTopGameMaster.Core.Cores;
+using AiTableTopGameMaster.Core.Helpers;
 using AiTableTopGameMaster.Core.Plugins.Sourcebooks;
 using AiTableTopGameMaster.Core.Services;
 using AiTableTopGameMaster.Domain;
@@ -12,8 +11,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Serilog;
 using Spectre.Console;
+using KernelExtensions = AiTableTopGameMaster.Core.Helpers.KernelExtensions;
 
-namespace AiTableTopGameMaster.ConsoleApp.Helpers;
+namespace AiTableTopGameMaster.ConsoleApp.Infrastructure;
 
 public static class ServiceExtensions
 {

@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AiTableTopGameMaster.Core\AiTableTopGameMaster.Core.csproj" />
-    <ProjectReference Include="..\AiTableTopGameMaster.Domain\AiTableTopGameMaster.Domain.csproj" />
   </ItemGroup>
 
 </Project>

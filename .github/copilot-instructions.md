@@ -15,8 +15,7 @@ The solution follows a clean architecture pattern with clear separation of conce
 ```
 AiTableTopGameMaster.sln
 ├── AiTableTopGameMaster.ConsoleApp/     # Main console application and UI
-├── AiTableTopGameMaster.Core/           # Core AI functionality and plugins
-├── AiTableTopGameMaster.Domain/         # Domain models and entities
+├── AiTableTopGameMaster.Core/           # Core AI functionality, domain models, and plugins
 ├── AiTableTopGameMaster.Tests/          # Unit tests
 └── adventures/                          # JSON-based adventure content
 ```
@@ -65,7 +64,8 @@ AiTableTopGameMaster.sln
 - **Async/await** for asynchronous programming, but only where necessary
 - **Target-typed new expressions** for cleaner object instantiation
 - **Expression-bodied members** for concise method definitions
-- **Avoid var** except for in foreach loops
+- **Prefer target-typed new** over var as var is hard to read
+- **Use of var acceptable in foreach loops** for type flexibility
 
 ### Code Style
 ```csharp
@@ -100,13 +100,13 @@ public static class ServiceExtensions
 - Use `IServiceProvider` for service resolution in Program.cs
 
 ### Logging Practices
-- Use **Serilog** for structured logging throughout the application
-- Log at appropriate levels (Debug, Information, Warning, Error)
+- Use **ILogger** and **ILoggerFactory** for structured logging throughout the application
+- Log at appropriate levels (Debug, Information, Warning, Error), defaulting to Debug when unsure
 - Include structured data in log messages
 - Separate diagnostic logging from console output
 
 ```csharp
-Log.Debug("Adventure loaded: {Name} by {Author}", adventure.Name, adventure.Author);
+_log.LogDebug("Adventure loaded: {Name} by {Author}", adventure.Name, adventure.Author);
 ```
 
 ## AI & Semantic Kernel Patterns

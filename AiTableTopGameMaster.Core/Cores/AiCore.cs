@@ -1,11 +1,11 @@
 using System.Text;
-using AiTableTopGameMaster.ConsoleApp.Helpers;
+using AiTableTopGameMaster.Core.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.Ollama;
 
-namespace AiTableTopGameMaster.ConsoleApp.Cores;
+namespace AiTableTopGameMaster.Core.Cores;
 
 public class AiCore(Kernel kernel, CoreInfo info, ILoggerFactory loggerFactory)
 {
@@ -21,7 +21,7 @@ public class AiCore(Kernel kernel, CoreInfo info, ILoggerFactory loggerFactory)
         IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
         
         ChatHistory history = BuildChatHistory(message, transcript, data);
-        history.LogHistory();
+        history.LogHistory(_log);
 
         OllamaPromptExecutionSettings settings = new()
         {

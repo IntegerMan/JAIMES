@@ -1,18 +1,19 @@
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Serilog;
+
 #pragma warning disable SKEXP0001
 
-namespace AiTableTopGameMaster.ConsoleApp.Helpers;
+namespace AiTableTopGameMaster.Core.Helpers;
 
 public static partial class ChatExtensions
 {
-    public static void LogHistory(this ChatHistory history)
+    public static void LogHistory(this ChatHistory history, ILogger log)
     {
-        Log.Debug("Chat History:");
+        log.LogDebug("Chat History:");
         foreach (var message in history)
         {
-            Log.Information("{Source}: {Content}", message.AuthorName ?? message.Role.ToString(), message.Content);
+            log.LogDebug("{Source}: {Content}", message.AuthorName ?? message.Role.ToString(), message.Content);
         }
     }
 

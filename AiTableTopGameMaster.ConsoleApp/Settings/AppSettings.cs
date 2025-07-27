@@ -1,4 +1,4 @@
-using AiTableTopGameMaster.ConsoleApp.Cores;
+using AiTableTopGameMaster.Core.Cores;
 using AiTableTopGameMaster.Domain;
 
 namespace AiTableTopGameMaster.ConsoleApp.Settings;

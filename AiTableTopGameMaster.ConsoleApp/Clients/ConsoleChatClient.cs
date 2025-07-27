@@ -1,6 +1,7 @@
 using System.Text;
-using AiTableTopGameMaster.ConsoleApp.Cores;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
+using AiTableTopGameMaster.Core.Cores;
+using AiTableTopGameMaster.Core.Helpers;
 using AiTableTopGameMaster.Domain;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.ChatCompletion;
