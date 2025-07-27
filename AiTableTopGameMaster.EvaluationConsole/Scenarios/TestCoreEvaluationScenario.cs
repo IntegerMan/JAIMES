@@ -1,5 +1,6 @@
 using AiTableTopGameMaster.ConsoleShared.Clients;
 using AiTableTopGameMaster.Core.Cores;
+using AiTableTopGameMaster.Core.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
@@ -15,9 +16,11 @@ public class TestCoreEvaluationScenario : EvaluationScenario
 
     public TestCoreEvaluationScenario(ServiceProvider services, string modelId)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(modelId);
         IAnsiConsole console = services.GetRequiredService<IAnsiConsole>();
         IKernelBuilder builder = services.GetRequiredService<IKernelBuilder>();
         ILoggerFactory loggerFactory = services.GetRequiredService<ILoggerFactory>();
+        ModelFactory factory = services.GetRequiredService<ModelFactory>();
 
         _coreInfo = new()
         {
@@ -32,6 +35,7 @@ public class TestCoreEvaluationScenario : EvaluationScenario
         [
             _coreInfo
         ];
+        factory.ConfigureKernel(builder, _coreInfo);
     
         Kernel kernel = builder.Build();
         List<AiCore> cores = info.Select(i => new AiCore(kernel, i, loggerFactory)).ToList();

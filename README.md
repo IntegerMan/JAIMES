@@ -29,7 +29,7 @@ The following tasks are planned for the project:
 - [/] Ensure the initial history matches the prior initial history (pre-migration)
 - [/] Allow cores to track history
 - [x] Allow cores to customize which plugins they use
-- [ ] Allow cores to customize which models they use
+- [x] Allow cores to customize which models they use
 - [ ] Handle long context windows by summarizing or truncating history
 
 ### Kernel Memory and RAG
@@ -37,7 +37,10 @@ The following tasks are planned for the project:
 - [x] Add a RAG skill to the Semantic Kernel using Kernel Memory
 - [x] Have Kernel Memory index the free D&D ruleset
 - [x] Display more indexing progress in the console
+- [/] Restore service to the RAG Skill; use an embedding model
 - [ ] Host a free vector database locally for Kernel Memory instance
+- [ ] Persist indexes
+- [ ] Only index RAG sources if they're not already indexed
 - [ ] Index the transcript / past sessions on an ongoing or on-demand basis
 - [ ] Provide the transcript as a RAG source
 
@@ -46,7 +49,7 @@ The following tasks are planned for the project:
 - [x] Add unit test project
 - [ ] Generate sample transcripts for testing
 - [ ] Add in Unit Tests around Semantic Kernel
-- [ ] Add in Evaluation for common game scenarios
+- [/] Add in Evaluation for common game scenarios
 - [ ] Add A/B Testing for Prompt Refinement and Model Selection
 - [ ] Add content safety checks (optional)
 

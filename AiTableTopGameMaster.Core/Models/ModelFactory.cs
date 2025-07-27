@@ -24,13 +24,15 @@ public class ModelFactory
             throw new ArgumentException("Models collection cannot be empty.", nameof(models));
         }
         
-        Type[] pluginTypes = AiTableTopGameMaster.Core.Helpers.KernelExtensions.FindPluginTypesWithKernelFunctions().ToArray();
         _pluginLookup = AiTableTopGameMaster.Core.Helpers.KernelExtensions.BuildPluginTypeDictionary();
     }
 
-    private ModelInfo FindModel(string modelId) =>
-        _models.FirstOrDefault(m => m.ModelId.Equals(modelId, StringComparison.OrdinalIgnoreCase))
-        ?? throw new ArgumentException($"Model with ID '{modelId}' not found.", nameof(modelId));
+    private ModelInfo FindModel(string modelId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(modelId, nameof(modelId));
+        return _models.FirstOrDefault(m => m.ModelId.Equals(modelId, StringComparison.OrdinalIgnoreCase))
+               ?? throw new ArgumentException($"Model with ID '{modelId}' not found.", nameof(modelId));
+    }
 
     public IChatClient CreateChatClient(string modelId)
     {
