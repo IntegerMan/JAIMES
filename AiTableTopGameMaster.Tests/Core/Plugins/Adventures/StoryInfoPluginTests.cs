@@ -84,8 +84,7 @@ public class StoryInfoPluginTests
     [Theory]
     [InlineData("")]
     [InlineData("   ")]
-    [InlineData(null)]
-    public void DescribeAdventureSetting_WithEmptyOrNullSetting_ReturnsAsIs(string? setting)
+    public void DescribeAdventureSetting_WithEmptyOrNullSetting_ReturnsAsIs(string setting)
     {
         // Arrange
         var adventure = new Adventure
@@ -114,8 +113,7 @@ public class StoryInfoPluginTests
     [Theory]
     [InlineData("")]
     [InlineData("   ")]
-    [InlineData(null)]
-    public void GetBackstory_WithEmptyOrNullBackstory_ReturnsAsIs(string? backstory)
+    public void GetBackstory_WithEmptyOrNullBackstory_ReturnsAsIs(string backstory)
     {
         // Arrange
         var adventure = new Adventure
@@ -144,8 +142,7 @@ public class StoryInfoPluginTests
     [Theory]
     [InlineData("")]
     [InlineData("   ")]
-    [InlineData(null)]
-    public void GetGameMasterNotes_WithEmptyOrNullNotes_ReturnsAsIs(string? notes)
+    public void GetGameMasterNotes_WithEmptyOrNullNotes_ReturnsAsIs(string notes)
     {
         // Arrange
         var adventure = new Adventure
@@ -174,8 +171,7 @@ public class StoryInfoPluginTests
     [Theory]
     [InlineData("")]
     [InlineData("   ")]
-    [InlineData(null)]
-    public void GetNarrativeStructure_WithEmptyOrNullStructure_ReturnsAsIs(string? structure)
+    public void GetNarrativeStructure_WithEmptyOrNullStructure_ReturnsAsIs(string structure)
     {
         // Arrange
         var adventure = new Adventure

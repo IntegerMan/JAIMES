@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Text;
-using AiTableTopGameMaster.Core.Settings;
 using JetBrains.Annotations;
 using Microsoft.KernelMemory;
 using Microsoft.SemanticKernel;
@@ -12,11 +11,11 @@ public class SourcebookLookupPlugin(string sourceDirectory, string system)
 {
     private IKernelMemory? _memory;
 
-    public async Task InitializeAsync(OllamaSettings settings, Action<IndexingInfo>? indexCallback = null)
+    public async Task InitializeAsync(string embeddingModelId, Action<IndexingInfo>? indexCallback = null)
     {
         _memory = new KernelMemoryBuilder()
-            .WithOllamaTextGeneration(settings.ChatModelId, settings.ChatEndpoint)
-            .WithOllamaTextEmbeddingGeneration(settings.EmbeddingModelId, settings.EmbeddingEndpoint)
+            //.WithOllamaTextGeneration(settings.ChatModelId, settings.ChatEndpoint)
+            //.WithOllamaTextEmbeddingGeneration(settings.EmbeddingModelId, settings.EmbeddingEndpoint)
             .Build();
 
         // List all PDF files in the source directory

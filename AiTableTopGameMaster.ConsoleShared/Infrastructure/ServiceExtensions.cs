@@ -3,6 +3,7 @@ using AiTableTopGameMaster.ConsoleShared.Helpers;
 using AiTableTopGameMaster.ConsoleShared.Settings;
 using AiTableTopGameMaster.Core.Cores;
 using AiTableTopGameMaster.Core.Domain;
+using AiTableTopGameMaster.Core.Models;
 using AiTableTopGameMaster.Core.Plugins.Sourcebooks;
 using AiTableTopGameMaster.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,24 +18,26 @@ namespace AiTableTopGameMaster.ConsoleShared.Infrastructure;
 
 public static class ServiceExtensions
 {
-    public static ServiceProvider BuildServiceProvider(IAnsiConsole console, string logFileName, string[] args)
+    public static ServiceProvider BuildServiceProvider<TSettings>(IAnsiConsole console, string logFileName, string[] args) where TSettings : class
     {
         ServiceCollection services = new();
         services.AddSingleton(console);
         services.AddJaimesAppLogging(logFileName);
+        services.AddSingleton<ModelFactory>();
 
         // Load configuration settings and options
-        AppSettings settings = services.RegisterConfigurationAndSettings(args);
+        TSettings settings = services.RegisterConfigurationAndSettings<TSettings>(args);
         
         // Configure Semantic Kernel
         services.AddTransient<IKernelBuilder>(sp =>
         {
+            //ModelFactory factory = sp.GetRequiredService<ModelFactory>();
             IKernelBuilder builder = Kernel.CreateBuilder();
             builder.Services.AddLogging(loggingBuilder => loggingBuilder.ConfigureSerilogLogging(disposeLogger: false));
             builder.Services.AddSingleton(sp.GetRequiredService<IAnsiConsole>());
             builder.Services.AddSingleton<IAutoFunctionInvocationFilter, FunctionInvocationLoggingFilter>();
-            builder.AddOllamaChatCompletion(settings.Ollama.ChatModelId, new Uri(settings.Ollama.ChatEndpoint));
-            builder.AddOllamaEmbeddingGenerator(settings.Ollama.EmbeddingModelId, new Uri(settings.Ollama.EmbeddingEndpoint));
+            //builder.AddOllamaChatCompletion(settings.Ollama.ChatModelId, new Uri(settings.Ollama.ChatEndpoint));
+            //builder.AddOllamaEmbeddingGenerator(settings.Ollama.EmbeddingModelId, new Uri(settings.Ollama.EmbeddingEndpoint));
             return builder;
         });
         
@@ -81,12 +84,14 @@ public static class ServiceExtensions
         });
         
         // Configure AI Cores
+        /*
         if (settings.Cores.Count <= 0) throw new InvalidOperationException("No AI cores configured");
         foreach (var core in settings.Cores)
         {
             Log.Debug("Adding AI Core: {CoreName} ({CoreId})", core.Name, core.Description);
             services.AddScoped<CoreInfo>(_ => core);
         }
+        */
 
         // Configure application dependencies
         services.AddTransient<ConsoleChatClient>();

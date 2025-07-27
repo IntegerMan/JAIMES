@@ -1,5 +1,4 @@
 using System.Reflection;
-using AiTableTopGameMaster.Core.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -8,7 +7,7 @@ namespace AiTableTopGameMaster.ConsoleShared.Settings;
 
 public static class ConfigurationExtensions
 {
-    public static AppSettings RegisterConfigurationAndSettings(this ServiceCollection services, string[] args)
+    public static TSettings RegisterConfigurationAndSettings<TSettings>(this ServiceCollection services, string[] args) where TSettings : class
     {
         Assembly entry = Assembly.GetEntryAssembly() ?? throw new InvalidOperationException("Entry assembly not found. Ensure this is called from the main application assembly.");
         
@@ -19,13 +18,9 @@ public static class ConfigurationExtensions
             .AddCommandLine(args)
             .Build();
         
-        services.Configure<AppSettings>(config);
-        services.Configure<OllamaSettings>(config.GetSection("Ollama"));
-        services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<AppSettings>>().Value);
-        services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<OllamaSettings>>().Value);
+        services.Configure<TSettings>(config);
+        services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<TSettings>>().Value);
 
-        // Get the AppSettings instance to ensure it's loaded
-        return config.Get<AppSettings>()
-                     ?? throw new InvalidOperationException("AppSettings are not configured properly.");
+        return config.Get<TSettings>() ?? throw new InvalidOperationException("Settings are not configured properly.");
     }
 }

@@ -1,7 +1,9 @@
-﻿using AiTableTopGameMaster.ConsoleShared;
+﻿using AiTableTopGameMaster.ConsoleApp;
+using AiTableTopGameMaster.ConsoleShared;
 using AiTableTopGameMaster.ConsoleShared.Clients;
 using AiTableTopGameMaster.ConsoleShared.Helpers;
 using AiTableTopGameMaster.ConsoleShared.Infrastructure;
+using AiTableTopGameMaster.ConsoleShared.Settings;
 using AiTableTopGameMaster.Core.Domain;
 using AiTableTopGameMaster.Core.Helpers;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +17,7 @@ try
     console.RenderAppHeader("JAIMES", "Join AI to Make Epic Stories");
     
     Log.Debug("Starting AI Table Top Game Master Console Application");
-    ServiceProvider services = ServiceExtensions.BuildServiceProvider(console, "Adventure", args);
+    ServiceProvider services = ServiceExtensions.BuildServiceProvider<AppSettings>(console, "Adventure", args);
     Log.Debug("Services configured successfully");
 
     Adventure adventure = services.GetRequiredService<Adventure>();

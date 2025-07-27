@@ -1,5 +1,4 @@
 using AiTableTopGameMaster.Core.Plugins.Sourcebooks;
-using AiTableTopGameMaster.Core.Settings;
 using Microsoft.SemanticKernel;
 using Shouldly;
 
@@ -17,15 +16,6 @@ public class SourcebookExtensionsTests
         // Create a temporary directory that we control
         var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         Directory.CreateDirectory(tempDir);
-        
-        var settings = new OllamaSettings
-        {
-            SystemPrompt = "Test prompt",
-            ChatModelId = "test-model",
-            ChatEndpoint = "http://localhost:11434",
-            EmbeddingModelId = "test-embedding",
-            EmbeddingEndpoint = "http://localhost:11434"
-        };
 
         try
         {
@@ -36,7 +26,7 @@ public class SourcebookExtensionsTests
             // This test will throw due to no PDFs in the directory, 
             // but we're testing the method signature and fluent interface
             var exception = Should.Throw<InvalidOperationException>(() =>
-                kernelBuilder.AddSourcebooks(system, tempDir, settings, IndexingCallback));
+                kernelBuilder.AddSourcebooks(system, tempDir, "TestEmbeddingModelId", IndexingCallback));
 
             // The exception should be about no PDF files found
             exception.Message.ShouldContain("No PDF files found");
@@ -57,21 +47,12 @@ public class SourcebookExtensionsTests
         var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         Directory.CreateDirectory(tempDir);
         
-        var settings = new OllamaSettings
-        {
-            SystemPrompt = "Test prompt",
-            ChatModelId = "test-model",
-            ChatEndpoint = "http://localhost:11434",
-            EmbeddingModelId = "test-embedding",
-            EmbeddingEndpoint = "http://localhost:11434"
-        };
-
         try
         {
             // Act & Assert
             // Should throw InvalidOperationException about no PDFs, not about null callback
             var exception = Should.Throw<InvalidOperationException>(() =>
-                kernelBuilder.AddSourcebooks(system, tempDir, settings, null));
+                kernelBuilder.AddSourcebooks(system, tempDir, "TestEmbeddingModelId", null));
 
             exception.Message.ShouldContain("No PDF files found");
         }
@@ -92,21 +73,12 @@ public class SourcebookExtensionsTests
         
         var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         Directory.CreateDirectory(tempDir);
-        
-        var settings = new OllamaSettings
-        {
-            SystemPrompt = "Test prompt",
-            ChatModelId = "test-model",
-            ChatEndpoint = "http://localhost:11434",
-            EmbeddingModelId = "test-embedding",
-            EmbeddingEndpoint = "http://localhost:11434"
-        };
 
         try
         {
             // Act & Assert
             var exception = Should.Throw<InvalidOperationException>(() =>
-                kernelBuilder.AddSourcebooks(system, tempDir, settings, null));
+                kernelBuilder.AddSourcebooks(system, tempDir, "TestEmbeddingModelId", null));
 
             // The fact that we get the "No PDF files found" exception means the system parameter was accepted
             exception.Message.ShouldContain("No PDF files found");
@@ -124,18 +96,9 @@ public class SourcebookExtensionsTests
         var kernelBuilder = Kernel.CreateBuilder();
         var system = "DND5E";
         var nonExistentPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        var settings = new OllamaSettings
-        {
-            SystemPrompt = "Test prompt",
-            ChatModelId = "test-model",
-            ChatEndpoint = "http://localhost:11434",
-            EmbeddingModelId = "test-embedding",
-            EmbeddingEndpoint = "http://localhost:11434"
-        };
-
         // Act & Assert
         Should.Throw<DirectoryNotFoundException>(() =>
-            kernelBuilder.AddSourcebooks(system, nonExistentPath, settings, null));
+            kernelBuilder.AddSourcebooks(system, nonExistentPath, "TestEmbeddingModelId", null));
     }
 
     [Fact]
@@ -147,15 +110,6 @@ public class SourcebookExtensionsTests
         
         var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         Directory.CreateDirectory(tempDir);
-        
-        var settings = new OllamaSettings
-        {
-            SystemPrompt = "Test prompt", 
-            ChatModelId = "test-model",
-            ChatEndpoint = "http://localhost:11434",
-            EmbeddingModelId = "test-embedding",
-            EmbeddingEndpoint = "http://localhost:11434"
-        };
 
         try
         {
@@ -165,7 +119,7 @@ public class SourcebookExtensionsTests
             
             Should.Throw<InvalidOperationException>(() =>
             {
-                returnedBuilder = kernelBuilder.AddSourcebooks(system, tempDir, settings, null);
+                returnedBuilder = kernelBuilder.AddSourcebooks(system, tempDir, "TestEmbeddingModelId", null);
             });
 
             // Even though it throws, the method should have returned the builder before the exception

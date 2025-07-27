@@ -36,6 +36,12 @@
         <Link>adventures/%(Filename)%(Extension)</Link>
       </None>
     </ItemGroup>
+    <ItemGroup>
+      <None Include="../ai/*.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Link>ai/%(Filename)%(Extension)</Link>
+      </None>
+    </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\AiTableTopGameMaster.ConsoleShared\AiTableTopGameMaster.ConsoleShared.csproj" />

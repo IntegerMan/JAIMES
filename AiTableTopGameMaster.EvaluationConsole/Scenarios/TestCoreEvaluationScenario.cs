@@ -13,7 +13,7 @@ public class TestCoreEvaluationScenario : EvaluationScenario
     private readonly ConsoleChatClient _client;
     private readonly CoreInfo _coreInfo;
 
-    public TestCoreEvaluationScenario(ServiceProvider services)
+    public TestCoreEvaluationScenario(ServiceProvider services, string modelId)
     {
         IAnsiConsole console = services.GetRequiredService<IAnsiConsole>();
         IKernelBuilder builder = services.GetRequiredService<IKernelBuilder>();
@@ -25,6 +25,7 @@ public class TestCoreEvaluationScenario : EvaluationScenario
             Instructions = ["Answer the user's question in one or two sentences."],
             IncludeHistory = true,
             IncludePlayerInput = true,
+            ModelId = modelId,
             Plugins = []
         };
         List<CoreInfo> info =

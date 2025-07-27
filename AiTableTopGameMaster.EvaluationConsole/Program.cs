@@ -1,7 +1,8 @@
 ﻿using System.Diagnostics;
 using AiTableTopGameMaster.ConsoleShared.Helpers;
 using AiTableTopGameMaster.ConsoleShared.Infrastructure;
-using AiTableTopGameMaster.ConsoleShared.Settings;
+using AiTableTopGameMaster.Core.Models;
+using AiTableTopGameMaster.EvaluationConsole;
 using AiTableTopGameMaster.EvaluationConsole.Helpers;
 using AiTableTopGameMaster.EvaluationConsole.Scenarios;
 using Microsoft.Extensions.AI;
@@ -17,10 +18,11 @@ try
     console.RenderAppHeader("Core Eval", "Evaluates the performance of different AI cores");
     
     Log.Debug("Starting AI Core Evaluation Console Application");
-    ServiceProvider services = ServiceExtensions.BuildServiceProvider(console, "Adventure", args);
+    ServiceProvider services = ServiceExtensions.BuildServiceProvider<AppSettings>(console, "Adventure", args);
+    AppSettings settings = services.GetRequiredService<AppSettings>();
     Log.Debug("Services configured successfully");
 
-    EvaluationScenario scenario = new TestCoreEvaluationScenario(services);
+    EvaluationScenario scenario = new TestCoreEvaluationScenario(services, settings.ChatModelId);
     string message = scenario.Message;
     
     console.MarkupLine($"{DisplayHelpers.User}You:[/] {message}");
@@ -31,13 +33,13 @@ try
     stopwatch.Stop();
     console.MarkupLine($"[yellow]Response generated in {stopwatch.ElapsedMilliseconds}ms[/]\r\n");
 
-    AppSettings settings = services.GetRequiredService<AppSettings>();
-    console.MarkupLine($"[yellow]Evaluation started using {settings.Ollama.ChatModelId}[/]...");
+    console.MarkupLine($"[yellow]Evaluation started using {settings.EvaluationModelId}[/]...");
     
-    OllamaChatClient chatClient = new(settings.Ollama.ChatEndpoint, settings.Ollama.ChatModelId); 
+    ModelFactory modelFactory = services.GetRequiredService<ModelFactory>();
+    IChatClient chatClient = modelFactory.CreateChatClient(settings.EvaluationModelId);
     ChatConfiguration config = new(chatClient);
-    
     IEvaluator evaluator = new CompositeEvaluator(scenario.BuildEvaluators());
+    
     stopwatch.Restart();
     EvaluationResult result = await evaluator.EvaluateAsync(message, response, config);
     stopwatch.Stop();

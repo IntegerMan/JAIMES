@@ -1,0 +1,38 @@
+[
+  {
+    "id": "qwen3:4b",
+    "provider": "Ollama",
+    "type": "Chat",
+    "endpoint": "http://127.0.0.1:11434",
+    "modelId": "qwen3:4b",
+    "supportsTools": true,
+    "notes": "Small model with tool support"
+  },
+  {
+    "id": "gemma3:1b-it-qat",
+    "provider": "Ollama",
+    "type": "Chat",
+    "endpoint": "http://127.0.0.1:11434",
+    "modelId": "gemma3:1b-it-qat",
+    "supportsTools": false,
+    "notes": "Great small model when tools are not needed"
+  },
+  {
+    "id": "gemma3:4b",
+    "provider": "Ollama",
+    "type": "Chat",
+    "endpoint": "http://127.0.0.1:11434",
+    "modelId": "gemma3:4b",
+    "supportsTools": false,
+    "notes": "Produces good output but may not be as runnable on lower-end hardware and takes a little longer"
+  },
+  {
+    "id": "nomic-embed-text",
+    "provider": "Ollama",
+    "type": "Embedding",
+    "endpoint": "http://127.0.0.1:11434",
+    "modelId": "nomic-embed-text",
+    "supportsTools": false,
+    "notes": "Small embedding model"
+  }
+]
