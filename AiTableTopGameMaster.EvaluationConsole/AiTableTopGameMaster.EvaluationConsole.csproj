@@ -12,18 +12,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="Microsoft.Extensions.AI.Ollama">
-        <HintPath>..\..\..\.nuget\packages\microsoft.extensions.ai.ollama\9.7.0-preview.1.25356.2\lib\net9.0\Microsoft.Extensions.AI.Ollama.dll</HintPath>
-      </Reference>
-      <Reference Include="Serilog">
-        <HintPath>..\..\..\.nuget\packages\serilog\4.3.0\lib\net9.0\Serilog.dll</HintPath>
-      </Reference>
-      <Reference Include="Serilog.Extensions.Logging">
-        <HintPath>..\..\..\.nuget\packages\serilog.extensions.logging\9.0.2\lib\net9.0\Serilog.Extensions.Logging.dll</HintPath>
-      </Reference>
-      <Reference Include="Spectre.Console">
-        <HintPath>..\..\..\.nuget\packages\spectre.console\0.50.0\lib\net9.0\Spectre.Console.dll</HintPath>
-      </Reference>
+      <PackageReference Include="Microsoft.Extensions.AI.Ollama" Version="9.7.0-preview.1.25356.2" />
+      <PackageReference Include="Serilog" Version="4.3.0" />
+      <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.2" />
+      <PackageReference Include="Spectre.Console" Version="0.50.0" />
     </ItemGroup>
 
     <ItemGroup>
