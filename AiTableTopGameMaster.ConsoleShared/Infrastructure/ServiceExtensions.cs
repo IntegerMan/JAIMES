@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using AiTableTopGameMaster.ConsoleShared.Clients;
 using AiTableTopGameMaster.ConsoleShared.Helpers;
 using AiTableTopGameMaster.ConsoleShared.Settings;
@@ -26,12 +28,11 @@ public static class ServiceExtensions
         services.AddSingleton<ModelFactory>();
 
         // Load configuration settings and options
-        TSettings settings = services.RegisterConfigurationAndSettings<TSettings>(args);
+        services.RegisterConfigurationAndSettings<TSettings>(args);
         
         // Configure Semantic Kernel
         services.AddTransient<IKernelBuilder>(sp =>
         {
-            //ModelFactory factory = sp.GetRequiredService<ModelFactory>();
             IKernelBuilder builder = Kernel.CreateBuilder();
             builder.Services.AddLogging(loggingBuilder => loggingBuilder.ConfigureSerilogLogging(disposeLogger: false));
             builder.Services.AddSingleton(sp.GetRequiredService<IAnsiConsole>());
@@ -82,16 +83,39 @@ public static class ServiceExtensions
         {
             FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
         });
-        
-        // Configure AI Cores
-        /*
-        if (settings.Cores.Count <= 0) throw new InvalidOperationException("No AI cores configured");
-        foreach (var core in settings.Cores)
+        services.AddScoped<JsonSerializerOptions>(_ =>
         {
-            Log.Debug("Adding AI Core: {CoreName} ({CoreId})", core.Name, core.Description);
-            services.AddScoped<CoreInfo>(_ => core);
-        }
-        */
+            JsonSerializerOptions options = new()
+            {
+                PropertyNameCaseInsensitive = true,
+                AllowTrailingCommas = true
+            };
+            options.Converters.Add(new JsonStringEnumConverter());
+            return options;
+        });
+        services.AddScoped<IEnumerable<ModelInfo>>(sp =>
+        {
+            string path = Path.Combine(Environment.CurrentDirectory, "ai", "models.json");
+            Log.Debug("Reading Model Configurations from {Filename}", path);
+            JsonSerializerOptions options = sp.GetRequiredService<JsonSerializerOptions>();
+            using FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read);
+            return JsonSerializer.Deserialize<List<ModelInfo>>(stream, options) ?? [];
+        });
+        services.AddScoped<IEnumerable<CoreInfo>>(sp =>
+        {
+            string path = Path.Combine(Environment.CurrentDirectory, "ai", "cores.json");
+            Log.Debug("Reading AI Cores from {Filename}", path);
+            JsonSerializerOptions options = sp.GetRequiredService<JsonSerializerOptions>();
+            using FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read);
+            return JsonSerializer.Deserialize<List<CoreInfo>>(stream, options) ?? [];
+        });
+        services.AddSingleton<CoreFactory>();
+        services.AddScoped<IEnumerable<AiCore>>(sp =>
+        {
+            CoreFactory factory = sp.GetRequiredService<CoreFactory>();
+            CoreInfo[] cores = sp.GetServices<CoreInfo>().ToArray();
+            return cores.Select(c => factory.CreateCore(c));
+        });
 
         // Configure application dependencies
         services.AddTransient<ConsoleChatClient>();

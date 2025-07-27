@@ -52,7 +52,6 @@ try
 catch (Exception ex)
 {
     Log.Error(ex, "An error occurred");
-    console.MarkupLine($"{DisplayHelpers.Error}An error occurred: {ex.Message}[/]");
     console.WriteException(ex, ExceptionFormats.ShortenEverything);
     return 1;
 }

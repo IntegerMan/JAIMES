@@ -56,7 +56,7 @@ public class ConsoleChatClient(
             do
             {
                 _log.LogDebug("Sending {Message} to {Core}", message, core.Name);
-                console.Write(new Rule($"{DisplayHelpers.AI}{core.Name}[/] {DisplayHelpers.System}is thinking...[/]")
+                console.Write(new Rule($"{DisplayHelpers.AI}{core.Name}[/] {DisplayHelpers.System}is thinking using {DisplayHelpers.AI}{core.ModelId}[/]...[/]")
                     .Justify(Justify.Left)
                     .RuleStyle(new Style(foreground: Color.MediumPurple3_1)));
 

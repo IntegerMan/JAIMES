@@ -11,7 +11,8 @@ public class AiCore(Kernel kernel, CoreInfo info, ILoggerFactory loggerFactory)
 {
     private readonly ILogger<AiCore> _log = loggerFactory.CreateLogger<AiCore>();
     public string Name => info.Name;
-    
+    public string ModelId => info.ModelId;
+
     public override string ToString() => $"AI Core {Name}";
     
     public async Task<string> ChatAsync(string message, ChatHistory transcript, IDictionary<string, object> data)

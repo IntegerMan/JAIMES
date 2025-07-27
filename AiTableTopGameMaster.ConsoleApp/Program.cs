@@ -1,9 +1,7 @@
 ﻿using AiTableTopGameMaster.ConsoleApp;
-using AiTableTopGameMaster.ConsoleShared;
 using AiTableTopGameMaster.ConsoleShared.Clients;
 using AiTableTopGameMaster.ConsoleShared.Helpers;
 using AiTableTopGameMaster.ConsoleShared.Infrastructure;
-using AiTableTopGameMaster.ConsoleShared.Settings;
 using AiTableTopGameMaster.Core.Domain;
 using AiTableTopGameMaster.Core.Helpers;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,7 +39,6 @@ try
 catch (Exception ex)
 {
     Log.Error(ex, "An error occurred");
-    console.MarkupLine($"{DisplayHelpers.Error}An error occurred: {ex.Message}[/]");
     console.WriteException(ex, ExceptionFormats.ShortenEverything);
     return 1;
 }
