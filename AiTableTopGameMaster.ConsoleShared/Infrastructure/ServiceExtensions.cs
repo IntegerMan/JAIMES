@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using AiTableTopGameMaster.ConsoleShared.Clients;
 using AiTableTopGameMaster.ConsoleShared.Helpers;
 using AiTableTopGameMaster.ConsoleShared.Settings;
+using AiTableTopGameMaster.Core;
 using AiTableTopGameMaster.Core.Cores;
 using AiTableTopGameMaster.Core.Domain;
 using AiTableTopGameMaster.Core.Models;
@@ -20,7 +21,7 @@ namespace AiTableTopGameMaster.ConsoleShared.Infrastructure;
 
 public static class ServiceExtensions
 {
-    public static ServiceProvider BuildServiceProvider<TSettings>(IAnsiConsole console, string logFileName, string[] args) where TSettings : class
+    public static ServiceProvider BuildServiceProvider<TSettings>(IAnsiConsole console, string logFileName, string[] args) where TSettings : class, ISettingsRoot
     {
         ServiceCollection services = new();
         services.AddSingleton(console);

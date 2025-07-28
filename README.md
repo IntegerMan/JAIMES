@@ -20,12 +20,14 @@ The following tasks are planned for the project:
 - [x] Add encounter and encounter list plugin to Semantic Kernel
 - [x] Add a templating system
 - [x] Handle bad tool calls by retrying
+- [x] Add support for Azure OpenAI models
 
 ### AI Core System
 
 - [x] Design an agentic layout for the game's AI
 - [x] Implement the core of the AI system
 - [x] Add a planner core
+- [ ] Add a prompts file that contains the standard greeting prompt
 - [/] Ensure the initial history matches the prior initial history (pre-migration)
 - [/] Allow cores to track history
 - [x] Allow cores to customize which plugins they use

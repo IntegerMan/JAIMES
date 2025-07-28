@@ -1,4 +1,6 @@
+using System.ClientModel;
 using AiTableTopGameMaster.Core.Cores;
+using Azure.AI.OpenAI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -30,7 +32,7 @@ public class ModelFactory
     private ModelInfo FindModel(string modelId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(modelId, nameof(modelId));
-        return _models.FirstOrDefault(m => m.ModelId.Equals(modelId, StringComparison.OrdinalIgnoreCase))
+        return _models.FirstOrDefault(m => m.Id.Equals(modelId, StringComparison.OrdinalIgnoreCase))
                ?? throw new ArgumentException($"Model with ID '{modelId}' not found.", nameof(modelId));
     }
 
@@ -42,6 +44,10 @@ public class ModelFactory
         return model.Provider switch
         {
             ModelProvider.Ollama => new OllamaChatClient(model.Endpoint, model.ModelId),
+            ModelProvider.AzureOpenAI => 
+                new AzureOpenAIClient(new Uri(model.Endpoint), new ApiKeyCredential(_sp.GetRequiredService<AzureOpenAIModelSettings>().Key!))
+                    .GetChatClient(model.ModelId)
+                    .AsIChatClient(),
             _ => throw new NotSupportedException($"Model provider '{model.Provider}' is not supported.")
         };
     }
@@ -57,6 +63,11 @@ public class ModelFactory
         {
             case ModelProvider.Ollama:
                 builder.AddOllamaChatCompletion(model.ModelId, new Uri(model.Endpoint));
+                break;
+            case ModelProvider.AzureOpenAI:
+                AzureOpenAIModelSettings azureSettings = _sp.GetRequiredService<AzureOpenAIModelSettings>();
+                string azKey = azureSettings.Key ?? throw new InvalidOperationException("Azure OpenAI key is not configured.");
+                builder.AddAzureOpenAIChatCompletion(model.ModelId, model.Endpoint, azKey);
                 break;
             default:
                 throw new NotSupportedException($"Model provider '{model.Provider}' is not supported.");

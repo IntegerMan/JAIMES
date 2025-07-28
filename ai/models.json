@@ -43,5 +43,23 @@
     "modelId": "nomic-embed-text",
     "supportsTools": false,
     "notes": "Small embedding model"
+  },
+  {
+    "id": "az-model-router",
+    "provider": "AzureOpenAI",
+    "type": "Chat",
+    "endpoint": "https://ai-emergencehub172399778472.cognitiveservices.azure.com/",
+    "modelId": "model-router",
+    "supportsTools": true,
+    "notes": "Auto-routes to the most relevant model on Azure. Relies on the key being set in your user secrets or environment variables."
+  },
+  {
+    "id": "az-gpt-4o",
+    "provider": "AzureOpenAI",
+    "type": "Chat",
+    "endpoint": "https://ai-emergencehub172399778472.cognitiveservices.azure.com/",
+    "modelId": "gpt-4o",
+    "supportsTools": true,
+    "notes": "GPT-4o on Azure. Relies on the key being set in your user secrets or environment variables."
   }
 ]
