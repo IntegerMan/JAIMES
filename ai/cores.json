@@ -28,7 +28,7 @@
     "Plugins": []
   },
   {
-    "Name": "Game Master",
+    "Name": "Editor",
     "ModelId": "gemma3:1b-it-qat",
     "Description": "Polishes the prior response, making it more appropriate for a game setting.",
     "Instructions": [

@@ -28,8 +28,7 @@ The following tasks are planned for the project:
 - [x] Implement the core of the AI system
 - [x] Add a planner core
 - [x] Add a prompts file that contains the standard greeting prompt
-- [/] Ensure the initial history matches the prior initial history (pre-migration)
-- [/] Allow cores to track history
+- [x] Ensure the initial history matches the prior initial history (pre-migration)
 - [x] Allow cores to customize which plugins they use
 - [x] Allow cores to customize which models they use
 - [ ] Handle long context windows by summarizing or truncating history
@@ -49,10 +48,11 @@ The following tasks are planned for the project:
 ### Quality and Testing
 
 - [x] Add unit test project
-- [ ] Generate sample transcripts for testing
-- [ ] Add in Unit Tests around Semantic Kernel
 - [/] Add in Evaluation for common game scenarios
-- [ ] Add A/B Testing for Prompt Refinement and Model Selection
+- [ ] Prototype A/B Testing for Prompt Refinement and Model Selection
+- [ ] Implement A/B Testing for Planner
+- [ ] Implement A/B Testing for Storyteller
+- [ ] Implement A/B Testing for Editor
 - [ ] Add content safety checks (optional)
 
 ### Content
@@ -78,6 +78,3 @@ The following tasks are planned for the project:
 - [ ] Add a Resume Game command that loads a game state
 - [x] Allow selecting a command on startup
 
-### Bugs
-
-- [ ] The Game Master output appears twice in the console

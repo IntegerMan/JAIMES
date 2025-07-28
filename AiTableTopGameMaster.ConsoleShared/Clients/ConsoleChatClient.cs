@@ -12,6 +12,7 @@ public class ConsoleChatClient(
     IEnumerable<AiCore> cores,
     ILoggerFactory loggerFactory)
 {
+    private readonly AiCore[] _cores = cores.ToArray();
     private readonly ILogger<ConsoleChatClient> _log = loggerFactory.CreateLogger<ConsoleChatClient>();
     public string Name => "Game Master";
 
@@ -46,9 +47,7 @@ public class ConsoleChatClient(
         history.AddUserMessage(message);
         data["UserMessage"] = message;
 
-        AiCore lastCore = cores.Last();
-
-        foreach (var core in cores)
+        foreach (var core in _cores)
         {
             data["InputMessage"] = message;
 
@@ -73,7 +72,7 @@ public class ConsoleChatClient(
                 }
             } while (string.IsNullOrWhiteSpace(reply) || reply.IsJson());
 
-            if (core != lastCore)
+            if (core != _cores.Last())
             {
                 console.Markup($"{DisplayHelpers.AI}{core.Name}:[/] ");
                 console.WriteLine(reply);
