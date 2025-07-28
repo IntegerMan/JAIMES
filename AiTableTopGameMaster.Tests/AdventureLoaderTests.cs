@@ -79,7 +79,6 @@ public class AdventureLoaderTests
             character.Name.ShouldBe("TestCharacter");
             character.Specialization.ShouldBe("Level 1 Unit test");
             character.CharacterSheet.ShouldBe("Test character sheet");
-            adventure.InitialGreetingPrompt.ShouldBe("Test greeting prompt");
         }
         finally
         {

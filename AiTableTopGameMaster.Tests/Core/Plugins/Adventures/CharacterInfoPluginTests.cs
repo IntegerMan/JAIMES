@@ -29,7 +29,6 @@ public class CharacterInfoPluginTests
             EncountersOverview = "Test encounters",
             GameMasterNotes = "Test notes",
             NarrativeStructure = "Test structure",
-            InitialGreetingPrompt = "Test greeting",
             PlayerCharacter = playerCharacter
         };
 
@@ -69,7 +68,6 @@ public class CharacterInfoPluginTests
             EncountersOverview = "Test encounters",
             GameMasterNotes = "Test notes",
             NarrativeStructure = "Test structure",
-            InitialGreetingPrompt = "Test greeting",
             PlayerCharacter = playerCharacter
         };
 
@@ -98,7 +96,6 @@ public class CharacterInfoPluginTests
             EncountersOverview = "Test encounters",
             GameMasterNotes = "Test notes",
             NarrativeStructure = "Test structure",
-            InitialGreetingPrompt = "Test greeting",
             PlayerCharacter = new Character
             {
                 Name = "Test",

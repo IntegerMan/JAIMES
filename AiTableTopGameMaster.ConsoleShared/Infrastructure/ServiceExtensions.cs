@@ -27,6 +27,7 @@ public static class ServiceExtensions
         services.AddSingleton(console);
         services.AddJaimesAppLogging(logFileName);
         services.AddSingleton<ModelFactory>();
+        services.AddSingleton<IPromptsService, PromptsService>();
 
         // Load configuration settings and options
         services.RegisterConfigurationAndSettings<TSettings>(args);
@@ -79,6 +80,14 @@ public static class ServiceExtensions
             JsonSerializerOptions options = sp.GetRequiredService<JsonSerializerOptions>();
             using FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read);
             return JsonSerializer.Deserialize<List<CoreInfo>>(stream, options) ?? [];
+        });
+        services.AddSingleton<StandardPrompts>(sp =>
+        {
+            string path = Path.Combine(Environment.CurrentDirectory, "ai", "prompts.json");
+            Log.Debug("Reading Standard Prompts from {Filename}", path);
+            JsonSerializerOptions options = sp.GetRequiredService<JsonSerializerOptions>();
+            using FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read);
+            return JsonSerializer.Deserialize<StandardPrompts>(stream, options) ?? new StandardPrompts();
         });
         services.AddSingleton<CoreFactory>();
         services.AddScoped<IEnumerable<AiCore>>(sp =>

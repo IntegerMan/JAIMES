@@ -6,12 +6,11 @@ namespace AiTableTopGameMaster.Tests.Core.Plugins.Adventures;
 
 public class StoryInfoPluginTests
 {
-    private readonly Adventure _testAdventure;
     private readonly StoryInfoPlugin _plugin;
 
     public StoryInfoPluginTests()
     {
-        _testAdventure = new Adventure
+        Adventure testAdventure = new()
         {
             Name = "Test Adventure",
             Author = "Test Author",
@@ -22,11 +21,10 @@ public class StoryInfoPluginTests
             LocationsOverview = "Various locations overview",
             EncountersOverview = "Various encounters overview",
             GameMasterNotes = "Important notes for the GM to remember",
-            NarrativeStructure = "Three-act structure with rising action",
-            InitialGreetingPrompt = "Welcome to the adventure"
+            NarrativeStructure = "Three-act structure with rising action"
         };
         
-        _plugin = new StoryInfoPlugin(_testAdventure);
+        _plugin = new StoryInfoPlugin(testAdventure);
     }
 
     [Fact]
@@ -98,8 +96,7 @@ public class StoryInfoPluginTests
             LocationsOverview = "Test",
             EncountersOverview = "Test",
             GameMasterNotes = "Test",
-            NarrativeStructure = "Test",
-            InitialGreetingPrompt = "Test"
+            NarrativeStructure = "Test"
         };
         var plugin = new StoryInfoPlugin(adventure);
 
@@ -127,8 +124,7 @@ public class StoryInfoPluginTests
             LocationsOverview = "Test",
             EncountersOverview = "Test",
             GameMasterNotes = "Test",
-            NarrativeStructure = "Test",
-            InitialGreetingPrompt = "Test"
+            NarrativeStructure = "Test"
         };
         var plugin = new StoryInfoPlugin(adventure);
 
@@ -156,8 +152,7 @@ public class StoryInfoPluginTests
             LocationsOverview = "Test",
             EncountersOverview = "Test",
             GameMasterNotes = notes,
-            NarrativeStructure = "Test",
-            InitialGreetingPrompt = "Test"
+            NarrativeStructure = "Test"
         };
         var plugin = new StoryInfoPlugin(adventure);
 
@@ -185,8 +180,7 @@ public class StoryInfoPluginTests
             LocationsOverview = "Test",
             EncountersOverview = "Test",
             GameMasterNotes = "Test",
-            NarrativeStructure = structure,
-            InitialGreetingPrompt = "Test"
+            NarrativeStructure = structure
         };
         var plugin = new StoryInfoPlugin(adventure);
 

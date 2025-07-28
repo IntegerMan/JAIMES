@@ -23,7 +23,6 @@ public class LocationsPluginTests
             EncountersOverview = "Test encounters",
             GameMasterNotes = "Test notes",
             NarrativeStructure = "Test structure",
-            InitialGreetingPrompt = "Test greeting",
             Locations = 
             [
                 new Location { Name = "Tavern", Description = "A cozy inn with warm fires and friendly locals." },
@@ -43,8 +42,7 @@ public class LocationsPluginTests
             LocationsOverview = "This is a simple adventure with no pre-scripted locations.",
             EncountersOverview = "Test encounters",
             GameMasterNotes = "Test notes",
-            NarrativeStructure = "Test structure",
-            InitialGreetingPrompt = "Test greeting"
+            NarrativeStructure = "Test structure"
         };
     }
 
@@ -175,8 +173,7 @@ public class LocationsPluginTests
             LocationsOverview = "",
             EncountersOverview = "Test",
             GameMasterNotes = "Test",
-            NarrativeStructure = "Test",
-            InitialGreetingPrompt = "Test"
+            NarrativeStructure = "Test"
         };
         var plugin = new LocationsPlugin(adventure);
 

@@ -1,0 +1,5 @@
+{
+  "GameStart": [
+    "I'm {{$CharacterName}} the {{$CharacterSpecialization}}. Please start the adventure. Tell me who and where I am, what I see, and give me hooks to draw me into the adventure story. Do not assume I know anything about the adventure or the world."
+  ]
+}

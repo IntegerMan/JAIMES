@@ -41,7 +41,6 @@ public class AdventureTests
             EncountersOverview = "Dangerous encounters",
             GameMasterNotes = "Important notes",
             NarrativeStructure = "Three act structure",
-            InitialGreetingPrompt = "Welcome to the adventure",
             Characters = [testCharacter],
             Locations = [testLocation],
             Encounters = [testEncounter],
@@ -59,7 +58,6 @@ public class AdventureTests
         adventure.EncountersOverview.ShouldBe("Dangerous encounters");
         adventure.GameMasterNotes.ShouldBe("Important notes");
         adventure.NarrativeStructure.ShouldBe("Three act structure");
-        adventure.InitialGreetingPrompt.ShouldBe("Welcome to the adventure");
         adventure.Characters.ShouldHaveSingleItem();
         adventure.Locations.ShouldHaveSingleItem();
         adventure.Encounters.ShouldHaveSingleItem();
@@ -81,8 +79,7 @@ public class AdventureTests
             LocationsOverview = "Various locations",
             EncountersOverview = "Dangerous encounters",
             GameMasterNotes = "Important notes",
-            NarrativeStructure = "Three act structure",
-            InitialGreetingPrompt = "Welcome to the adventure"
+            NarrativeStructure = "Three act structure"
         };
 
         // Assert
@@ -107,8 +104,7 @@ public class AdventureTests
             LocationsOverview = "Various locations",
             EncountersOverview = "Dangerous encounters",
             GameMasterNotes = "Important notes",
-            NarrativeStructure = "Three act structure",
-            InitialGreetingPrompt = "Welcome to the adventure"
+            NarrativeStructure = "Three act structure"
         };
 
         // Act
@@ -148,7 +144,6 @@ public class AdventureTests
             EncountersOverview = "Dangerous encounters",
             GameMasterNotes = "Important notes",
             NarrativeStructure = "Three act structure",
-            InitialGreetingPrompt = "Welcome to the adventure",
             PlayerCharacter = initialCharacter
         };
 

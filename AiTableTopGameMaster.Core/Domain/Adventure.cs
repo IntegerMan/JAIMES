@@ -19,7 +19,6 @@ public class Adventure
     
     public required string GameMasterNotes { get; init; }
     public required string NarrativeStructure { get; init; }
-    public required string InitialGreetingPrompt { get; init; }
     
     public List<Character> Characters { get; init; } = [];
 

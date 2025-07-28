@@ -4,6 +4,7 @@ using AiTableTopGameMaster.ConsoleShared.Helpers;
 using AiTableTopGameMaster.ConsoleShared.Infrastructure;
 using AiTableTopGameMaster.Core.Domain;
 using AiTableTopGameMaster.Core.Helpers;
+using AiTableTopGameMaster.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 using Serilog;
@@ -30,8 +31,12 @@ try
     console.MarkupLine("The adventure begins! Type [bold green]'exit'[/] to quit at any time.");
     console.WriteLine();
     
+    IPromptsService promptsService = services.GetRequiredService<IPromptsService>();
     ConsoleChatClient client = services.GetRequiredService<ConsoleChatClient>();
-    await client.ChatIndefinitelyAsync(adventure.InitialGreetingPrompt, adventure.CreateChatData());
+
+    IDictionary<string, object> data = adventure.CreateChatData();
+    string message = promptsService.GetInitialGreetingMessage(data);
+    await client.ChatIndefinitelyAsync(message, data);
     
     console.WriteLine();
     return 0;

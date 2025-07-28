@@ -23,7 +23,6 @@ public class EncountersPluginTests
             EncountersOverview = "This adventure includes several challenging encounters:",
             GameMasterNotes = "Test notes",
             NarrativeStructure = "Test structure",
-            InitialGreetingPrompt = "Test greeting",
             Encounters = 
             [
                 new Encounter { Name = "Goblin Ambush", Description = "A group of goblins attacks from the bushes." },
@@ -44,7 +43,6 @@ public class EncountersPluginTests
             EncountersOverview = "This is a roleplay-focused adventure with no pre-scripted encounters.",
             GameMasterNotes = "Test notes",
             NarrativeStructure = "Test structure",
-            InitialGreetingPrompt = "Test greeting"
         };
     }
 
@@ -176,7 +174,6 @@ public class EncountersPluginTests
             EncountersOverview = "",
             GameMasterNotes = "Test",
             NarrativeStructure = "Test",
-            InitialGreetingPrompt = "Test"
         };
         var plugin = new EncountersPlugin(adventure);
 

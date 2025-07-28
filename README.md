@@ -27,7 +27,7 @@ The following tasks are planned for the project:
 - [x] Design an agentic layout for the game's AI
 - [x] Implement the core of the AI system
 - [x] Add a planner core
-- [ ] Add a prompts file that contains the standard greeting prompt
+- [x] Add a prompts file that contains the standard greeting prompt
 - [/] Ensure the initial history matches the prior initial history (pre-migration)
 - [/] Allow cores to track history
 - [x] Allow cores to customize which plugins they use
@@ -61,7 +61,7 @@ The following tasks are planned for the project:
 - [ ] Add a second character to the beach game
 - [ ] Add a second adventure
 - [ ] Separate characters from adventures
-- [ ] Move greeting out of the adventure and into the game settings. Make it an array.
+- [x] Move greeting out of the adventure and into the game settings. Make it an array.
 
 ### User Interface
 
@@ -77,3 +77,7 @@ The following tasks are planned for the project:
 - [ ] Summarize sessions at session end
 - [ ] Add a Resume Game command that loads a game state
 - [x] Allow selecting a command on startup
+
+### Bugs
+
+- [ ] The Game Master output appears twice in the console
