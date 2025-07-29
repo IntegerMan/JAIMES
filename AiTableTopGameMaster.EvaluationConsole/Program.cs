@@ -7,6 +7,8 @@ using AiTableTopGameMaster.EvaluationConsole.Helpers;
 using AiTableTopGameMaster.EvaluationConsole.Scenarios;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.AI.Evaluation;
+using Microsoft.Extensions.AI.Evaluation.Reporting;
+using Microsoft.Extensions.AI.Evaluation.Reporting.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Spectre.Console;
@@ -22,30 +24,25 @@ try
     AppSettings settings = services.GetRequiredService<AppSettings>();
     Log.Debug("Services configured successfully");
 
+
     EvaluationScenario scenario = new TestCoreEvaluationScenario(services, settings.ChatModelId);
+    ReportingConfiguration reportingConfig = BuildReportingConfig(scenario, services, settings);
     string message = scenario.Message;
     
-    console.MarkupLine($"{DisplayHelpers.User}You:[/] {message}");
-    console.MarkupLine("\r\n[yellow]Generating a response...[/]");
+    for (int i = 1; i <= settings.EvaluationIterations; i++)
+    {
+        console.MarkupLine($"[bold]Iteration {i}/{settings.EvaluationIterations}[/]");
+        console.MarkupLine($"{DisplayHelpers.User}You:[/] {message}");
+        console.MarkupLine("\r\n[yellow]Generating a response...[/]");
 
-    Stopwatch stopwatch = Stopwatch.StartNew();
-    string response = await scenario.GetResponseAsync(message);
-    stopwatch.Stop();
-    console.MarkupLine($"[yellow]Response generated in {stopwatch.ElapsedMilliseconds}ms[/]\r\n");
-
-    console.MarkupLine($"[yellow]Evaluation started using {settings.EvaluationModelId}[/]...");
-    
-    ModelFactory modelFactory = services.GetRequiredService<ModelFactory>();
-    IChatClient chatClient = modelFactory.CreateChatClient(settings.EvaluationModelId);
-    ChatConfiguration config = new(chatClient);
-    IEvaluator evaluator = new CompositeEvaluator(scenario.BuildEvaluators());
-    
-    stopwatch.Restart();
-    EvaluationResult result = await evaluator.EvaluateAsync(message, response, config);
-    stopwatch.Stop();
-    
-    console.MarkupLine($"{DisplayHelpers.Success}Evaluation Complete in {stopwatch.ElapsedMilliseconds}ms[/]");
-    console.DisplayEvaluationResultsTable(result);
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        string response = await scenario.GetResponseAsync(message);
+        stopwatch.Stop();
+        console.MarkupLine($"[yellow]Response generated in {stopwatch.ElapsedMilliseconds}ms[/]\r\n");
+        
+        EvaluationResult result = await EvaluateScenario(reportingConfig, scenario, i.ToString(), settings, message, response);
+        console.DisplayEvaluationResultsTable(result);
+    }
     
     return 0;
 } 
@@ -59,4 +56,41 @@ finally
 {
     Log.CloseAndFlush();
     console.WaitForKeypress();
+}
+
+async Task<EvaluationResult> EvaluateScenario(ReportingConfiguration reportingConfiguration, EvaluationScenario evaluationScenario, string iterationName, AppSettings appSettings, string input, string reply)
+{
+    await using ScenarioRun run = await reportingConfiguration.CreateScenarioRunAsync(
+        evaluationScenario.Name, iterationName);
+    console.MarkupLine($"[yellow]Evaluation started using {appSettings.EvaluationModelId}[/]...");
+
+    Stopwatch sw = Stopwatch.StartNew();
+    EvaluationResult result = await run.EvaluateAsync(input, reply);
+    sw.Stop();
+    
+    console.MarkupLine($"{DisplayHelpers.Success}Evaluation Complete in {sw.ElapsedMilliseconds}ms[/]");
+    
+    return result;
+}
+
+ReportingConfiguration BuildReportingConfig(EvaluationScenario scenario1, ServiceProvider serviceProvider, AppSettings settings1)
+{
+    IEnumerable<IEvaluator> evaluators = scenario1.BuildEvaluators();
+
+    ModelFactory modelFactory = serviceProvider.GetRequiredService<ModelFactory>();
+    IChatClient chatClient = modelFactory.CreateChatClient(settings1.EvaluationModelId);
+
+    string[] tags = [
+        $"EvalModel_{settings1.EvaluationModelId}", 
+        $"ChatModel_{settings1.ChatModelId}"
+    ];
+    ReportingConfiguration reportingConfiguration1 = DiskBasedReportingConfiguration.Create(
+        settings1.EvaluationStoragePath,
+        evaluators,
+        new ChatConfiguration(chatClient),
+        enableResponseCaching: true,
+        executionName: $"{DateTime.Now:yyyyMMddTHHmmss}",
+        tags: tags
+    );
+    return reportingConfiguration1;
 }

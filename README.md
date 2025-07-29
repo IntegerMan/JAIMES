@@ -5,6 +5,16 @@ This is a project to create an AI-powered tabletop game master that can run tabl
 
 This project was created by Matt Eland for demonstration and teaching purposes. It is not intended to be a complete game system, but rather a starting point for building AI-assisted tabletop games.
 
+## Evaluation
+
+You can run the evaluation console app to generate metrics and benchmarks around AI performance with different prompts and scenarios.
+
+Once this is complete, you can run the .NET AI Evaluation reporting tool to generate a HTML or JSON report of the results. Here's an example, run from the root directory of the solution:
+
+```bash
+dotnet aieval report -p Evaluation -o report.html --open
+```
+
 ## Tasks
 
 The following tasks are planned for the project:

@@ -43,7 +43,7 @@ public class TestCoreEvaluationScenario : EvaluationScenario
         _client = new ConsoleChatClient(console, cores, loggerFactory);
     }
 
-    public override string Name => "Test Core Evaluation Scenario";
+    public override string Name => "Life";
     public override string Message => "What is the meaning of life?";
     
     public override async Task<string> GetResponseAsync(string message)
