@@ -21,7 +21,7 @@ namespace AiTableTopGameMaster.ConsoleShared.Infrastructure;
 
 public static class ServiceExtensions
 {
-    public static ServiceProvider BuildServiceProvider<TSettings>(IAnsiConsole console, string logFileName, string[] args) where TSettings : class, ISettingsRoot
+    public static ServiceProvider BuildServiceProvider<TSettings>(IAnsiConsole console, string logFileName, Action<IServiceCollection> configure, string[] args) where TSettings : class, ISettingsRoot
     {
         ServiceCollection services = new();
         services.AddSingleton(console);
@@ -148,6 +148,8 @@ public static class ServiceExtensions
             adventure.PlayerCharacter = character;
             return character;
         });
+        
+        configure?.Invoke(services);
 
         return services.BuildServiceProvider();
     }

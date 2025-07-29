@@ -16,7 +16,10 @@ try
     console.RenderAppHeader("JAIMES", "Join AI to Make Epic Stories");
     
     Log.Debug("Starting AI Table Top Game Master Console Application");
-    ServiceProvider services = ServiceExtensions.BuildServiceProvider<AppSettings>(console, "Adventure", args);
+    ServiceProvider services = ServiceExtensions.BuildServiceProvider<AppSettings>(console, "Adventure", services =>
+    {
+        
+    }, args);
     Log.Debug("Services configured successfully");
 
     Adventure adventure = services.GetRequiredService<Adventure>();

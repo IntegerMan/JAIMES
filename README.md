@@ -58,11 +58,17 @@ The following tasks are planned for the project:
 ### Quality and Testing
 
 - [x] Add unit test project
-- [/] Add in Evaluation for common game scenarios
-- [ ] Prototype A/B Testing for Prompt Refinement and Model Selection
+- [x] Prototype A/B Testing for Prompt Refinement and Model Selection
+- [ ] Include time metrics in eval results (Custom IEvaluator?)
+- [ ] Add in contextual evaluators
+- [/] Use concrete evaluation scenario for Planner
+- [ ] Use concrete evaluation scenario for Storyteller
+- [ ] Use concrete evaluation scenario for Editor
+- [/] Use concrete evaluation scenario for full pipeline
 - [ ] Implement A/B Testing for Planner
 - [ ] Implement A/B Testing for Storyteller
 - [ ] Implement A/B Testing for Editor
+- [ ] Implement A/B Testing for full pipeline
 - [ ] Add content safety checks (optional)
 
 ### Content
