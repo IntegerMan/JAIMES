@@ -1,16 +1,15 @@
 ﻿using System.Diagnostics;
+using AiTableTopGameMaster.ConsoleShared.Clients;
 using AiTableTopGameMaster.ConsoleShared.Helpers;
 using AiTableTopGameMaster.ConsoleShared.Infrastructure;
 using AiTableTopGameMaster.Core.Models;
 using AiTableTopGameMaster.EvaluationConsole;
 using AiTableTopGameMaster.EvaluationConsole.Helpers;
 using AiTableTopGameMaster.EvaluationConsole.Scenarios;
-using DocumentFormat.OpenXml.EMMA;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.AI.Evaluation;
 using Microsoft.Extensions.AI.Evaluation.Quality;
 using Microsoft.Extensions.AI.Evaluation.Reporting;
-using Microsoft.Extensions.AI.Evaluation.Reporting.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Spectre.Console;
@@ -54,6 +53,7 @@ try
         //new GroundednessEvaluator(),
         new RelevanceEvaluator(),
         new RelevanceTruthAndCompletenessEvaluator(),
+        new StopwatchEvaluator()
         //new EquivalenceEvaluator(),
         //new RetrievalEvaluator()
     ];
@@ -70,11 +70,11 @@ try
             console.MarkupLine("\r\n[yellow]Generating a response...[/]");
 
             Stopwatch stopwatch = Stopwatch.StartNew();
-            string response = await scenario.GetResponseAsync(message);
+            ChatResult response = await scenario.GetResponseAsync(message);
             stopwatch.Stop();
             console.MarkupLine($"[yellow]Response generated in {stopwatch.ElapsedMilliseconds}ms[/]\r\n");
         
-            EvaluationResult result = await eval.EvaluateScenario(reportingConfig, scenario, i.ToString(), settings, message, response);
+            EvaluationResult result = await EvaluationManager.EvaluateScenario(reportingConfig, scenario, i.ToString(), message, response);
             console.DisplayEvaluationResultsTable(result);
         }
     }

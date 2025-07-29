@@ -40,7 +40,7 @@ public class AdventureEvaluationScenario : EvaluationScenario
     public override string Name { get; }
     public override string Message { get; }
 
-    public override async Task<string> GetResponseAsync(string message)
+    public override async Task<ChatResult> GetResponseAsync(string message)
     {
         ChatHistory history = new();
 

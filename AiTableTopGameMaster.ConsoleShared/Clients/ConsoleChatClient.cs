@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using AiTableTopGameMaster.ConsoleShared.Helpers;
 using AiTableTopGameMaster.Core.Cores;
 using AiTableTopGameMaster.Core.Helpers;
@@ -41,8 +42,9 @@ public class ConsoleChatClient(
         } while (true);
     }
 
-    public async Task<string> ChatAsync(string message, ChatHistory history, IDictionary<string, object> data)
+    public async Task<ChatResult> ChatAsync(string message, ChatHistory history, IDictionary<string, object> data)
     {
+        Stopwatch sw = Stopwatch.StartNew();
         _log.LogInformation("User:\r\n{Message}\r\n", message);
         history.AddUserMessage(message);
         data["UserMessage"] = message;
@@ -82,6 +84,8 @@ public class ConsoleChatClient(
             message = reply;
         }
 
+        sw.Stop();
+        
         // This gets logged to the transcript file
         _log.LogInformation("{Agent}:\r\n{Content}\r\n", Name, message);
         history.AddAssistantMessage(message);
@@ -90,6 +94,11 @@ public class ConsoleChatClient(
         console.Markup($"{DisplayHelpers.AI}{Name}:[/] ");
         console.WriteLine(message);
 
-        return message;
+        return new ChatResult
+        {
+            Message = message,
+            EllapsedMilliseconds = sw.ElapsedMilliseconds,
+            Data = data
+        };
     }
 }

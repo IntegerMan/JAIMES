@@ -59,8 +59,8 @@ The following tasks are planned for the project:
 
 - [x] Add unit test project
 - [x] Prototype A/B Testing for Prompt Refinement and Model Selection
-- [ ] Include time metrics in eval results (Custom IEvaluator?)
-- [ ] Add in contextual evaluators
+- [x] Include time metrics in eval results
+- [/] Add in contextual evaluators
 - [/] Use concrete evaluation scenario for Planner
 - [ ] Use concrete evaluation scenario for Storyteller
 - [ ] Use concrete evaluation scenario for Editor

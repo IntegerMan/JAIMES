@@ -1,15 +1,13 @@
-using System.Diagnostics;
-using AiTableTopGameMaster.ConsoleShared.Helpers;
+using AiTableTopGameMaster.ConsoleShared.Clients;
 using AiTableTopGameMaster.EvaluationConsole.Scenarios;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.AI.Evaluation;
 using Microsoft.Extensions.AI.Evaluation.Reporting;
 using Microsoft.Extensions.AI.Evaluation.Reporting.Storage;
-using Spectre.Console;
 
 namespace AiTableTopGameMaster.EvaluationConsole;
 
-public class EvaluationManager(IAnsiConsole console, IChatClient chatClient, AppSettings settings)
+public class EvaluationManager(IChatClient chatClient, AppSettings settings)
 {
     public ReportingConfiguration BuildReportingConfig(IEnumerable<IEvaluator> evaluators)
     {
@@ -27,17 +25,12 @@ public class EvaluationManager(IAnsiConsole console, IChatClient chatClient, App
         );
     }
     
-    public async Task<EvaluationResult> EvaluateScenario(ReportingConfiguration config, EvaluationScenario scenario, string iterationName, AppSettings appSettings, string input, string reply)
+    public static async Task<EvaluationResult> EvaluateScenario(ReportingConfiguration config, EvaluationScenario scenario, string iterationName, string input, ChatResult reply)
     {
         await using ScenarioRun run = await config.CreateScenarioRunAsync(scenario.Name, iterationName, additionalTags: scenario.AdditionalTags);
         
-        console.MarkupLine($"[yellow]Evaluation started using {appSettings.EvaluationModelId}[/]...");
-
-        Stopwatch sw = Stopwatch.StartNew();
-        EvaluationResult result = await run.EvaluateAsync(input, reply);
-        sw.Stop();
-    
-        console.MarkupLine($"{DisplayHelpers.Success}Evaluation Complete in {sw.ElapsedMilliseconds}ms[/]");
+        IEnumerable<EvaluationContext> context = scenario.BuildContext(reply);
+        EvaluationResult result = await run.EvaluateAsync(input, reply.Message, context);
     
         return result;
     }
