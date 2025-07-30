@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using AiTableTopGameMaster.Core.Domain;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.ChatCompletion;
 
@@ -71,6 +72,22 @@ public static partial class ChatExtensions
             ["AdventureBackstory"] = adventure.Backstory,
             ["AdventureSetting"] = adventure.SettingDescription
         };
+    }
+    
+    public static ChatRole ToChatRole(this AuthorRole role)
+    {
+        if (role == AuthorRole.User)
+        {
+            return ChatRole.User;
+        } else if (role == AuthorRole.Assistant)
+        {
+            return ChatRole.Assistant;
+        } else if (role == AuthorRole.System)
+        {
+            return ChatRole.System;
+        }
+
+        return ChatRole.Tool;
     }
     
 }

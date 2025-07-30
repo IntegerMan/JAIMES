@@ -1,6 +1,5 @@
 using System.Reflection;
 using AiTableTopGameMaster.Core;
-using AiTableTopGameMaster.Core.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

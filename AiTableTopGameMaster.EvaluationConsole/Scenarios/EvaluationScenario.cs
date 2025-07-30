@@ -1,4 +1,5 @@
-using AiTableTopGameMaster.ConsoleShared.Clients;
+using AiTableTopGameMaster.Core.Cores;
+using AiTableTopGameMaster.EvaluationConsole.Evaluators;
 using Microsoft.Extensions.AI.Evaluation;
 
 namespace AiTableTopGameMaster.EvaluationConsole.Scenarios;
@@ -10,7 +11,7 @@ public abstract class EvaluationScenario
 
     public IEnumerable<EvaluationContext> BuildContext(ChatResult result)
     {
-        return [new StopwatchEvaluationContext(result.EllapsedMilliseconds)];
+        return [new StopwatchEvaluationContext(result.ElapsedMilliseconds)];
     }
 
     public abstract Task<ChatResult> GetResponseAsync(string message);

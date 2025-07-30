@@ -3,8 +3,6 @@ using Shouldly;
 using System.Text.Json;
 using AiTableTopGameMaster.Core.Domain;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace AiTableTopGameMaster.Tests;
 

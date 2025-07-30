@@ -1,15 +1,18 @@
 ﻿using System.Diagnostics;
-using AiTableTopGameMaster.ConsoleShared.Clients;
 using AiTableTopGameMaster.ConsoleShared.Helpers;
 using AiTableTopGameMaster.ConsoleShared.Infrastructure;
+using AiTableTopGameMaster.Core.Cores;
 using AiTableTopGameMaster.Core.Models;
 using AiTableTopGameMaster.EvaluationConsole;
+using AiTableTopGameMaster.EvaluationConsole.Evaluators;
 using AiTableTopGameMaster.EvaluationConsole.Helpers;
 using AiTableTopGameMaster.EvaluationConsole.Scenarios;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.AI.Evaluation;
 using Microsoft.Extensions.AI.Evaluation.Quality;
 using Microsoft.Extensions.AI.Evaluation.Reporting;
+using Microsoft.Extensions.AI.Evaluation.Reporting.Formats.Html;
+using Microsoft.Extensions.AI.Evaluation.Reporting.Formats.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Spectre.Console;
@@ -79,6 +82,10 @@ try
         }
     }
     
+    console.MarkupLine("\r\n[bold green]Evaluation complete![/]");
+    await eval.ExportEvaluationReportAsync(reportingConfig, Environment.CurrentDirectory, openInBrowser: true);
+    console.MarkupLine($"Results saved to: {Environment.CurrentDirectory}");
+
     return 0;
 } 
 catch (Exception ex)

@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using System.Text;
 using AiTableTopGameMaster.Core.Helpers;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -16,7 +18,7 @@ public class AiCore(Kernel kernel, CoreInfo info, ILoggerFactory loggerFactory)
 
     public override string ToString() => $"AI Core {Name}";
     
-    public async Task<string> ChatAsync(string message, ChatHistory transcript, IDictionary<string, object> data)
+    public async Task<ChatResult> ChatAsync(string message, ChatHistory transcript, IDictionary<string, object> data)
     {
         _log.LogDebug("{CoreName}: Starting chat with message: {Message}", Name, message);
         
@@ -35,7 +37,10 @@ public class AiCore(Kernel kernel, CoreInfo info, ILoggerFactory loggerFactory)
         
         _log.LogDebug("{CoreName}: Sending message to chat service", Name);
         StringBuilder sb = new();
-        foreach (var result in await chatService.GetChatMessageContentsAsync(history, settings, kernel))
+        Stopwatch sw = Stopwatch.StartNew();
+        IReadOnlyList<ChatMessageContent> responseContent = await chatService.GetChatMessageContentsAsync(history, settings, kernel);
+        sw.Stop();
+        foreach (var result in responseContent)
         {
             string? content = result.Content;
             _log.LogDebug("{CoreName}: {Content}", Name, content);
@@ -44,7 +49,15 @@ public class AiCore(Kernel kernel, CoreInfo info, ILoggerFactory loggerFactory)
             sb.Append(content);
         }
 
-        return sb.ToString();
+        List<ChatMessage> chatMessages = responseContent.Select(c => new ChatMessage(ChatRole.Assistant, c.Content)).ToList();
+        return new ChatResult
+        {
+            Message = sb.ToString(),
+            ElapsedMilliseconds = sw.ElapsedMilliseconds,
+            Data = data,
+            History = history,
+            Response = new ChatResponse(chatMessages)
+        };
     }
 
     private ChatHistory BuildChatHistory(string message, ChatHistory transcript, IDictionary<string, object> data)

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.AI.Evaluation;
 
-namespace AiTableTopGameMaster.EvaluationConsole;
+namespace AiTableTopGameMaster.EvaluationConsole.Evaluators;
 
 public class StopwatchEvaluationContext(long elapsedMilliseconds) : EvaluationContext("StopwatchEvaluationContext")
 {

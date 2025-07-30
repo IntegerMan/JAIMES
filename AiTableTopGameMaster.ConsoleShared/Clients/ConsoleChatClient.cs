@@ -2,6 +2,7 @@ using System.Diagnostics;
 using AiTableTopGameMaster.ConsoleShared.Helpers;
 using AiTableTopGameMaster.Core.Cores;
 using AiTableTopGameMaster.Core.Helpers;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Spectre.Console;
@@ -49,11 +50,13 @@ public class ConsoleChatClient(
         history.AddUserMessage(message);
         data["UserMessage"] = message;
 
+        ChatResult? reply = null;
+        bool isSingleCore = _cores.Length == 1;
+        
         foreach (var core in _cores)
         {
             data["InputMessage"] = message;
 
-            string? reply;
             do
             {
                 _log.LogDebug("Sending {Message} to {Core}", message, core.Name);
@@ -64,24 +67,24 @@ public class ConsoleChatClient(
                 reply = await core.ChatAsync(message, history, data);
                 _log.LogDebug("{Core}: {Content}", core.Name, reply);
                 
-                if (string.IsNullOrWhiteSpace(reply))
+                if (reply.IsEmpty)
                 {
                     console.MarkupLine($"[bold red]The {core.Name} response was empty. Retrying.[/]");
                 }
-                else if (reply.IsJson())
+                else if (reply.IsJson)
                 {
                     console.MarkupLine($"[bold red]The {core.Name} response appeared to be JSON. Retrying.[/]");
                 }
-            } while (string.IsNullOrWhiteSpace(reply) || reply.IsJson());
+            } while (reply.IsEmpty || reply.IsJson);
 
             if (core != _cores.Last())
             {
                 console.Markup($"{DisplayHelpers.AI}{core.Name}:[/] ");
-                console.WriteLine(reply);
+                console.WriteLine(reply.Message);
                 console.WriteLine();
             }
 
-            message = reply;
+            message = reply.Message;
         }
 
         sw.Stop();
@@ -97,8 +100,10 @@ public class ConsoleChatClient(
         return new ChatResult
         {
             Message = message,
-            EllapsedMilliseconds = sw.ElapsedMilliseconds,
-            Data = data
+            ElapsedMilliseconds = sw.ElapsedMilliseconds,
+            Data = data,
+            History = isSingleCore ? reply!.History : history,
+            Response = new ChatResponse(new ChatMessage(ChatRole.Assistant, message)),
         };
     }
 }
