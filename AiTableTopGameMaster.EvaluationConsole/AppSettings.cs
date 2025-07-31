@@ -10,4 +10,5 @@ public class AppSettings : ISettingsRoot
     public required string EvaluationStoragePath { get; init; }
     public AzureOpenAIModelSettings AzureOpenAI { get; init; } = new();
     public int EvaluationIterations { get; init; } = 1;
+    public string[] ModelIdsToEvaluate { get; init; } = [];
 }

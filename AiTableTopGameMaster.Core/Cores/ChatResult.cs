@@ -1,3 +1,4 @@
+using AiTableTopGameMaster.Core.Helpers;
 using Microsoft.Extensions.AI;
 using Microsoft.SemanticKernel.ChatCompletion;
 
@@ -10,6 +11,6 @@ public record ChatResult
     public IDictionary<string, object> Data { get; init; } = new Dictionary<string, object>();
     public required ChatHistory History { get; init; }
     public required ChatResponse Response { get; init; }
-    public bool IsJson { get; }
-    public bool IsEmpty { get; }
+    public bool IsJson => Message.IsJson();
+    public bool IsEmpty => string.IsNullOrWhiteSpace(Message);
 }

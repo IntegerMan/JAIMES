@@ -5,6 +5,7 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
+using Serilog;
 
 namespace AiTableTopGameMaster.Core.Models;
 
@@ -57,7 +58,6 @@ public class ModelFactory
         string modelId = core.ModelId;
         ModelInfo model = FindModel(modelId);
         if (model.Type != ModelType.Chat) throw new InvalidOperationException($"Model with ID '{modelId}' is not a chat model but is referenced by core {core.Name}.");
-        if (core.Plugins.Length > 0 && !model.SupportsTools) throw new InvalidOperationException($"The model {modelId} does not support tools, but tools are required for this operation for core {core.Name}.");
         
         switch (model.Provider)
         {
@@ -74,6 +74,18 @@ public class ModelFactory
         }
         
         // Add Plugins as requested by the core
+        AddPlugins(builder, core, model, modelId);
+    }
+
+    private void AddPlugins(IKernelBuilder builder, CoreInfo core, ModelInfo model, string modelId)
+    {
+        if (core.Plugins.Length <= 0) return;
+        if (!model.SupportsTools)
+        {
+            Log.Warning("Model {ModelId} does not support tools, but core {CoreName} has plugins. Plugins will be disabled.", modelId, core.Name);
+            return;
+        }
+
         foreach (var plugin in core.Plugins)
         {
             _log.LogDebug("Adding plugin {PluginName} to AI Core {CoreName}", plugin, core.Name);
@@ -81,7 +93,7 @@ public class ModelFactory
             {
                 throw new InvalidOperationException($"Plugin type not found: {plugin} for core {core.Name}");
             }
-            
+
             object pluginInstance = _sp.GetRequiredService(pluginType);
             builder.Plugins.AddFromObject(pluginInstance);
         }

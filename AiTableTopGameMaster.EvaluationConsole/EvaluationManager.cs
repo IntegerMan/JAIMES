@@ -9,7 +9,6 @@ using Microsoft.Extensions.AI.Evaluation.Reporting.Formats.Html;
 using Microsoft.Extensions.AI.Evaluation.Reporting.Formats.Json;
 using Microsoft.Extensions.AI.Evaluation.Reporting.Storage;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Spectre.Console;
 
 namespace AiTableTopGameMaster.EvaluationConsole;
 
@@ -31,7 +30,7 @@ public class EvaluationManager(IChatClient chatClient, AppSettings settings)
         );
     }
     
-    public static async Task<EvaluationResult> EvaluateScenario(ReportingConfiguration config, EvaluationScenario scenario, string iterationName, string input, ChatResult reply)
+    public static async Task<EvaluationResult> EvaluateScenario(ReportingConfiguration config, EvaluationScenario scenario, string iterationName, ChatResult reply)
     {
         await using ScenarioRun run = await config.CreateScenarioRunAsync(scenario.Name, iterationName, additionalTags: scenario.AdditionalTags);
         
@@ -40,7 +39,35 @@ public class EvaluationManager(IChatClient chatClient, AppSettings settings)
         IEnumerable<ChatMessage> messages = history.Select(m => new ChatMessage(m.Role.ToChatRole(), m.Content));
         EvaluationResult result = await run.EvaluateAsync(messages, reply.Response, context);
         
+        // Customize pass / fail interpretation for metrics to help streamline report interpretation
+        result.Interpret(metric =>
+        {
+            // We like to have many metrics, but we really only want to show red on the high-level report for some metrics
+            if (metric is NumericMetric numMetric && IsPassFailMetric(numMetric.Name))
+            {
+                return new EvaluationMetricInterpretation(
+                    numMetric.Interpretation?.Rating ?? EvaluationRating.Unknown,
+                    failed: numMetric.Value < 3,
+                    reason: $"Completeness metric value: {numMetric.Value}"
+                );
+            }
+
+            // Do not fail on other metrics
+            return new EvaluationMetricInterpretation(
+                metric.Interpretation?.Rating ?? EvaluationRating.Unknown,
+                failed: false,
+                reason: metric.Interpretation?.Reason ?? "No interpretation provided"
+            );
+        });
+        
         return result;
+    }
+
+    private static bool IsPassFailMetric(string name)
+    {
+        return name.StartsWith("Completeness") || 
+               name.Equals("Equivalence") || 
+               name.StartsWith("Relevance");
     }
 
     public async Task ExportEvaluationReportAsync(ReportingConfiguration reportingConfiguration, string directory, bool openInBrowser = false)
@@ -52,7 +79,7 @@ public class EvaluationManager(IChatClient chatClient, AppSettings settings)
         JsonReportWriter jsonWriter = new(reportJsonPath);
         
         List<ScenarioRunResult> results = new();
-        await foreach (string executionName in reportingConfiguration.ResultStore.GetLatestExecutionNamesAsync(count: 1))
+        await foreach (string executionName in reportingConfiguration.ResultStore.GetLatestExecutionNamesAsync(count: 5))
         {
             await foreach (ScenarioRunResult result in reportingConfiguration.ResultStore.ReadResultsAsync(executionName))
             {

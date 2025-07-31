@@ -1,8 +1,7 @@
 {
   "GameStart": [
-    "Here is the adventure setting: {{$AdventureSetting}}",
-    "Here is the adventure backstory: {{$AdventureBackstory}}",
-    "I'm playing {{$CharacterName}} the {{$CharacterSpecialization}}. You can check their starting character information via a function call, but details may change as the story progresses.",
-    "Please start the adventure. Tell me who and where I am, what I see, and give me hooks to draw me into the adventure story. Do not assume I know anything about the adventure or the world."
+    "Please start a new adventure.",
+    "I'm playing {{$CharacterName}} the {{$CharacterSpecialization}}. This is important to the game master, so include it in your response.",
+    "Here is the adventure backstory: {{$AdventureBackstory}}. I don't know this, so include some key information as needed."
   ]
 }

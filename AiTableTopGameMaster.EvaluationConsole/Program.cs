@@ -11,8 +11,6 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.AI.Evaluation;
 using Microsoft.Extensions.AI.Evaluation.Quality;
 using Microsoft.Extensions.AI.Evaluation.Reporting;
-using Microsoft.Extensions.AI.Evaluation.Reporting.Formats.Html;
-using Microsoft.Extensions.AI.Evaluation.Reporting.Formats.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Spectre.Console;
@@ -41,9 +39,9 @@ try
     EvaluationScenario[] scenarios =
     [
         new PlannerEvaluationScenario(services),
-        new AdventureEvaluationScenario(services, "Storyteller"),
-        new AdventureEvaluationScenario(services, "Editor"),
-        new EndToEndEvaluationScenario(services),
+        //new AdventureEvaluationScenario(services, "Storyteller"),
+        //new AdventureEvaluationScenario(services, "Editor"),
+        //new EndToEndEvaluationScenario(services),
     ];
 
     EvaluationManager eval = services.GetRequiredService<EvaluationManager>();
@@ -51,13 +49,15 @@ try
     IEnumerable<IEvaluator> evaluators =
     [
         new CoherenceEvaluator(),
-        //new CompletenessEvaluator(),
         new FluencyEvaluator(),
-        //new GroundednessEvaluator(),
         new RelevanceEvaluator(),
         new RelevanceTruthAndCompletenessEvaluator(),
-        new StopwatchEvaluator()
-        //new EquivalenceEvaluator(),
+        new CompletenessEvaluator(), // Note: better coverage from the RelevanceTruthAndCompletenessEvaluator. May be redundant.
+        new StopwatchEvaluator(),
+        new EquivalenceEvaluator(),
+        //new ToolCallAccuracyEvaluator(),
+        //new TaskAdherenceEvaluator()
+        //new GroundednessEvaluator(),
         //new RetrievalEvaluator()
     ];
     ReportingConfiguration reportingConfig = eval.BuildReportingConfig(evaluators);
@@ -66,18 +66,18 @@ try
     {
         string message = scenario.Message;
     
-        for (int i = 1; i <= settings.EvaluationIterations; i++)
+        foreach (var modelId in settings.ModelIdsToEvaluate)
         {
-            console.MarkupLine($"[bold]{scenario.Name} Iteration {i}/{settings.EvaluationIterations}[/]");
+            console.MarkupLine($"[bold]{scenario.Name}:{modelId}[/]");
             console.MarkupLine($"{DisplayHelpers.User}You:[/] {message}");
             console.MarkupLine("\r\n[yellow]Generating a response...[/]");
 
             Stopwatch stopwatch = Stopwatch.StartNew();
-            ChatResult response = await scenario.GetResponseAsync(message);
+            ChatResult response = await scenario.GetResponseAsync(message, modelId);
             stopwatch.Stop();
             console.MarkupLine($"[yellow]Response generated in {stopwatch.ElapsedMilliseconds}ms[/]\r\n");
         
-            EvaluationResult result = await EvaluationManager.EvaluateScenario(reportingConfig, scenario, i.ToString(), message, response);
+            EvaluationResult result = await EvaluationManager.EvaluateScenario(reportingConfig, scenario, modelId, response);
             console.DisplayEvaluationResultsTable(result);
         }
     }

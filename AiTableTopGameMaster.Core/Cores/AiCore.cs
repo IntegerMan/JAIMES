@@ -16,7 +16,7 @@ public class AiCore(Kernel kernel, CoreInfo info, ILoggerFactory loggerFactory)
     public string ModelId => info.ModelId;
     public int PluginCount => kernel.Plugins.Count;
 
-    public override string ToString() => $"AI Core {Name}";
+    public override string ToString() => $"AI Core {Name}:{ModelId}";
     
     public async Task<ChatResult> ChatAsync(string message, ChatHistory transcript, IDictionary<string, object> data)
     {
@@ -25,6 +25,7 @@ public class AiCore(Kernel kernel, CoreInfo info, ILoggerFactory loggerFactory)
         IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
         
         ChatHistory history = BuildChatHistory(message, transcript, data);
+        ChatHistory inputHistory = new(history);
         history.LogHistory(_log);
 
         OllamaPromptExecutionSettings settings = new()
@@ -55,7 +56,7 @@ public class AiCore(Kernel kernel, CoreInfo info, ILoggerFactory loggerFactory)
             Message = sb.ToString(),
             ElapsedMilliseconds = sw.ElapsedMilliseconds,
             Data = data,
-            History = history,
+            History = inputHistory,
             Response = new ChatResponse(chatMessages)
         };
     }
@@ -68,9 +69,10 @@ public class AiCore(Kernel kernel, CoreInfo info, ILoggerFactory loggerFactory)
             history.AddSystemMessage(instruction.ResolveVariables(data));
         }
 
-        ChatMessageContent? lastUserMessage = transcript.LastOrDefault(t => t.Role == AuthorRole.User);
+        //ChatMessageContent? lastUserMessage = transcript.LastOrDefault(t => t.Role == AuthorRole.User);
         
-        if (info.IncludeHistory && transcript.Count > 0)
+        /*
+        if (info.IncludeHistory && transcript.Any(m => m.Role == AuthorRole.Assistant || m.Role == AuthorRole.User))
         {
             _log.LogDebug("{CoreName}: Including previous chat history", Name);
             history.AddSystemMessage("Here is the previous session history:");
@@ -95,6 +97,7 @@ public class AiCore(Kernel kernel, CoreInfo info, ILoggerFactory loggerFactory)
         {
             history.AddUserMessage($"The player just said: {lastUserMessage.Content}");
         }
+        */
         
         history.AddUserMessage(message);
 

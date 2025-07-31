@@ -48,6 +48,7 @@ public class ConsoleChatClient(
         Stopwatch sw = Stopwatch.StartNew();
         _log.LogInformation("User:\r\n{Message}\r\n", message);
         history.AddUserMessage(message);
+        ChatHistory inputHistory = new(history);
         data["UserMessage"] = message;
 
         ChatResult? reply = null;
@@ -102,7 +103,7 @@ public class ConsoleChatClient(
             Message = message,
             ElapsedMilliseconds = sw.ElapsedMilliseconds,
             Data = data,
-            History = isSingleCore ? reply!.History : history,
+            History = isSingleCore ? reply!.History : inputHistory,
             Response = new ChatResponse(new ChatMessage(ChatRole.Assistant, message)),
         };
     }

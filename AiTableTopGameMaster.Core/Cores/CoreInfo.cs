@@ -1,9 +1,6 @@
-using JetBrains.Annotations;
-
 namespace AiTableTopGameMaster.Core.Cores;
 
-[UsedImplicitly]
-public class CoreInfo
+public record CoreInfo
 {
     public required string Name { get; init; }
     public required string ModelId { get; init; }
