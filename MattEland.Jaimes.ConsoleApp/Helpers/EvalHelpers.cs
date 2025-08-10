@@ -1,7 +1,7 @@
 using Microsoft.Extensions.AI.Evaluation;
 using Spectre.Console;
 
-namespace AiTableTopGameMaster.EvaluationConsole.Helpers;
+namespace AiTableTopGameMaster.ConsoleApp.Helpers;
 
 public static class EvalHelpers
 {

@@ -2,7 +2,7 @@ using AiTableTopGameMaster.Core.Domain;
 using AiTableTopGameMaster.Core.Plugins.Adventures;
 using Shouldly;
 
-namespace AiTableTopGameMaster.Tests.Core.Plugins.Adventures;
+namespace MattEland.Jaimes.Tests.Core.Plugins.Adventures;
 
 public class StoryInfoPluginTests
 {

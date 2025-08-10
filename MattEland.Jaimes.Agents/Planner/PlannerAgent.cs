@@ -3,7 +3,7 @@ using MattEland.Jaimes.RAG;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 
-namespace MattEland.Jaimes.Agents;
+namespace MattEland.Jaimes.Agents.Planner;
 
 
 public class PlannerAgent(ITranscriptService transcriptService, IModelFactory factory, IKernelBuilder builder, ModelInfo model) : IPlannerAgent

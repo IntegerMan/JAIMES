@@ -2,7 +2,7 @@ using AiTableTopGameMaster.Core.Plugins.Sourcebooks;
 using Microsoft.SemanticKernel;
 using Shouldly;
 
-namespace AiTableTopGameMaster.Tests.Core.Plugins.Sourcebooks;
+namespace MattEland.Jaimes.Tests.Core.Plugins.Sourcebooks;
 
 public class SourcebookExtensionsTests
 {

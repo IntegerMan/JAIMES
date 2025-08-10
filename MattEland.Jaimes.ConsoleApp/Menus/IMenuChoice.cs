@@ -1,6 +1,6 @@
 namespace AiTableTopGameMaster.ConsoleApp.Menus;
 
-public interface IMainMenuChoice
+public interface IMenuChoice
 {
     string MenuText { get; }
     Task<ApplicationState> RunAsync();

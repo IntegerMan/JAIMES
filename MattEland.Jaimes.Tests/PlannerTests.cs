@@ -1,5 +1,6 @@
 ﻿using AiTableTopGameMaster.Core.Models;
 using MattEland.Jaimes.Agents;
+using MattEland.Jaimes.Agents.Planner;
 using MattEland.Jaimes.RAG;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;

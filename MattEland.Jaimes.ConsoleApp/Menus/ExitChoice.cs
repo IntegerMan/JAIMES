@@ -2,7 +2,7 @@ using Spectre.Console;
 
 namespace AiTableTopGameMaster.ConsoleApp.Menus;
 
-public class ExitChoice(IAnsiConsole console) : IMainMenuChoice
+public class ExitChoice(IAnsiConsole console) : IMenuChoice
 {
     public string MenuText => "Exit Application";
     public int Order => int.MaxValue;

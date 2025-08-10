@@ -1,10 +1,10 @@
-﻿using AiTableTopGameMaster.Core.Services;
-using Shouldly;
-using System.Text.Json;
+﻿using System.Text.Json;
 using AiTableTopGameMaster.Core.Domain;
+using AiTableTopGameMaster.Core.Services;
 using Microsoft.Extensions.Logging.Abstractions;
+using Shouldly;
 
-namespace AiTableTopGameMaster.Tests;
+namespace MattEland.Jaimes.Tests;
 
 public class AdventureLoaderTests
 {

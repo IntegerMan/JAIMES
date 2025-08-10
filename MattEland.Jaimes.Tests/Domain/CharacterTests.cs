@@ -1,7 +1,7 @@
 using AiTableTopGameMaster.Core.Domain;
 using Shouldly;
 
-namespace AiTableTopGameMaster.Tests.Domain;
+namespace MattEland.Jaimes.Tests.Domain;
 
 public class CharacterTests
 {

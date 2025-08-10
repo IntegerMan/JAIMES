@@ -9,7 +9,7 @@ using Spectre.Console;
 
 namespace AiTableTopGameMaster.ConsoleApp.Menus;
 
-public class StartAdventureChoice(IServiceProvider services, IAnsiConsole console) : IMainMenuChoice
+public class StartAdventureChoice(IServiceProvider services, IAnsiConsole console) : IMenuChoice
 {
     public string MenuText => "Start New Adventure";
     public int Order => 1;

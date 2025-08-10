@@ -2,7 +2,7 @@ using AiTableTopGameMaster.Core.Services;
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 
-namespace AiTableTopGameMaster.Tests.Core.Services;
+namespace MattEland.Jaimes.Tests.Core.Services;
 
 public class AdventureLoaderExtendedTests
 {

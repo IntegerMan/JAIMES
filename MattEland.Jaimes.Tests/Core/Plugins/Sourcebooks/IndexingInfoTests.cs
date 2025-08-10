@@ -1,7 +1,7 @@
 using AiTableTopGameMaster.Core.Plugins.Sourcebooks;
 using Shouldly;
 
-namespace AiTableTopGameMaster.Tests.Core.Plugins.Sourcebooks;
+namespace MattEland.Jaimes.Tests.Core.Plugins.Sourcebooks;
 
 public class IndexingInfoTests
 {

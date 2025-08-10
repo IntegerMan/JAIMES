@@ -1,4 +1,4 @@
-namespace MattEland.Jaimes.Agents;
+namespace MattEland.Jaimes.Agents.Planner;
 
 public interface IPlannerAgent : IJaimesAgent<PlannerResponse>
 {

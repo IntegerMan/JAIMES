@@ -1,12 +1,16 @@
 ﻿using System.ComponentModel;
 using AiTableTopGameMaster.ConsoleApp;
+using AiTableTopGameMaster.ConsoleApp.Evaluation;
+using AiTableTopGameMaster.ConsoleApp.Evaluation.Scenarios;
 using AiTableTopGameMaster.ConsoleApp.Menus;
 using AiTableTopGameMaster.ConsoleShared.Clients;
 using AiTableTopGameMaster.ConsoleShared.Helpers;
 using AiTableTopGameMaster.ConsoleShared.Infrastructure;
 using AiTableTopGameMaster.Core.Domain;
 using AiTableTopGameMaster.Core.Helpers;
+using AiTableTopGameMaster.Core.Models;
 using AiTableTopGameMaster.Core.Services;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 using Serilog;
@@ -20,13 +24,29 @@ try
     Log.Debug("Starting AI Table Top Game Master Console Application");
     ServiceProvider services = ServiceExtensions.BuildServiceProvider<AppSettings>(console, "Adventure", services =>
     {
+        // Add an IChatClient for evaluation
+        services.AddKeyedSingleton<IChatClient>("Evaluation", (sp, key) =>
+        {
+            AppSettings settings = sp.GetRequiredService<AppSettings>();
+            ModelFactory modelFactory = sp.GetRequiredService<ModelFactory>();
+            return modelFactory.CreateChatClient(settings.EvaluationModelId);
+        });
+        
         // Automatic registration of types by conventions
         services.Scan(scan =>
         {
+            services.AddSingleton<EvaluationManager>();
+            
             // Find all IMainMenuChoice implementations and register them
             scan.FromEntryAssembly()
-                .AddClasses(c => c.AssignableTo<IMainMenuChoice>())
+                .AddClasses(c => c.AssignableTo<IMenuChoice>())
                 .AsImplementedInterfaces()
+                .WithTransientLifetime();
+            
+            // Register all EvaluationScenario implementations
+            scan.FromEntryAssembly()
+                .AddClasses(c => c.AssignableTo<EvaluationScenario>())
+                .As<EvaluationScenario>()
                 .WithTransientLifetime();
         });
     }, args);
@@ -35,13 +55,13 @@ try
     ApplicationState state;
     do
     {
-        IMainMenuChoice mainMenuChoice = console.Prompt(new SelectionPrompt<IMainMenuChoice>().Title("What do you want to do?")
-            .AddChoices(services.GetServices<IMainMenuChoice>()
+        IMenuChoice menuChoice = console.Prompt(new SelectionPrompt<IMenuChoice>().Title("What do you want to do?")
+            .AddChoices(services.GetServices<IMenuChoice>()
                 .OrderBy(c => c.Order)
                 .ThenBy(c => c.MenuText))
             .UseConverter(c => c.MenuText));
 
-        state = await mainMenuChoice.RunAsync();
+        state = await menuChoice.RunAsync();
         console.WriteLine();
     } while (state != ApplicationState.Terminating);
 
