@@ -9,7 +9,7 @@ using Serilog;
 
 namespace AiTableTopGameMaster.Core.Models;
 
-public class ModelFactory
+public class ModelFactory : IModelFactory
 {
     private readonly ILogger<ModelFactory> _log;
     private readonly IServiceProvider _sp;
@@ -55,10 +55,24 @@ public class ModelFactory
 
     public void ConfigureKernel(IKernelBuilder builder, CoreInfo core)
     {
-        string modelId = core.ModelId;
-        ModelInfo model = FindModel(modelId);
-        if (model.Type != ModelType.Chat) throw new InvalidOperationException($"Model with ID '{modelId}' is not a chat model but is referenced by core {core.Name}.");
+        string agentName = core.Name;
+        ModelInfo model = FindModel(core.ModelId);
+        string[] plugins = core.Plugins;
         
+        ConfigureKernel(builder, agentName, model, plugins);
+    }
+    
+    public void ConfigureKernel(IKernelBuilder builder, string agentName, string modelId, string[] plugins)
+    {
+        ModelInfo model = FindModel(modelId);
+
+        ConfigureKernel(builder, agentName, model, plugins);
+    }
+
+    public void ConfigureKernel(IKernelBuilder builder, string agentName, ModelInfo model, string[] plugins)
+    {
+        if (model.Type != ModelType.Chat) throw new ArgumentException($"{model.ModelId} is a {model.Type}, not a {ModelType.Chat} model but is referenced by {agentName} as {model.Id}.", nameof(model));
+
         switch (model.Provider)
         {
             case ModelProvider.Ollama:
@@ -72,26 +86,26 @@ public class ModelFactory
             default:
                 throw new NotSupportedException($"Model provider '{model.Provider}' is not supported.");
         }
-        
+
         // Add Plugins as requested by the core
-        AddPlugins(builder, core, model, modelId);
+        AddPlugins(builder, model, plugins, agentName);
     }
 
-    private void AddPlugins(IKernelBuilder builder, CoreInfo core, ModelInfo model, string modelId)
+    private void AddPlugins(IKernelBuilder builder, ModelInfo model, string[] pluginIds, string agentName)
     {
-        if (core.Plugins.Length <= 0) return;
+        if (pluginIds.Length <= 0) return;
         if (!model.SupportsTools)
         {
-            Log.Warning("Model {ModelId} does not support tools, but core {CoreName} has plugins. Plugins will be disabled.", modelId, core.Name);
+            Log.Warning("Model {ModelId} does not support tools, but {Name} has plugins. Plugins will be disabled.", model.ModelId, agentName);
             return;
         }
 
-        foreach (var plugin in core.Plugins)
+        foreach (var plugin in pluginIds)
         {
-            _log.LogDebug("Adding plugin {PluginName} to AI Core {CoreName}", plugin, core.Name);
+            _log.LogDebug("Adding plugin {PluginName} to {Name}", plugin, agentName);
             if (!_pluginLookup.TryGetValue(plugin, out Type? pluginType))
             {
-                throw new InvalidOperationException($"Plugin type not found: {plugin} for core {core.Name}");
+                throw new InvalidOperationException($"Plugin type not found: {plugin} for core {agentName}");
             }
 
             object pluginInstance = _sp.GetRequiredService(pluginType);
