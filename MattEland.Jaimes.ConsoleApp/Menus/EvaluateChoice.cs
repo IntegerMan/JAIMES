@@ -57,6 +57,7 @@ public class EvaluateChoice(IEnumerable<EvaluationScenario> scenarios,
                 Stopwatch stopwatch = Stopwatch.StartNew();
                 ChatResult response = await scenario.GetResponseAsync(message, modelId);
                 stopwatch.Stop();
+                response.ElapsedMilliseconds = stopwatch.ElapsedMilliseconds;
                 console.MarkupLine($"[yellow]Response generated in {stopwatch.ElapsedMilliseconds}ms[/]\r\n");
         
                 EvaluationResult result = await EvaluationManager.EvaluateScenario(reportingConfig, scenario, modelId, response);

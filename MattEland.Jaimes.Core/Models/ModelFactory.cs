@@ -30,7 +30,7 @@ public class ModelFactory : IModelFactory
         _pluginLookup = AiTableTopGameMaster.Core.Helpers.KernelExtensions.BuildPluginTypeDictionary();
     }
 
-    private ModelInfo FindModel(string modelId)
+    public ModelInfo FindModel(string modelId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(modelId, nameof(modelId));
         return _models.FirstOrDefault(m => m.Id.Equals(modelId, StringComparison.OrdinalIgnoreCase))

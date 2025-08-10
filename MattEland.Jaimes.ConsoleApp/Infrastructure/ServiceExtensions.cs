@@ -25,7 +25,7 @@ public static class ServiceExtensions
         ServiceCollection services = new();
         services.AddSingleton(console);
         services.AddJaimesAppLogging(logFileName);
-        services.AddSingleton<ModelFactory>();
+        services.AddSingleton<IModelFactory, ModelFactory>();
         services.AddSingleton<IPromptsService, PromptsService>();
 
         // Load configuration settings and options

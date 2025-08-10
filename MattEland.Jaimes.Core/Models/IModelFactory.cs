@@ -10,4 +10,5 @@ public interface IModelFactory
     void ConfigureKernel(IKernelBuilder builder, CoreInfo core);
     void ConfigureKernel(IKernelBuilder builder, string agentName, string modelId, string[] plugins);
     void ConfigureKernel(IKernelBuilder builder, string agentName, ModelInfo model, string[] plugins);
+    ModelInfo FindModel(string modelId);
 }

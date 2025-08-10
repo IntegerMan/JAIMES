@@ -53,7 +53,6 @@ public class AiCore(Kernel kernel, CoreInfo info, ILoggerFactory loggerFactory)
         List<ChatMessage> chatMessages = responseContent.Select(c => new ChatMessage(ChatRole.Assistant, c.Content)).ToList();
         return new ChatResult
         {
-            Message = sb.ToString(),
             ElapsedMilliseconds = sw.ElapsedMilliseconds,
             Data = data,
             History = inputHistory,

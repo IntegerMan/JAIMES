@@ -100,7 +100,6 @@ public class ConsoleChatClient(
 
         return new ChatResult
         {
-            Message = message,
             ElapsedMilliseconds = sw.ElapsedMilliseconds,
             Data = data,
             History = isSingleCore ? reply!.History : inputHistory,

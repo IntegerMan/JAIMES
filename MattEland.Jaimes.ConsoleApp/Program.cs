@@ -27,7 +27,7 @@ try
         services.AddKeyedSingleton<IChatClient>("Evaluation", (sp, key) =>
         {
             AppSettings settings = sp.GetRequiredService<AppSettings>();
-            ModelFactory modelFactory = sp.GetRequiredService<ModelFactory>();
+            IModelFactory modelFactory = sp.GetRequiredService<IModelFactory>();
             return modelFactory.CreateChatClient(settings.EvaluationModelId);
         });
         

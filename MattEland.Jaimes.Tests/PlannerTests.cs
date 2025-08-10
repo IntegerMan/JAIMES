@@ -1,4 +1,5 @@
-﻿using AiTableTopGameMaster.Core.Models;
+﻿using AiTableTopGameMaster.Core.Helpers;
+using AiTableTopGameMaster.Core.Models;
 using MattEland.Jaimes.Agents;
 using MattEland.Jaimes.Agents.Planner;
 using MattEland.Jaimes.RAG;
@@ -28,25 +29,18 @@ public class PlannerTests
         };
 
         ChatHistory history = new();
-        Mock<ITranscriptService> transcriptServiceMock = new Mock<ITranscriptService>(MockBehavior.Strict);
-        transcriptServiceMock
-            .Setup(ts => ts.GetChatHistory())
-            .Returns(history)
-            .Verifiable(Times.Once);
 
         Mock<IChatCompletionService> chatClientMock = new Mock<IChatCompletionService>(MockBehavior.Strict);
+        PlannerResponse plan = new PlannerResponse()
+        {
+            Cautions = "Hey",
+            Checks = "None",
+            KeyPoints = "You Guys"
+        };
         chatClientMock.Setup(m => m.GetChatMessageContentsAsync(It.IsAny<ChatHistory>(), null, It.IsAny<Kernel>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(
             [
-                new ChatMessageContent()
-                {
-                    InnerContent = new PlannerResponse()
-                    {
-                        Cautions = "Hey",
-                        Checks = "None",
-                        KeyPoints = "You Guys"
-                    }
-                }
+                plan.ToChatMessageContent(),
             ])
             .Verifiable(Times.Once);
 
@@ -61,16 +55,16 @@ public class PlannerTests
             .Setup(mf => mf.ConfigureKernel(kernelBuilderMock.Object, "Planner", modelInfo, It.IsAny<string[]>()))
             .Verifiable(Times.Once);
 
-        PlannerAgent planner = new(transcriptServiceMock.Object, modelFactory.Object, kernelBuilderMock.Object, modelInfo);
+        PlannerAgent planner = new(modelFactory.Object, kernelBuilderMock.Object, modelInfo);
 
         // Act
-        PlannerResponse response = await planner.GenerateAsync();
+        PlannerResponse response = await planner.GenerateAsync(history);
 
         // Assert
         response.ShouldNotBeNull();
-        response.Cautions.ShouldBe("Hey");
-        response.Checks.ShouldBe("None");
-        response.KeyPoints.ShouldBe("You Guys");
-        Mock.VerifyAll(transcriptServiceMock, modelFactory, kernelBuilderMock, chatClientMock);
+        response.Cautions.ShouldBe(plan.Cautions);
+        response.Checks.ShouldBe(plan.Checks);
+        response.KeyPoints.ShouldBe(plan.KeyPoints);
+        Mock.VerifyAll(modelFactory, kernelBuilderMock, chatClientMock);
     }
 }

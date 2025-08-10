@@ -2,7 +2,9 @@ using System.Text.RegularExpressions;
 using AiTableTopGameMaster.Core.Domain;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
+using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using FunctionResultContent = Microsoft.Extensions.AI.FunctionResultContent;
 
 #pragma warning disable SKEXP0001
 
@@ -90,4 +92,43 @@ public static partial class ChatExtensions
         return ChatRole.Tool;
     }
     
+    public static ChatResponse ToChatResponse(this object result, string callId)
+    {
+        return new ChatResponse(
+            new ChatMessage(ChatRole.Assistant, [
+                new FunctionResultContent(callId, result)
+            ]));
+    }
+    
+    public static IEnumerable<ChatMessage> ToChatMessages(this ChatHistory history) 
+        => history.Select(m => new ChatMessage(m.Role.ToChatRole(), m.Content));
+
+    public static ChatMessageContent ToChatMessageContent(this object result)
+    {
+        return new ChatMessageContent()
+        {
+            InnerContent = result
+        };
+    }
+    
+    public static void CopyMessagesTo(this ChatHistory source, ChatHistory target, params AuthorRole[] rolesToCopy)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(target);
+
+        foreach (var message in source)
+        {
+            if (string.IsNullOrWhiteSpace(message.Content)) continue;
+            if (!rolesToCopy.Contains(message.Role)) continue;
+            
+            if (message.Role == AuthorRole.Assistant)
+            {
+                target.AddAssistantMessage(message.Content);
+            }
+            else if (message.Role == AuthorRole.User)
+            {
+                target.AddUserMessage(message.Content);
+            }
+        }
+    }
 }

@@ -5,18 +5,13 @@ using Microsoft.SemanticKernel;
 
 namespace AiTableTopGameMaster.Core.Cores;
 
-public class CoreFactory(IServiceProvider services)
+public class CoreFactory(ILoggerFactory loggerFactory, IModelFactory factory, IKernelBuilder builder)
 {
     public AiCore CreateCore(CoreInfo coreInfo)
     {
         ArgumentNullException.ThrowIfNull(coreInfo);
-
-        ILoggerFactory loggerFactory = services.GetRequiredService<ILoggerFactory>();
-        ModelFactory factory = services.GetRequiredService<ModelFactory>();
         
-        IKernelBuilder builder = services.GetRequiredService<IKernelBuilder>();
         factory.ConfigureKernel(builder, coreInfo);
-        
         Kernel kernel = builder.Build();
 
         return new AiCore(kernel, coreInfo, loggerFactory);

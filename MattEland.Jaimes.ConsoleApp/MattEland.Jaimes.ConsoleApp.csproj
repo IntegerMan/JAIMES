@@ -23,6 +23,7 @@
       <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
       <PackageReference Include="Spectre.Console" Version="0.50.0" />
       <PackageReference Include="Spectre.Console.Cli" Version="0.50.0" />
+      <PackageReference Include="Spectre.Console.Json" Version="0.50.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -46,6 +47,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\MattEland.Jaimes.Agents\MattEland.Jaimes.Agents.csproj" />
       <ProjectReference Include="..\MattEland.Jaimes.Core\MattEland.Jaimes.Core.csproj" />
     </ItemGroup>
 

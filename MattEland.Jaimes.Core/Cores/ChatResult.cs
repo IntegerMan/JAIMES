@@ -6,8 +6,8 @@ namespace AiTableTopGameMaster.Core.Cores;
 
 public record ChatResult
 {
-    public required string Message { get; init; }
-    public long ElapsedMilliseconds { get; init; }
+    public string Message => Response.Text;
+    public long ElapsedMilliseconds { get; set; }
     public IDictionary<string, object> Data { get; init; } = new Dictionary<string, object>();
     public required ChatHistory History { get; init; }
     public required ChatResponse Response { get; init; }
