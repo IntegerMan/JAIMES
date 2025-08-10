@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace AiTableTopGameMaster.ConsoleShared.Settings;
+namespace AiTableTopGameMaster.ConsoleApp.Helpers;
 
 public static class ConfigurationExtensions
 {

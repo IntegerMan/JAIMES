@@ -46,8 +46,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AiTableTopGameMaster.ConsoleShared\AiTableTopGameMaster.ConsoleShared.csproj" />
-      <ProjectReference Include="..\AiTableTopGameMaster.Core\AiTableTopGameMaster.Core.csproj" />
+      <ProjectReference Include="..\MattEland.Jaimes.Core\MattEland.Jaimes.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,5 +1,5 @@
-using AiTableTopGameMaster.ConsoleShared.Clients;
-using AiTableTopGameMaster.ConsoleShared.Helpers;
+using AiTableTopGameMaster.ConsoleApp.Clients;
+using AiTableTopGameMaster.ConsoleApp.Helpers;
 using AiTableTopGameMaster.Core.Domain;
 using AiTableTopGameMaster.Core.Helpers;
 using AiTableTopGameMaster.Core.Services;

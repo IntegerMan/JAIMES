@@ -1,8 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AiTableTopGameMaster.ConsoleShared.Clients;
-using AiTableTopGameMaster.ConsoleShared.Helpers;
-using AiTableTopGameMaster.ConsoleShared.Settings;
+using AiTableTopGameMaster.ConsoleApp.Clients;
+using AiTableTopGameMaster.ConsoleApp.Helpers;
 using AiTableTopGameMaster.Core;
 using AiTableTopGameMaster.Core.Cores;
 using AiTableTopGameMaster.Core.Domain;
@@ -14,11 +13,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Serilog;
 using Spectre.Console;
-using Scrutor;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using KernelExtensions = AiTableTopGameMaster.Core.Helpers.KernelExtensions;
 
-namespace AiTableTopGameMaster.ConsoleShared.Infrastructure;
+namespace AiTableTopGameMaster.ConsoleApp.Infrastructure;
 
 public static class ServiceExtensions
 {

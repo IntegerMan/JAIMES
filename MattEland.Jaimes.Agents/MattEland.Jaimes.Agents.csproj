@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AiTableTopGameMaster.Core\AiTableTopGameMaster.Core.csproj" />
+      <ProjectReference Include="..\MattEland.Jaimes.Core\MattEland.Jaimes.Core.csproj" />
       <ProjectReference Include="..\MattEland.Jaimes.RAG\MattEland.Jaimes.RAG.csproj" />
     </ItemGroup>
 

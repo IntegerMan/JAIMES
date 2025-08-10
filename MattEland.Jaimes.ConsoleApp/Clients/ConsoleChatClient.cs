@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using AiTableTopGameMaster.ConsoleShared.Helpers;
+using AiTableTopGameMaster.ConsoleApp.Helpers;
 using AiTableTopGameMaster.Core.Cores;
 using AiTableTopGameMaster.Core.Helpers;
 using Microsoft.Extensions.AI;
@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Spectre.Console;
 
-namespace AiTableTopGameMaster.ConsoleShared.Clients;
+namespace AiTableTopGameMaster.ConsoleApp.Clients;
 
 public class ConsoleChatClient(
     IAnsiConsole console,

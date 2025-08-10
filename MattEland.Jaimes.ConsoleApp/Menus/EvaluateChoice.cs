@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using AiTableTopGameMaster.ConsoleApp.Evaluation;
 using AiTableTopGameMaster.ConsoleApp.Evaluation.Scenarios;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
-using AiTableTopGameMaster.ConsoleShared.Helpers;
 using AiTableTopGameMaster.Core.Cores;
 using Microsoft.Extensions.AI.Evaluation;
 using Microsoft.Extensions.AI.Evaluation.Quality;

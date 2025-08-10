@@ -1,10 +1,10 @@
 using System.Diagnostics;
-using AiTableTopGameMaster.ConsoleShared.Helpers;
+using AiTableTopGameMaster.ConsoleApp.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Spectre.Console;
 
-namespace AiTableTopGameMaster.ConsoleShared.Infrastructure;
+namespace AiTableTopGameMaster.ConsoleApp.Infrastructure;
 
 public sealed class FunctionInvocationLoggingFilter(IAnsiConsole console, ILogger<FunctionInvocationLoggingFilter> log) : IAutoFunctionInvocationFilter
 {

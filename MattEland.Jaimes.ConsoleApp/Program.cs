@@ -2,10 +2,9 @@
 using AiTableTopGameMaster.ConsoleApp;
 using AiTableTopGameMaster.ConsoleApp.Evaluation;
 using AiTableTopGameMaster.ConsoleApp.Evaluation.Scenarios;
+using AiTableTopGameMaster.ConsoleApp.Helpers;
+using AiTableTopGameMaster.ConsoleApp.Infrastructure;
 using AiTableTopGameMaster.ConsoleApp.Menus;
-using AiTableTopGameMaster.ConsoleShared.Clients;
-using AiTableTopGameMaster.ConsoleShared.Helpers;
-using AiTableTopGameMaster.ConsoleShared.Infrastructure;
 using AiTableTopGameMaster.Core.Domain;
 using AiTableTopGameMaster.Core.Helpers;
 using AiTableTopGameMaster.Core.Models;
