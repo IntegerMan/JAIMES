@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Serilog;
 using Spectre.Console;
+using Scrutor;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using KernelExtensions = AiTableTopGameMaster.Core.Helpers.KernelExtensions;
 
