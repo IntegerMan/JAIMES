@@ -45,8 +45,6 @@ public class PlannerTests
         kernelBuilderMock.SetupGet(m => m.Services)
             .Returns(new ServiceCollection().AddScoped<IChatCompletionService>(_ => chatClientMock.Object));
 
-        Kernel kernel = new Kernel(null, null);
-
         Mock<IModelFactory> modelFactory = new Mock<IModelFactory>(MockBehavior.Strict);
         modelFactory
             .Setup(mf => mf.ConfigureKernel(kernelBuilderMock.Object, "Planner", modelInfo, It.IsAny<string[]>()))
@@ -55,7 +53,7 @@ public class PlannerTests
         PlannerAgent planner = new(modelFactory.Object, kernelBuilderMock.Object, modelInfo);
 
         // Act
-        PlannerResponse response = await planner.GenerateAsync(history);
+        (PlannerResponse response, _) = await planner.GenerateAsync(history);
 
         // Assert
         response.ShouldNotBeNull();

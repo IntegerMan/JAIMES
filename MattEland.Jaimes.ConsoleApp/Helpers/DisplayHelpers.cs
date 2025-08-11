@@ -1,5 +1,7 @@
+using System.Text.Json;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Spectre.Console;
+using Spectre.Console.Json;
 
 namespace AiTableTopGameMaster.ConsoleApp.Helpers;
 
@@ -44,5 +46,19 @@ public static class DisplayHelpers
     {
         console.MarkupLine($"{DisplayHelpers.Error}Press any key to exit...[/]");
         console.Input.ReadKey(intercept: true);
+    }
+    
+    public static string? WriteAsJson(this IAnsiConsole console, object? obj)
+    {
+        if (obj is null)
+        {
+            console.MarkupLine("[dim gray]null[/]");
+            return null;
+        }
+
+        string json = JsonSerializer.Serialize(obj);
+        console.Write(new JsonText(json));
+        console.WriteLine();
+        return json;
     }
 }

@@ -36,9 +36,6 @@ public static class ServiceExtensions
         // Load configuration settings and options
         services.RegisterConfigurationAndSettings<TSettings>(args);
 
-        KernelContextService kContext = new();
-        services.AddSingleton(kContext);
-        
         // Configure Semantic Kernel
         services.AddTransient<IKernelBuilder>(sp =>
         {
@@ -47,7 +44,6 @@ public static class ServiceExtensions
             builder.Services.AddLogging(loggingBuilder => loggingBuilder.ConfigureSerilogLogging(disposeLogger: false));
             builder.Services.AddSingleton(sp.GetRequiredService<IAnsiConsole>());
             builder.Services.AddSingleton<IAutoFunctionInvocationFilter, FunctionInvocationLoggingFilter>();
-            builder.Services.AddSingleton(kContext);
             
             return builder;
         });
@@ -159,7 +155,7 @@ public static class ServiceExtensions
             return character;
         });
         
-// Add an IChatClient for evaluation
+        // Add an IChatClient for evaluation
         services.AddKeyedSingleton<IChatClient>("Evaluation", (sp, key) =>
         {
             AppSettings settings = sp.GetRequiredService<AppSettings>();
@@ -185,8 +181,7 @@ public static class ServiceExtensions
                 .WithTransientLifetime();
         });
 
-        kContext.ServiceProvider = services.BuildServiceProvider();
-        return kContext.ServiceProvider;
+        return services.BuildServiceProvider();
     }
 
     private static void DocumentIndexingCallback(IAnsiConsole console, IndexingInfo status)

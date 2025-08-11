@@ -15,7 +15,7 @@ public class PlannerAgent(IModelFactory factory, IKernelBuilder builder, ModelIn
     public string Name => "Planner";
     public string[] Plugins => [];
     
-    public async Task<PlannerResponse> GenerateAsync(ChatHistory history)
+    public async Task<(PlannerResponse, ChatHistory)> GenerateAsync(ChatHistory history)
     {
         factory.ConfigureKernel(builder, Name, model, Plugins);
         Kernel kernel = builder.Build();
@@ -47,6 +47,6 @@ public class PlannerAgent(IModelFactory factory, IKernelBuilder builder, ModelIn
         ChatResponse<PlannerResponse> response = 
             await chatClient.GetResponseAsync<PlannerResponse>(messages.ToChatMessages());
         
-        return response.Result;
+        return (response.Result, messages);
     }
 }

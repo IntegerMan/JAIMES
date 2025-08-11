@@ -46,4 +46,15 @@ public class ConversationContextService : IConversationContextService
     {
         _context.Clear();
     }
+
+    public T GetRequiredContext<T>(string key) where T : class
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+        
+        if (!_context.TryGetValue(key, out object? value))
+        {
+            throw new KeyNotFoundException($"Context for key '{key}' not found.");
+        }
+        return value as T ?? throw new InvalidCastException($"Context for key '{key}' is not of type {typeof(T).Name}.");
+    }
 }

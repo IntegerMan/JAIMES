@@ -7,4 +7,5 @@ public interface IConversationContextService
     T? GetContext<T>(string key) where T : class;
     T? GetContext<T>() where T : class;
     void ClearContext();
+    T GetRequiredContext<T>(string key) where T : class;
 }
