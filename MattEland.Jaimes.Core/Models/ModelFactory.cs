@@ -1,13 +1,14 @@
 using System.ClientModel;
-using AiTableTopGameMaster.Core.Cores;
 using Azure.AI.OpenAI;
+using MattEland.Jaimes.Core.Cores;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Serilog;
+using KernelExtensions = MattEland.Jaimes.Core.Helpers.KernelExtensions;
 
-namespace AiTableTopGameMaster.Core.Models;
+namespace MattEland.Jaimes.Core.Models;
 
 public class ModelFactory : IModelFactory
 {
@@ -27,7 +28,7 @@ public class ModelFactory : IModelFactory
             throw new ArgumentException("Models collection cannot be empty.", nameof(models));
         }
         
-        _pluginLookup = AiTableTopGameMaster.Core.Helpers.KernelExtensions.BuildPluginTypeDictionary();
+        _pluginLookup = KernelExtensions.BuildPluginTypeDictionary();
     }
 
     public ModelInfo FindModel(string modelId)

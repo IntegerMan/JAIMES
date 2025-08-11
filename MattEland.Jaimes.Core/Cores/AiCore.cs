@@ -1,13 +1,13 @@
 using System.Diagnostics;
 using System.Text;
-using AiTableTopGameMaster.Core.Helpers;
+using MattEland.Jaimes.Core.Helpers;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.Ollama;
 
-namespace AiTableTopGameMaster.Core.Cores;
+namespace MattEland.Jaimes.Core.Cores;
 
 public class AiCore(Kernel kernel, CoreInfo info, ILoggerFactory loggerFactory)
 {

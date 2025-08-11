@@ -1,4 +1,4 @@
-namespace AiTableTopGameMaster.Core.Services;
+namespace MattEland.Jaimes.Core.Services;
 
 public interface IPromptsService
 {

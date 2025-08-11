@@ -1,4 +1,4 @@
-using AiTableTopGameMaster.Core.Plugins.Sourcebooks;
+using MattEland.Jaimes.Core.Plugins.Sourcebooks;
 using Shouldly;
 
 namespace MattEland.Jaimes.Tests.Core.Plugins.Sourcebooks;

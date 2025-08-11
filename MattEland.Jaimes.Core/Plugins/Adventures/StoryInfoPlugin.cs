@@ -1,9 +1,9 @@
 using System.ComponentModel;
-using AiTableTopGameMaster.Core.Domain;
 using JetBrains.Annotations;
+using MattEland.Jaimes.Core.Domain;
 using Microsoft.SemanticKernel;
 
-namespace AiTableTopGameMaster.Core.Plugins.Adventures;
+namespace MattEland.Jaimes.Core.Plugins.Adventures;
 
 [Description("Provides information about the adventure's overall story and setting.")]
 public class StoryInfoPlugin(Adventure adventure)

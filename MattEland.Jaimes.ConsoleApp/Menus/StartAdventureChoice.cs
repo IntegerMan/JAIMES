@@ -1,8 +1,8 @@
 using AiTableTopGameMaster.ConsoleApp.Clients;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
-using AiTableTopGameMaster.Core.Domain;
-using AiTableTopGameMaster.Core.Helpers;
-using AiTableTopGameMaster.Core.Services;
+using MattEland.Jaimes.Core.Domain;
+using MattEland.Jaimes.Core.Helpers;
+using MattEland.Jaimes.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Spectre.Console;

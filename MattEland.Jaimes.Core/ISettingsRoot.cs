@@ -1,6 +1,6 @@
-using AiTableTopGameMaster.Core.Models;
+using MattEland.Jaimes.Core.Models;
 
-namespace AiTableTopGameMaster.Core;
+namespace MattEland.Jaimes.Core;
 
 public interface ISettingsRoot
 {

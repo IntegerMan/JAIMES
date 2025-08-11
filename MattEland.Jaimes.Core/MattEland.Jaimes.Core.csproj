@@ -4,7 +4,6 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>AiTableTopGameMaster.Core</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -21,6 +20,12 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Reference Include="Microsoft.Extensions.AI.Evaluation">
+        <HintPath>..\..\..\.nuget\packages\microsoft.extensions.ai.evaluation\9.7.0\lib\net9.0\Microsoft.Extensions.AI.Evaluation.dll</HintPath>
+      </Reference>
+      <Reference Include="Microsoft.Extensions.AI.Evaluation.Quality">
+        <HintPath>..\..\..\.nuget\packages\microsoft.extensions.ai.evaluation.quality\9.7.0\lib\net9.0\Microsoft.Extensions.AI.Evaluation.Quality.dll</HintPath>
+      </Reference>
       <Reference Include="Microsoft.Extensions.AI.Ollama">
         <HintPath>..\..\..\.nuget\packages\microsoft.extensions.ai.ollama\9.7.0-preview.1.25356.2\lib\net9.0\Microsoft.Extensions.AI.Ollama.dll</HintPath>
       </Reference>

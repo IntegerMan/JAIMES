@@ -1,9 +1,10 @@
 ﻿using System.Text.Json;
-using AiTableTopGameMaster.Core.Helpers;
-using AiTableTopGameMaster.Core.Models;
+using MattEland.Jaimes.Core.Helpers;
+using MattEland.Jaimes.Core.Models;
 using Microsoft.Extensions.AI;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+
 #pragma warning disable SKEXP0001
 
 namespace MattEland.Jaimes.Agents.Planner;
@@ -39,6 +40,9 @@ public class PlannerAgent(IModelFactory factory, IKernelBuilder builder, ModelIn
         history.CopyMessagesTo(messages, AuthorRole.Assistant, AuthorRole.User);
         
         IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
+        
+        // NOTE: Ollama doesn't support structured output via the API in Semantic Kernel, but this way seems to work
+        // We're not using tools or Semantic Kernel in this, but it's viable for strongly-typed responses
         IChatClient chatClient = chatService.AsChatClient();
         ChatResponse<PlannerResponse> response = 
             await chatClient.GetResponseAsync<PlannerResponse>(messages.ToChatMessages());

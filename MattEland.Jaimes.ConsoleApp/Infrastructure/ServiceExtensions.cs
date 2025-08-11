@@ -1,43 +1,54 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AiTableTopGameMaster.ConsoleApp.Clients;
+using AiTableTopGameMaster.ConsoleApp.Evaluation;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
-using AiTableTopGameMaster.Core;
-using AiTableTopGameMaster.Core.Cores;
-using AiTableTopGameMaster.Core.Domain;
-using AiTableTopGameMaster.Core.Models;
-using AiTableTopGameMaster.Core.Plugins.Sourcebooks;
-using AiTableTopGameMaster.Core.Services;
+using AiTableTopGameMaster.ConsoleApp.Menus;
+using MattEland.Jaimes.Core;
+using MattEland.Jaimes.Core.Cores;
+using MattEland.Jaimes.Core.Domain;
+using MattEland.Jaimes.Core.Evaluation;
+using MattEland.Jaimes.Core.Models;
+using MattEland.Jaimes.Core.Plugins.Sourcebooks;
+using MattEland.Jaimes.Core.Services;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Serilog;
 using Spectre.Console;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
-using KernelExtensions = AiTableTopGameMaster.Core.Helpers.KernelExtensions;
+using KernelExtensions = MattEland.Jaimes.Core.Helpers.KernelExtensions;
 
 namespace AiTableTopGameMaster.ConsoleApp.Infrastructure;
 
 public static class ServiceExtensions
 {
-    public static ServiceProvider BuildServiceProvider<TSettings>(IAnsiConsole console, string logFileName, Action<IServiceCollection> configure, string[] args) where TSettings : class, ISettingsRoot
+    public static IServiceProvider BuildServiceProvider<TSettings>(IAnsiConsole console, string logFileName, string[] args) where TSettings : class, ISettingsRoot
     {
         ServiceCollection services = new();
         services.AddSingleton(console);
         services.AddJaimesAppLogging(logFileName);
         services.AddSingleton<IModelFactory, ModelFactory>();
         services.AddSingleton<IPromptsService, PromptsService>();
+        services.AddScoped<IConversationContextService, ConversationContextService>();
 
         // Load configuration settings and options
         services.RegisterConfigurationAndSettings<TSettings>(args);
+
+        KernelContextService kContext = new();
+        services.AddSingleton(kContext);
         
         // Configure Semantic Kernel
         services.AddTransient<IKernelBuilder>(sp =>
         {
             IKernelBuilder builder = Kernel.CreateBuilder();
+            //builder.Services.AddSingleton<ILoggerFactory>(sp => sp.GetRequiredService<ILoggerFactory>());
             builder.Services.AddLogging(loggingBuilder => loggingBuilder.ConfigureSerilogLogging(disposeLogger: false));
             builder.Services.AddSingleton(sp.GetRequiredService<IAnsiConsole>());
             builder.Services.AddSingleton<IAutoFunctionInvocationFilter, FunctionInvocationLoggingFilter>();
+            builder.Services.AddSingleton(kContext);
+            
             return builder;
         });
         
@@ -148,9 +159,34 @@ public static class ServiceExtensions
             return character;
         });
         
-        configure?.Invoke(services);
+// Add an IChatClient for evaluation
+        services.AddKeyedSingleton<IChatClient>("Evaluation", (sp, key) =>
+        {
+            AppSettings settings = sp.GetRequiredService<AppSettings>();
+            IModelFactory modelFactory = sp.GetRequiredService<IModelFactory>();
+            return modelFactory.CreateChatClient(settings.EvaluationModelId);
+        });
+        
+        // Automatic registration of types by conventions
+        services.Scan(scan =>
+        {
+            services.AddSingleton<EvaluationManager>();
+            
+            // Find all IMainMenuChoice implementations and register them
+            scan.FromEntryAssembly()
+                .AddClasses(c => c.AssignableTo<IMenuChoice>())
+                .AsImplementedInterfaces()
+                .WithTransientLifetime();
+            
+            // Register all EvaluationScenario implementations
+            scan.FromEntryAssembly()
+                .AddClasses(c => c.AssignableTo<EvaluationScenario>())
+                .As<EvaluationScenario>()
+                .WithTransientLifetime();
+        });
 
-        return services.BuildServiceProvider();
+        kContext.ServiceProvider = services.BuildServiceProvider();
+        return kContext.ServiceProvider;
     }
 
     private static void DocumentIndexingCallback(IAnsiConsole console, IndexingInfo status)

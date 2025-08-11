@@ -1,4 +1,4 @@
-using AiTableTopGameMaster.Core.Services;
+using MattEland.Jaimes.Core.Services;
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 

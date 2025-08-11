@@ -1,4 +1,4 @@
-namespace AiTableTopGameMaster.Core.Models;
+namespace MattEland.Jaimes.Core.Models;
 
 public enum ModelType
 {

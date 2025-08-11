@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 using Microsoft.KernelMemory;
 using Microsoft.SemanticKernel;
 
-namespace AiTableTopGameMaster.Core.Plugins.Sourcebooks;
+namespace MattEland.Jaimes.Core.Plugins.Sourcebooks;
 
 [Description("Contains functions for looking up rules related to Dungeons & Dragons 5th Edition (DND5E)'s free ruleset.")]
 public class SourcebookLookupPlugin(string sourceDirectory, string system)

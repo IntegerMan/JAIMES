@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using AiTableTopGameMaster.Core.Domain;
+using MattEland.Jaimes.Core.Domain;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
@@ -8,7 +8,7 @@ using FunctionResultContent = Microsoft.Extensions.AI.FunctionResultContent;
 
 #pragma warning disable SKEXP0001
 
-namespace AiTableTopGameMaster.Core.Helpers;
+namespace MattEland.Jaimes.Core.Helpers;
 
 public static partial class ChatExtensions
 {

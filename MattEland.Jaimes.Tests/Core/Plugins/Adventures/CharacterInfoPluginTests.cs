@@ -1,5 +1,5 @@
-using AiTableTopGameMaster.Core.Domain;
-using AiTableTopGameMaster.Core.Plugins.Adventures;
+using MattEland.Jaimes.Core.Domain;
+using MattEland.Jaimes.Core.Plugins.Adventures;
 using Shouldly;
 
 namespace MattEland.Jaimes.Tests.Core.Plugins.Adventures;

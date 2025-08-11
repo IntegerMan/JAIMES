@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
-using AiTableTopGameMaster.Core.Cores;
-using AiTableTopGameMaster.Core.Helpers;
+using MattEland.Jaimes.Core.Cores;
+using MattEland.Jaimes.Core.Helpers;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.ChatCompletion;

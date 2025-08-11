@@ -1,4 +1,4 @@
-namespace AiTableTopGameMaster.Core.Cores;
+namespace MattEland.Jaimes.Core.Cores;
 
 public record CoreInfo
 {

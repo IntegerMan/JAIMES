@@ -1,6 +1,6 @@
-﻿using AiTableTopGameMaster.Core.Helpers;
-using AiTableTopGameMaster.Core.Models;
-using MattEland.Jaimes.Agents.Planner;
+﻿using MattEland.Jaimes.Agents.Planner;
+using MattEland.Jaimes.Core.Helpers;
+using MattEland.Jaimes.Core.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;

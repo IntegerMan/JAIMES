@@ -1,8 +1,8 @@
 using System.Text;
-using AiTableTopGameMaster.Core.Domain;
-using AiTableTopGameMaster.Core.Helpers;
+using MattEland.Jaimes.Core.Domain;
+using MattEland.Jaimes.Core.Helpers;
 
-namespace AiTableTopGameMaster.Core.Services;
+namespace MattEland.Jaimes.Core.Services;
 
 public class PromptsService(StandardPrompts prompts) : IPromptsService
 {

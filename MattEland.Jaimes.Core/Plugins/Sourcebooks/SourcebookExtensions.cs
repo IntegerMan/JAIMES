@@ -1,6 +1,6 @@
 using Microsoft.SemanticKernel;
 
-namespace AiTableTopGameMaster.Core.Plugins.Sourcebooks;
+namespace MattEland.Jaimes.Core.Plugins.Sourcebooks;
 
 public static class SourcebookExtensions
 {

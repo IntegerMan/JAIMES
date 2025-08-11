@@ -1,6 +1,6 @@
-using AiTableTopGameMaster.Core.Domain;
+using MattEland.Jaimes.Core.Domain;
 
-namespace AiTableTopGameMaster.Core.Services;
+namespace MattEland.Jaimes.Core.Services;
 
 public interface IAdventureLoader
 {

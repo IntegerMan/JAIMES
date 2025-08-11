@@ -1,8 +1,8 @@
-using AiTableTopGameMaster.Core.Cores;
+using MattEland.Jaimes.Core.Cores;
 using Microsoft.Extensions.AI;
 using Microsoft.SemanticKernel;
 
-namespace AiTableTopGameMaster.Core.Models;
+namespace MattEland.Jaimes.Core.Models;
 
 public interface IModelFactory
 {

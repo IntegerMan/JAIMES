@@ -1,4 +1,4 @@
-using AiTableTopGameMaster.Core.Plugins.Sourcebooks;
+using MattEland.Jaimes.Core.Plugins.Sourcebooks;
 using Microsoft.SemanticKernel;
 using Shouldly;
 

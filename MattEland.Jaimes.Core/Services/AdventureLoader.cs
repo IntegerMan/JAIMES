@@ -1,9 +1,9 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AiTableTopGameMaster.Core.Domain;
+using MattEland.Jaimes.Core.Domain;
 using Microsoft.Extensions.Logging;
 
-namespace AiTableTopGameMaster.Core.Services;
+namespace MattEland.Jaimes.Core.Services;
 
 public class AdventureLoader(ILoggerFactory loggerFactory) : IAdventureLoader
 {

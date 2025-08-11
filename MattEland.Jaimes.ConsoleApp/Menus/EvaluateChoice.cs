@@ -3,7 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using AiTableTopGameMaster.ConsoleApp.Evaluation;
 using AiTableTopGameMaster.ConsoleApp.Evaluation.Scenarios;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
-using AiTableTopGameMaster.Core.Cores;
+using MattEland.Jaimes.Core.Cores;
+using MattEland.Jaimes.Core.Evaluation;
 using Microsoft.Extensions.AI.Evaluation;
 using Microsoft.Extensions.AI.Evaluation.Quality;
 using Microsoft.Extensions.AI.Evaluation.Reporting;
@@ -60,7 +61,7 @@ public class EvaluateChoice(IEnumerable<EvaluationScenario> scenarios,
                 response.ElapsedMilliseconds = stopwatch.ElapsedMilliseconds;
                 console.MarkupLine($"[yellow]Response generated in {stopwatch.ElapsedMilliseconds}ms[/]\r\n");
         
-                EvaluationResult result = await EvaluationManager.EvaluateScenario(reportingConfig, scenario, modelId, response);
+                EvaluationResult result = await EvaluationManager.EvaluateScenarioAsync(reportingConfig, scenario, modelId, response);
                 console.DisplayEvaluationResultsTable(result);
             }
         }

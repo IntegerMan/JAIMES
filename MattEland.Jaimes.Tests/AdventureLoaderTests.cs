@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
-using AiTableTopGameMaster.Core.Domain;
-using AiTableTopGameMaster.Core.Services;
+using MattEland.Jaimes.Core.Domain;
+using MattEland.Jaimes.Core.Services;
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 

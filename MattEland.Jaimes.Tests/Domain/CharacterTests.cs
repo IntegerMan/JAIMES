@@ -1,4 +1,4 @@
-using AiTableTopGameMaster.Core.Domain;
+using MattEland.Jaimes.Core.Domain;
 using Shouldly;
 
 namespace MattEland.Jaimes.Tests.Domain;

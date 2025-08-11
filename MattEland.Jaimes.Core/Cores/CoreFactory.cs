@@ -1,8 +1,8 @@
-using AiTableTopGameMaster.Core.Models;
+using MattEland.Jaimes.Core.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 
-namespace AiTableTopGameMaster.Core.Cores;
+namespace MattEland.Jaimes.Core.Cores;
 
 public class CoreFactory(ILoggerFactory loggerFactory, IModelFactory factory, IKernelBuilder builder)
 {

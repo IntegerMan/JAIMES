@@ -1,6 +1,6 @@
-using AiTableTopGameMaster.Core;
-using AiTableTopGameMaster.Core.Models;
 using JetBrains.Annotations;
+using MattEland.Jaimes.Core;
+using MattEland.Jaimes.Core.Models;
 
 namespace AiTableTopGameMaster.ConsoleApp;
 

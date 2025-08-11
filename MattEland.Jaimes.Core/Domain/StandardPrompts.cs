@@ -1,4 +1,4 @@
-namespace AiTableTopGameMaster.Core.Domain;
+namespace MattEland.Jaimes.Core.Domain;
 
 public class StandardPrompts
 {
