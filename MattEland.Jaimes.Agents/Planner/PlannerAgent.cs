@@ -1,9 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
 using AiTableTopGameMaster.Core.Helpers;
 using AiTableTopGameMaster.Core.Models;
-using MattEland.Jaimes.RAG;
 using Microsoft.Extensions.AI;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -25,7 +22,7 @@ public class PlannerAgent(IModelFactory factory, IKernelBuilder builder, ModelIn
         PlannerResponse sampleResponse = new()
         {
             Checks = "None, or actions to request from the player (e.g. roll a skill check, clarify something, etc.)",
-            KeyPoints = "A list of key points that must be included in the storyteller's response.",
+            KeyPoints = ["A list of key points that must be included in the storyteller's response."],
             Cautions = "Any cautions or warnings to convey to the storyteller for use when generating a response"
         };
         

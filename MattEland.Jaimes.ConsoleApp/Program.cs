@@ -1,14 +1,10 @@
-﻿using System.ComponentModel;
-using AiTableTopGameMaster.ConsoleApp;
+﻿using AiTableTopGameMaster.ConsoleApp;
 using AiTableTopGameMaster.ConsoleApp.Evaluation;
 using AiTableTopGameMaster.ConsoleApp.Evaluation.Scenarios;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
 using AiTableTopGameMaster.ConsoleApp.Infrastructure;
 using AiTableTopGameMaster.ConsoleApp.Menus;
-using AiTableTopGameMaster.Core.Domain;
-using AiTableTopGameMaster.Core.Helpers;
 using AiTableTopGameMaster.Core.Models;
-using AiTableTopGameMaster.Core.Services;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;

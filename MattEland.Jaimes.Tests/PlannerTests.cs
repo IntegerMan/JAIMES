@@ -1,14 +1,11 @@
 ﻿using AiTableTopGameMaster.Core.Helpers;
 using AiTableTopGameMaster.Core.Models;
-using MattEland.Jaimes.Agents;
 using MattEland.Jaimes.Agents.Planner;
-using MattEland.Jaimes.RAG;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Moq;
 using Shouldly;
-using FunctionResultContent = Microsoft.Extensions.AI.FunctionResultContent;
 
 namespace MattEland.Jaimes.Tests;
 
@@ -35,7 +32,7 @@ public class PlannerTests
         {
             Cautions = "Hey",
             Checks = "None",
-            KeyPoints = "You Guys"
+            KeyPoints = ["You Guys"]
         };
         chatClientMock.Setup(m => m.GetChatMessageContentsAsync(It.IsAny<ChatHistory>(), null, It.IsAny<Kernel>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(
@@ -64,7 +61,8 @@ public class PlannerTests
         response.ShouldNotBeNull();
         response.Cautions.ShouldBe(plan.Cautions);
         response.Checks.ShouldBe(plan.Checks);
-        response.KeyPoints.ShouldBe(plan.KeyPoints);
+        response.KeyPoints.Count.ShouldBe(plan.KeyPoints.Count);
+        response.KeyPoints[0].ShouldBe(plan.KeyPoints[0]);
         Mock.VerifyAll(modelFactory, kernelBuilderMock, chatClientMock);
     }
 }
