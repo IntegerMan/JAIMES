@@ -7,7 +7,7 @@ namespace MattEland.Jaimes.Agents.Processes;
 public class PlannerProcess
 {
     [Experimental("SKEXP0080")]
-    public ProcessBuilder Create()
+    public static ProcessBuilder Create()
     {
         ProcessBuilder process = new("Planner");
 

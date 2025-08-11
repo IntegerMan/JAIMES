@@ -111,6 +111,13 @@ public static partial class ChatExtensions
             Content = JsonSerializer.Serialize(result)
         };
     }
+
+    public static ChatResponse AsChatResponse(this string? input)
+    {
+        return new ChatResponse(new ChatMessage(ChatRole.Assistant,
+            input
+        ));
+    }
     
     public static void CopyMessagesTo(this ChatHistory source, ChatHistory target, params AuthorRole[] rolesToCopy)
     {

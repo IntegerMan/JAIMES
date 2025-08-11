@@ -66,7 +66,7 @@ public static class DisplayHelpers
     }
 
     [Experimental("SKEXP0080")]
-    public static void DisplayProcessMermaid(this IAnsiConsole console, ProcessBuilder process)
+    public static void WriteMermaidNotation(this IAnsiConsole console, ProcessBuilder process)
     {
         string mermaidGraph = process.ToMermaid();
         console.Write(new Panel(new Text(mermaidGraph))

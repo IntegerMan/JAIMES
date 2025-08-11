@@ -16,16 +16,6 @@ public class PlannerTests
     public async Task PlannerShouldCallExpectedServices()
     {
         // Arrange
-        ModelInfo modelInfo = new()
-        {
-            Id = "planner-model",
-            Provider = ModelProvider.Ollama,
-            Type = ModelType.Chat,
-            Endpoint = "http://localhost:11434",
-            ModelId = "test-model",
-            SupportsTools = true
-        };
-
         ChatHistory history = new();
 
         Mock<IChatCompletionService> chatClientMock = new Mock<IChatCompletionService>();
@@ -45,7 +35,6 @@ public class PlannerTests
         IKernelBuilder kernelBuilder = Kernel.CreateBuilder();
         kernelBuilder.Services.AddScoped<IChatCompletionService>(_ => chatClientMock.Object);
         Kernel kernel = kernelBuilder.Build();
-
         PlannerAgent planner = new(kernel);
 
         // Act
