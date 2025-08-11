@@ -9,7 +9,6 @@ using MattEland.Jaimes.Core.Evaluation;
 using MattEland.Jaimes.Core.Helpers;
 using MattEland.Jaimes.Core.Models;
 using MattEland.Jaimes.Core.Services;
-using Microsoft.Extensions.AI;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Spectre.Console;

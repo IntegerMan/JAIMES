@@ -1,7 +1,6 @@
 ﻿using MattEland.Jaimes.Agents.Definitions;
 using MattEland.Jaimes.Agents.Functions;
 using MattEland.Jaimes.Core.Helpers;
-using MattEland.Jaimes.Core.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
