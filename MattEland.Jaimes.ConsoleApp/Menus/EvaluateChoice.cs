@@ -28,9 +28,7 @@ public class EvaluateChoice(IEnumerable<EvaluationScenario> scenarios,
             new FluencyEvaluator(),
             new RelevanceEvaluator(),
             new RelevanceTruthAndCompletenessEvaluator(),
-            new CompletenessEvaluator(), // Note: better coverage from the RelevanceTruthAndCompletenessEvaluator. May be redundant.
             new StopwatchEvaluator(),
-            new EquivalenceEvaluator(),
             //new ToolCallAccuracyEvaluator(),
             //new TaskAdherenceEvaluator()
             //new GroundednessEvaluator(),
