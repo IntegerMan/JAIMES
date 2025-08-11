@@ -1,5 +1,5 @@
-﻿using MattEland.Jaimes.Agents.Definitions;
-using MattEland.Jaimes.Agents.Functions;
+﻿using MattEland.Jaimes.Agents.Functions;
+using MattEland.Jaimes.Agents.Models;
 using MattEland.Jaimes.Core.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;

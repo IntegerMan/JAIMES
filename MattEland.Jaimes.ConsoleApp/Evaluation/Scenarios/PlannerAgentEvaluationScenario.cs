@@ -1,6 +1,6 @@
 using AiTableTopGameMaster.ConsoleApp.Helpers;
 using MattEland.Jaimes.Agents;
-using MattEland.Jaimes.Agents.Definitions;
+using MattEland.Jaimes.Agents.Models;
 using MattEland.Jaimes.Agents.Processes;
 using MattEland.Jaimes.Agents.Steps;
 using MattEland.Jaimes.Core.Cores;
@@ -73,7 +73,8 @@ public class PlannerAgentEvaluationScenario(
         modelFactory.ConfigureKernel(kernelBuilder, Name, modelId, []);
         Kernel kernel = kernelBuilder.Build();
 
-        await using LocalKernelProcessContext runningProcess = await kernelProcess.Build().StartAsync(
+        KernelProcess process = kernelProcess.Build();
+        await using LocalKernelProcessContext runningProcess = await process.StartAsync(
             kernel,
             new KernelProcessEvent
             {

@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
-using MattEland.Jaimes.Agents.Definitions;
 using MattEland.Jaimes.Agents.Functions;
+using MattEland.Jaimes.Agents.Models;
 using MattEland.Jaimes.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
@@ -24,14 +24,15 @@ public sealed class PlannerStep : KernelProcessStep
             IServiceProvider sp = convContext.ServiceProvider;
             IConversationContextService conversationService = sp.GetRequiredService<IConversationContextService>();
             PlannerAgent planner = new(kernel);
-            (PlannerResponse result, ChatHistory renderedHistory) = await planner.GenerateAsync(convContext.History);
+            PlannerStepResult result = await planner.GenerateAsync(convContext.History);
             conversationService.SetContext(result);
-            conversationService.SetContext(RenderedHistoryKey, renderedHistory);
+            conversationService.SetContext(RenderedHistoryKey, result.History);
             await steps.EmitEventAsync(PlanGeneratedEvent, result);
         }
         catch (Exception ex)
         {
             Log.Error(ex, "An error occurred while executing the planner step.");
+            throw;
         }
     }
 }

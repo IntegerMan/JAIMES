@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using MattEland.Jaimes.Agents.Definitions;
+using MattEland.Jaimes.Agents.Models;
 using MattEland.Jaimes.Core.Helpers;
 using Microsoft.Extensions.AI;
 using Microsoft.SemanticKernel;
@@ -9,13 +9,12 @@ using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace MattEland.Jaimes.Agents.Functions;
 
-
 public class PlannerAgent(Kernel kernel)
 {
     public string Name => "Planner";
     public string[] Plugins => [];
     
-    public async Task<(PlannerResponse, ChatHistory)> GenerateAsync(ChatHistory history)
+    public async Task<PlannerStepResult> GenerateAsync(ChatHistory history)
     {
         PlannerResponse sampleResponse = new()
         {
@@ -43,7 +42,12 @@ public class PlannerAgent(Kernel kernel)
         IChatClient chatClient = chatService.AsChatClient();
         ChatResponse<PlannerResponse> response = 
             await chatClient.GetResponseAsync<PlannerResponse>(messages.ToChatMessages());
-        
-        return (response.Result, messages);
+
+        return new PlannerStepResult
+        {
+            History = messages,
+            Plan = response.Result,
+            Response = response
+        };
     }
 }

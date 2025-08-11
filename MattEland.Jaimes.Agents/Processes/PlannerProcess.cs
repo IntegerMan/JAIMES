@@ -12,8 +12,12 @@ public class PlannerProcess
         ProcessBuilder process = new("Planner");
 
         ProcessStepBuilder plannerStep = process.AddStepFromType<PlannerStep>();
+        ProcessStepBuilder planEvalStep = process.AddStepFromType<EvaluatePlanStep>();
+        
         process.OnInputEvent(ProcessEvents.StartProcess)
             .SendEventTo(new ProcessFunctionTargetBuilder(plannerStep));
+        process.OnEvent(PlannerStep.PlanGeneratedEvent)
+            .SendEventTo(new ProcessFunctionTargetBuilder(planEvalStep));
 
         return process;
     }

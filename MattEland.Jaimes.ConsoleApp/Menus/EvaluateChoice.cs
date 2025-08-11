@@ -22,20 +22,7 @@ public class EvaluateChoice(IEnumerable<EvaluationScenario> scenarios,
     [Experimental("AIEVAL001")]
     public async Task<ApplicationState> RunAsync()
     {
-        IEnumerable<IEvaluator> evaluators =
-        [
-            new CoherenceEvaluator(),
-            new FluencyEvaluator(),
-            new RelevanceEvaluator(),
-            new RelevanceTruthAndCompletenessEvaluator(),
-            new StopwatchEvaluator(),
-            //new ToolCallAccuracyEvaluator(),
-            //new TaskAdherenceEvaluator()
-            //new GroundednessEvaluator(),
-            //new RetrievalEvaluator()
-        ];
-        
-        ReportingConfiguration reportingConfig = eval.BuildReportingConfig(evaluators);
+        //ReportingConfiguration reportingConfig = eval.BuildReportingConfig();
 
         if (!scenarios.Any())
         {
@@ -58,14 +45,14 @@ public class EvaluateChoice(IEnumerable<EvaluationScenario> scenarios,
                 response.ElapsedMilliseconds = stopwatch.ElapsedMilliseconds;
                 console.MarkupLine($"[yellow]Response generated in {stopwatch.ElapsedMilliseconds}ms[/]\r\n");
         
-                EvaluationResult result = await EvaluationManager.EvaluateScenarioAsync(reportingConfig, scenario, modelId, response);
-                console.DisplayEvaluationResultsTable(result);
+                //EvaluationResult result = await EvaluationManager.EvaluateScenarioAsync(reportingConfig, scenario, modelId, response);
+                //console.DisplayEvaluationResultsTable(result);
             }
         }
     
-        console.MarkupLine("\r\n[bold green]Evaluation complete![/]");
-        await eval.ExportEvaluationReportAsync(reportingConfig, Environment.CurrentDirectory, openInBrowser: true);
-        console.MarkupLine($"Results saved to: {Environment.CurrentDirectory}");
+        //console.MarkupLine("\r\n[bold green]Evaluation complete![/]");
+        //await eval.ExportEvaluationReportAsync(reportingConfig, Environment.CurrentDirectory, openInBrowser: true);
+        //console.MarkupLine($"Results saved to: {Environment.CurrentDirectory}");
         
         return ApplicationState.Running;
     }

@@ -70,7 +70,9 @@ public static class DisplayHelpers
     {
         string mermaidGraph = process.ToMermaid();
         console.Write(new Panel(new Text(mermaidGraph))
-            .Header($"{process.Name} Process Graph")
+            .Header($"{process.Name} Process Graph", Justify.Center)
+            .NoBorder()
+            .Expand()
             .BorderColor(Color.Aqua));
     }
 }
