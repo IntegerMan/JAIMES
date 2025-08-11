@@ -1,4 +1,5 @@
-﻿using MattEland.Jaimes.Agents.Planner;
+﻿using MattEland.Jaimes.Agents.Definitions;
+using MattEland.Jaimes.Agents.Functions;
 using MattEland.Jaimes.Core.Helpers;
 using MattEland.Jaimes.Core.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,30 +28,25 @@ public class PlannerTests
 
         ChatHistory history = new();
 
-        Mock<IChatCompletionService> chatClientMock = new Mock<IChatCompletionService>(MockBehavior.Strict);
-        PlannerResponse plan = new PlannerResponse()
+        Mock<IChatCompletionService> chatClientMock = new Mock<IChatCompletionService>();
+        PlannerResponse plan = new()
         {
             Cautions = "Hey",
             Checks = "None",
             KeyPoints = ["You Guys"]
         };
-        chatClientMock.Setup(m => m.GetChatMessageContentsAsync(It.IsAny<ChatHistory>(), null, It.IsAny<Kernel>(), It.IsAny<CancellationToken>()))
+        chatClientMock.Setup(m => m.GetChatMessageContentsAsync(It.IsAny<ChatHistory>(), It.IsAny<PromptExecutionSettings>(), It.IsAny<Kernel>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(
             [
                 plan.ToChatMessageContent(),
             ])
             .Verifiable(Times.Once);
 
-        Mock<IKernelBuilder> kernelBuilderMock = new Mock<IKernelBuilder>(MockBehavior.Strict);
-        kernelBuilderMock.SetupGet(m => m.Services)
-            .Returns(new ServiceCollection().AddScoped<IChatCompletionService>(_ => chatClientMock.Object));
+        IKernelBuilder kernelBuilder = Kernel.CreateBuilder();
+        kernelBuilder.Services.AddScoped<IChatCompletionService>(_ => chatClientMock.Object);
+        Kernel kernel = kernelBuilder.Build();
 
-        Mock<IModelFactory> modelFactory = new Mock<IModelFactory>(MockBehavior.Strict);
-        modelFactory
-            .Setup(mf => mf.ConfigureKernel(kernelBuilderMock.Object, "Planner", modelInfo, It.IsAny<string[]>()))
-            .Verifiable(Times.Once);
-
-        PlannerAgent planner = new(modelFactory.Object, kernelBuilderMock.Object, modelInfo);
+        PlannerAgent planner = new(kernel);
 
         // Act
         (PlannerResponse response, _) = await planner.GenerateAsync(history);
@@ -61,6 +57,6 @@ public class PlannerTests
         response.Checks.ShouldBe(plan.Checks);
         response.KeyPoints.Count.ShouldBe(plan.KeyPoints.Count);
         response.KeyPoints[0].ShouldBe(plan.KeyPoints[0]);
-        Mock.VerifyAll(modelFactory, kernelBuilderMock, chatClientMock);
+        Mock.VerifyAll(chatClientMock);
     }
 }

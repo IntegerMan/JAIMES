@@ -1,4 +1,4 @@
-namespace MattEland.Jaimes.Agents.Planner;
+namespace MattEland.Jaimes.Agents.Definitions;
 
 public record PlannerResponse
 {

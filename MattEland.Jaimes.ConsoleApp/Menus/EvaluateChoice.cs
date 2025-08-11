@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using AiTableTopGameMaster.ConsoleApp.Evaluation;
-using AiTableTopGameMaster.ConsoleApp.Evaluation.Scenarios;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
 using MattEland.Jaimes.Core.Cores;
 using MattEland.Jaimes.Core.Evaluation;

@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
+using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Process.Tools;
 using Spectre.Console;
 using Spectre.Console.Json;
 
@@ -60,5 +63,14 @@ public static class DisplayHelpers
         console.Write(new JsonText(json));
         console.WriteLine();
         return json;
+    }
+
+    [Experimental("SKEXP0080")]
+    public static void DisplayProcessMermaid(this IAnsiConsole console, ProcessBuilder process)
+    {
+        string mermaidGraph = process.ToMermaid();
+        console.Write(new Panel(new Text(mermaidGraph))
+            .Header($"{process.Name} Process Graph")
+            .BorderColor(Color.Aqua));
     }
 }

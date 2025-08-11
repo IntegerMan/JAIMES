@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using MattEland.Jaimes.Core.Domain;
 using Microsoft.Extensions.AI;
@@ -105,9 +106,9 @@ public static partial class ChatExtensions
 
     public static ChatMessageContent ToChatMessageContent(this object result)
     {
-        return new ChatMessageContent()
+        return new ChatMessageContent
         {
-            InnerContent = result
+            Content = JsonSerializer.Serialize(result)
         };
     }
     

@@ -1,25 +1,22 @@
 ﻿using System.Text.Json;
+using MattEland.Jaimes.Agents.Definitions;
 using MattEland.Jaimes.Core.Helpers;
-using MattEland.Jaimes.Core.Models;
 using Microsoft.Extensions.AI;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 
 #pragma warning disable SKEXP0001
 
-namespace MattEland.Jaimes.Agents.Planner;
+namespace MattEland.Jaimes.Agents.Functions;
 
 
-public class PlannerAgent(IModelFactory factory, IKernelBuilder builder, ModelInfo model) : IPlannerAgent
+public class PlannerAgent(Kernel kernel)
 {
     public string Name => "Planner";
     public string[] Plugins => [];
     
     public async Task<(PlannerResponse, ChatHistory)> GenerateAsync(ChatHistory history)
     {
-        factory.ConfigureKernel(builder, Name, model, Plugins);
-        Kernel kernel = builder.Build();
-        
         PlannerResponse sampleResponse = new()
         {
             Checks = "None, or actions to request from the player (e.g. roll a skill check, clarify something, etc.)",
