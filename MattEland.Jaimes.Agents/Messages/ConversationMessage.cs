@@ -3,18 +3,10 @@ using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace MattEland.Jaimes.Agents.Messages;
 
-public class ConversationMessage(
-    ChatHistory history,
-    Adventure adventure,
-    Character character,
-    IServiceProvider serviceProvider)
+public record ConversationMessage
 {
-    public ConversationMessage(ConversationMessage message) : this(message.History, message.Adventure, message.Character, message.ServiceProvider)
-    {
-    }
-
-    public ChatHistory History { get; init; } = history;
-    public Adventure Adventure { get; init; } = adventure;
-    public Character Character { get; init; } = character;
-    public IServiceProvider ServiceProvider { get; init; } = serviceProvider;
+    public required ChatHistory History { get; init; }
+    public required Adventure Adventure { get; init; }
+    public required Character Character { get; init; }
+    public required IServiceProvider ServiceProvider { get; init; }
 }

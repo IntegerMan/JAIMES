@@ -68,7 +68,7 @@ public class PlannerAgentEvaluationScenario(
         ChatHistory history = [];
         history.AddUserMessage(message);
 
-        ProcessBuilder kernelProcess = PlannerProcess.Create();
+        ProcessBuilder kernelProcess = PlannerWithEvaluationProcess.Create();
         
         console.WriteMermaidNotation(kernelProcess);
         
@@ -82,7 +82,13 @@ public class PlannerAgentEvaluationScenario(
             {
                 Id = ProcessEvents.StartProcess,
                 Visibility = KernelProcessEventVisibility.Public,
-                Data = new ConversationMessage(history, adventure, character, services)
+                Data = new ConversationMessage
+                {
+                    History = history,
+                    Adventure = adventure,
+                    Character = character,
+                    ServiceProvider = services,
+                }
             },
             externalMessageChannel: new LoggingExternalMessageChannel(console));
         

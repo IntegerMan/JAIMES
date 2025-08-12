@@ -44,7 +44,7 @@ public class PlannerAgent(Kernel kernel)
         ChatResponse<PlannerResponse> response = 
             await chatClient.GetResponseAsync<PlannerResponse>(messages.ToChatMessages());
 
-        return new PlanCompleteMessage(conversation)
+        return new PlanCompleteMessage
         {
             History = messages,
             Plan = response.Result,

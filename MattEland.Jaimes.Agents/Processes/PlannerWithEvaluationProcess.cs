@@ -15,7 +15,8 @@ public class PlannerWithEvaluationProcess
         ProcessStepBuilder planEvalStep = process.AddStepFromType<EvaluatePlanStep>();
 
         process.OnInputEvent(ProcessEvents.StartProcess)
-            .SendEventTo(new ProcessFunctionTargetBuilder(plannerStep, parameterName: "conversation"));
+            .SendEventTo(new ProcessFunctionTargetBuilder(plannerStep, parameterName: "conversation"))
+            .SendEventTo(new ProcessFunctionTargetBuilder(planEvalStep, parameterName: "conversation"));
         plannerStep.OnFunctionResult()
             .SendEventTo(new ProcessFunctionTargetBuilder(planEvalStep, parameterName: "plan"));
         
