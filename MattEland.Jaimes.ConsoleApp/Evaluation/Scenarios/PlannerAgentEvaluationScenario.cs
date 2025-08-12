@@ -68,6 +68,7 @@ public class PlannerAgentEvaluationScenario(
         history.AddUserMessage(message);
 
         ProcessBuilder kernelProcess = PlannerProcess.Create();
+        
         console.WriteMermaidNotation(kernelProcess);
         
         modelFactory.ConfigureKernel(kernelBuilder, Name, modelId, []);
@@ -87,10 +88,11 @@ public class PlannerAgentEvaluationScenario(
                     Character = character,
                     ServiceProvider = services,
                 }
-            });
+            },
+            externalMessageChannel: new LoggingExternalMessageChannel(console));
         
-        PlannerResponse? result = conversation.GetContext<PlannerResponse>();
-        string? json = console.WriteAsJson(result);
+        PlannerStepResult? result = conversation.GetContext<PlannerStepResult>();
+        string? json = console.WriteAsJson(result?.Plan);
 
         return new ChatResult
         {

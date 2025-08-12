@@ -40,7 +40,7 @@ public static class ServiceExtensions
         services.AddTransient<IKernelBuilder>(sp =>
         {
             IKernelBuilder builder = Kernel.CreateBuilder();
-            //builder.Services.AddSingleton<ILoggerFactory>(sp => sp.GetRequiredService<ILoggerFactory>());
+            builder.Services.AddSingleton<ILoggerFactory>(_ => sp.GetRequiredService<ILoggerFactory>());
             builder.Services.AddLogging(loggingBuilder => loggingBuilder.ConfigureSerilogLogging(disposeLogger: false));
             builder.Services.AddSingleton(sp.GetRequiredService<IAnsiConsole>());
             builder.Services.AddSingleton<IAutoFunctionInvocationFilter, FunctionInvocationLoggingFilter>();

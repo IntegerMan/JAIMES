@@ -13,19 +13,25 @@ namespace MattEland.Jaimes.Agents.Steps;
 [Experimental("SKEXP0080")]
 public class EvaluatePlanStep : KernelProcessStep
 {
+    public override ValueTask ActivateAsync(KernelProcessStepState state)
+    {
+        return base.ActivateAsync(state);
+    }
+
     public static string EvaluatedEvent => "PlanEvaluated";
     
-    [KernelFunction]
-    public async Task ExecuteAsync(KernelProcessStepContext steps, PlannerStepResult planResult, ConversationContext convContext)
+    [KernelFunction("Execute")]
+    public async Task<EvaluationResult> ExecuteAsync(KernelProcessStepContext steps, PlannerStepResult plan, ConversationContext convContext)
     {
         try
         {
             IServiceProvider sp = convContext.ServiceProvider;
             EvaluationManager evaluationManager = sp.GetRequiredService<EvaluationManager>();
             ReportingConfiguration config = evaluationManager.BuildReportingConfig(); // TODO: This would be good to get from an active eval context
-            EvaluationResult result = await EvaluationManager.EvaluateInteractionAsync(config, planResult.History, planResult.Response, "Planner Evaluation", iteration: "N/A");
+            EvaluationResult result = await EvaluationManager.EvaluateInteractionAsync(config, plan.History, plan.Response, "PlannerEval", iteration: "NA");
 
             await steps.EmitEventAsync(EvaluatedEvent, result);
+            return result;
         }
         catch (Exception ex)
         {

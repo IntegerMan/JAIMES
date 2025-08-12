@@ -12,7 +12,7 @@ public static class LoggingExtensions
         DeleteOldLogs(filename);
 
         Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Debug()
+            .MinimumLevel.Verbose()
             .WriteTo.Logger(l =>
             {
                 l.WriteTo.File(

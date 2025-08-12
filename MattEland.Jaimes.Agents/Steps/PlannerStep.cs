@@ -16,8 +16,8 @@ public sealed class PlannerStep : KernelProcessStep
     public static string PlanGeneratedEvent => "PlanGenerated";
     public static string RenderedHistoryKey => "PlannerHistory";
 
-    [KernelFunction]
-    public async Task ExecuteAsync(Kernel kernel, KernelProcessStepContext steps, ConversationContext convContext)
+    [KernelFunction("Execute")]
+    public async Task<PlannerStepResult> ExecuteAsync(Kernel kernel, KernelProcessStepContext steps, ConversationContext convContext)
     {
         try
         {
@@ -28,6 +28,7 @@ public sealed class PlannerStep : KernelProcessStep
             conversationService.SetContext(result);
             conversationService.SetContext(RenderedHistoryKey, result.History);
             await steps.EmitEventAsync(PlanGeneratedEvent, result);
+            return result;
         }
         catch (Exception ex)
         {

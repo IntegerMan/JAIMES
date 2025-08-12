@@ -4,7 +4,7 @@ using Microsoft.SemanticKernel;
 
 namespace MattEland.Jaimes.Agents.Processes;
 
-public class PlannerProcess
+public class PlannerWithEvaluationProcess
 {
     [Experimental("SKEXP0080")]
     public static ProcessBuilder Create()
@@ -12,9 +12,13 @@ public class PlannerProcess
         ProcessBuilder process = new("Planner");
 
         ProcessStepBuilder plannerStep = process.AddStepFromType<PlannerStep>();
+        ProcessStepBuilder planEvalStep = process.AddStepFromType<EvaluatePlanStep>();
 
         process.OnInputEvent(ProcessEvents.StartProcess)
+            .SendEventTo(new ProcessFunctionTargetBuilder(planEvalStep, parameterName: "convContext"))
             .SendEventTo(new ProcessFunctionTargetBuilder(plannerStep, parameterName: "convContext"));
+        plannerStep.OnFunctionResult()
+            .SendEventTo(new ProcessFunctionTargetBuilder(planEvalStep, parameterName: "plan"));
         
         return process;
     }

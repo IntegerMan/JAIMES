@@ -1,6 +1,7 @@
 using System.Text;
 using Serilog;
 using Spectre.Console;
+using Spectre.Console.Json;
 using Spectre.Console.Rendering;
 
 namespace AiTableTopGameMaster.ConsoleApp.Infrastructure;
@@ -26,6 +27,7 @@ public class LoggingConsoleWrapper(IAnsiConsole console) : IAnsiConsole
             }
             case Text _: // Typically an empty line. We can't easily get at the internal text.
             case ControlCode _:  // This is ignorable and is used for animations
+            case JsonText _: // Ignorable, we're typically writing JSON to the console and it's hard to get out of the object
                 break;
             default:
                 Log.Debug("Unhandled Renderable: {Renderable}", renderable.ToString());
