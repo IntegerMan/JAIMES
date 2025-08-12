@@ -14,7 +14,7 @@ public class PlannerProcess
         ProcessStepBuilder plannerStep = process.AddStepFromType<PlannerStep>();
 
         process.OnInputEvent(ProcessEvents.StartProcess)
-            .SendEventTo(new ProcessFunctionTargetBuilder(plannerStep, parameterName: "convContext"));
+            .SendEventTo(new ProcessFunctionTargetBuilder(plannerStep, parameterName: "conversation"));
         
         return process;
     }

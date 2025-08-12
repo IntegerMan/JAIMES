@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using MattEland.Jaimes.Agents.Messages;
 using MattEland.Jaimes.Agents.Models;
 using MattEland.Jaimes.Core.Helpers;
 using Microsoft.Extensions.AI;
@@ -14,7 +15,7 @@ public class PlannerAgent(Kernel kernel)
     public string Name => "Planner";
     public string[] Plugins => [];
     
-    public async Task<PlannerStepResult> GenerateAsync(ChatHistory history)
+    public async Task<PlanCompleteMessage> GenerateAsync(ConversationMessage conversation)
     {
         PlannerResponse sampleResponse = new()
         {
@@ -33,7 +34,7 @@ public class PlannerAgent(Kernel kernel)
         messages.AddSystemMessage("""
                                   Ensure that the plan is clear, actionable, and takes into account any constraints or preferences mentioned by the user.
                                   """);
-        history.CopyMessagesTo(messages, AuthorRole.Assistant, AuthorRole.User);
+        conversation.History.CopyMessagesTo(messages, AuthorRole.Assistant, AuthorRole.User);
         
         IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
         
@@ -43,7 +44,7 @@ public class PlannerAgent(Kernel kernel)
         ChatResponse<PlannerResponse> response = 
             await chatClient.GetResponseAsync<PlannerResponse>(messages.ToChatMessages());
 
-        return new PlannerStepResult
+        return new PlanCompleteMessage(conversation)
         {
             History = messages,
             Plan = response.Result,

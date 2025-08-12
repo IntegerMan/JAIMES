@@ -1,5 +1,6 @@
 using AiTableTopGameMaster.ConsoleApp.Helpers;
 using MattEland.Jaimes.Agents;
+using MattEland.Jaimes.Agents.Messages;
 using MattEland.Jaimes.Agents.Models;
 using MattEland.Jaimes.Agents.Processes;
 using MattEland.Jaimes.Agents.Steps;
@@ -81,17 +82,11 @@ public class PlannerAgentEvaluationScenario(
             {
                 Id = ProcessEvents.StartProcess,
                 Visibility = KernelProcessEventVisibility.Public,
-                Data = new ConversationContext()
-                {
-                    History = history,
-                    Adventure = adventure,
-                    Character = character,
-                    ServiceProvider = services,
-                }
+                Data = new ConversationMessage(history, adventure, character, services)
             },
             externalMessageChannel: new LoggingExternalMessageChannel(console));
         
-        PlannerStepResult? result = conversation.GetContext<PlannerStepResult>();
+        PlanCompleteMessage? result = conversation.GetContext<PlanCompleteMessage>();
         string? json = console.WriteAsJson(result?.Plan);
 
         return new ChatResult

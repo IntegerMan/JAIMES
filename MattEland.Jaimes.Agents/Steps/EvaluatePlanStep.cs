@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using MattEland.Jaimes.Agents.Messages;
 using MattEland.Jaimes.Agents.Models;
 using MattEland.Jaimes.Core.Domain;
 using MattEland.Jaimes.Core.Evaluation;
@@ -21,11 +22,11 @@ public class EvaluatePlanStep : KernelProcessStep
     public static string EvaluatedEvent => "PlanEvaluated";
     
     [KernelFunction("Execute")]
-    public async Task<EvaluationResult> ExecuteAsync(KernelProcessStepContext steps, PlannerStepResult plan, ConversationContext convContext)
+    public async Task<EvaluationResult> ExecuteAsync(KernelProcessStepContext steps, PlanCompleteMessage plan)
     {
         try
         {
-            IServiceProvider sp = convContext.ServiceProvider;
+            IServiceProvider sp = plan.ServiceProvider;
             EvaluationManager evaluationManager = sp.GetRequiredService<EvaluationManager>();
             ReportingConfiguration config = evaluationManager.BuildReportingConfig(); // TODO: This would be good to get from an active eval context
             EvaluationResult result = await EvaluationManager.EvaluateInteractionAsync(config, plan.History, plan.Response, "PlannerEval", iteration: "NA");

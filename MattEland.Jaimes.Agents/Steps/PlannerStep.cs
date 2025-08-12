@@ -1,12 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using MattEland.Jaimes.Agents.Functions;
-using MattEland.Jaimes.Agents.Models;
+using MattEland.Jaimes.Agents.Messages;
 using MattEland.Jaimes.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
 using Serilog;
-using ConversationContext = MattEland.Jaimes.Core.Domain.ConversationContext;
 
 namespace MattEland.Jaimes.Agents.Steps;
 
@@ -17,14 +15,14 @@ public sealed class PlannerStep : KernelProcessStep
     public static string RenderedHistoryKey => "PlannerHistory";
 
     [KernelFunction("Execute")]
-    public async Task<PlannerStepResult> ExecuteAsync(Kernel kernel, KernelProcessStepContext steps, ConversationContext convContext)
+    public async Task<PlanCompleteMessage> ExecuteAsync(Kernel kernel, KernelProcessStepContext steps, ConversationMessage conversation)
     {
         try
         {
-            IServiceProvider sp = convContext.ServiceProvider;
+            IServiceProvider sp = conversation.ServiceProvider;
             IConversationContextService conversationService = sp.GetRequiredService<IConversationContextService>();
             PlannerAgent planner = new(kernel);
-            PlannerStepResult result = await planner.GenerateAsync(convContext.History);
+            PlanCompleteMessage result = await planner.GenerateAsync(conversation);
             conversationService.SetContext(result);
             conversationService.SetContext(RenderedHistoryKey, result.History);
             await steps.EmitEventAsync(PlanGeneratedEvent, result);
