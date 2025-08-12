@@ -11,6 +11,7 @@ using MattEland.Jaimes.Core.Evaluation;
 using MattEland.Jaimes.Core.Helpers;
 using MattEland.Jaimes.Core.Models;
 using MattEland.Jaimes.Core.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Spectre.Console;
@@ -20,11 +21,12 @@ using Spectre.Console;
 namespace AiTableTopGameMaster.ConsoleApp.Evaluation.Scenarios;
 
 public class PlannerAgentEvaluationScenario(
-    IServiceProvider services,
     IModelFactory modelFactory,
     IAnsiConsole console,
     Adventure adventure,
     Character character,
+    IEventsService events,
+    EvaluationManager evaluationManager,
     IConversationContextService conversation,
     IPromptsService promptsService,
     IKernelBuilder kernelBuilder) : EvaluationScenario
@@ -70,13 +72,18 @@ public class PlannerAgentEvaluationScenario(
         history.AddUserMessage(message);
 
         ProcessBuilder kernelProcess = PlannerWithEvaluationProcess.Create();
+        ProcessProxyBuilder proxy = kernelProcess.AddProxyStep("FinalOutput", ["Output"]);
+        kernelProcess.OnEvent(PlannerStep.PlanGeneratedEvent).EmitExternalEvent(proxy, "Output");
+        KernelProcess process = kernelProcess.Build();
+        events.SendMessage(new ProcessCreatedMessage(kernelProcess.Name, process));
         
-        console.WriteMermaidNotation(kernelProcess);
+        kernelBuilder.Services.AddSingleton(evaluationManager);
+        kernelBuilder.Services.AddSingleton(events);
+        kernelBuilder.Services.AddSingleton(conversation);
         
         modelFactory.ConfigureKernel(kernelBuilder, Name, modelId, []);
         Kernel kernel = kernelBuilder.Build();
 
-        KernelProcess process = kernelProcess.Build();
         await using LocalKernelProcessContext runningProcess = await process.StartAsync(
             kernel,
             new KernelProcessEvent
@@ -88,11 +95,10 @@ public class PlannerAgentEvaluationScenario(
                     History = history,
                     Adventure = adventure,
                     Character = character,
-                    ServiceProvider = services,
                 }
             },
             externalMessageChannel: new LoggingExternalMessageChannel(console));
-        
+
         PlanCompleteMessage? result = conversation.GetContext<PlanCompleteMessage>();
         
         string? json = result is null 

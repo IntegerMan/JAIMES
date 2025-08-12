@@ -68,9 +68,15 @@ public static class DisplayHelpers
     [Experimental("SKEXP0080")]
     public static void WriteMermaidNotation(this IAnsiConsole console, ProcessBuilder process)
     {
-        string mermaidGraph = process.ToMermaid();
+        console.WriteMermaidNotation(process.Name, process.Build());
+    }
+    
+    [Experimental("SKEXP0080")]
+    public static void WriteMermaidNotation(this IAnsiConsole console, string name, KernelProcess process)
+    {
+        string mermaidGraph = process.ToMermaid(maxLevel: 5);
         console.Write(new Panel(new Text(mermaidGraph))
-            .Header($"{process.Name} Process Graph", Justify.Center)
+            .Header($"{name} Process Graph", Justify.Center)
             .NoBorder()
             .Expand()
             .BorderColor(Color.Aqua));

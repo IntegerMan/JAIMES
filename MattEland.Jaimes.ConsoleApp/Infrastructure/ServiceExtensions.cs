@@ -32,7 +32,7 @@ public static class ServiceExtensions
         services.AddSingleton<IModelFactory, ModelFactory>();
         services.AddSingleton<IPromptsService, PromptsService>();
         services.AddSingleton<IEventsService, EventsService>();
-        services.AddScoped<IConversationContextService, ConversationContextService>();
+        services.AddTransient<IConversationContextService, ConversationContextService>();
 
         // Load configuration settings and options
         services.RegisterConfigurationAndSettings<TSettings>(args);

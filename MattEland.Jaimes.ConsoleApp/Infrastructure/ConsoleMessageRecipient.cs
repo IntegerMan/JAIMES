@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
 using CommunityToolkit.Mvvm.Messaging;
 using MattEland.Jaimes.Agents.Messages;
@@ -7,6 +8,7 @@ namespace AiTableTopGameMaster.ConsoleApp.Infrastructure;
 
 public class ConsoleMessageRecipient(IAnsiConsole console) : 
     IRecipient<PlanCompleteMessage>,
+    IRecipient<ProcessCreatedMessage>,
     IRecipient<PlanEvaluatedMessage>
 {
     public void Listen()
@@ -28,5 +30,11 @@ public class ConsoleMessageRecipient(IAnsiConsole console) :
     public void Receive(PlanEvaluatedMessage message)
     {
         console.DisplayEvaluationResults(message.Evaluation, "Plan Evaluation Results");
+    }
+
+    [Experimental("SKEXP0080")]
+    public void Receive(ProcessCreatedMessage message)
+    {
+        console.WriteMermaidNotation(message.Name, message.Process);
     }
 }
