@@ -112,7 +112,7 @@ public static partial class ChatExtensions
         };
     }
 
-    public static ChatResponse AsChatResponse(this string? input)
+    public static ChatResponse ToChatResponse(this string? input)
     {
         return new ChatResponse(new ChatMessage(ChatRole.Assistant,
             input

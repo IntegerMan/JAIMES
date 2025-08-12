@@ -17,6 +17,11 @@ try
     IServiceProvider services = ServiceExtensions.BuildServiceProvider<AppSettings>(console, "Adventure", args);
     
     Log.Debug("Services configured successfully");
+    
+    // This object will listen for event messages and display them as they occur
+    ConsoleMessageRecipient listener = new(console);
+    listener.Listen();
+    
     ApplicationState state;
     do
     {

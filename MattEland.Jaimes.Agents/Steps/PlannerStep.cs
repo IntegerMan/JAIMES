@@ -9,10 +9,10 @@ using Serilog;
 namespace MattEland.Jaimes.Agents.Steps;
 
 [Experimental("SKEXP0080")]
-public sealed class PlannerStep : KernelProcessStep
+public sealed class PlannerStep : AppStep
 {
-    public static string PlanGeneratedEvent => "PlanGenerated";
-    public static string RenderedHistoryKey => "PlannerHistory";
+    public const string RenderedHistoryKey = "Planner__RenderedHistory";
+    public static string PlanGeneratedEvent => "Planner__PlanGenerated";
 
     [KernelFunction("Execute")]
     public async Task<PlanCompleteMessage> ExecuteAsync(Kernel kernel, KernelProcessStepContext steps, ConversationMessage conversation)
@@ -23,10 +23,9 @@ public sealed class PlannerStep : KernelProcessStep
             IConversationContextService conversationService = sp.GetRequiredService<IConversationContextService>();
             PlannerAgent planner = new(kernel);
             PlanCompleteMessage result = await planner.GenerateAsync(conversation);
-            conversationService.SetContext(result);
+            
             conversationService.SetContext(RenderedHistoryKey, result.History);
-            await steps.EmitEventAsync(PlanGeneratedEvent, result);
-            return result;
+            return await EmitAsync(PlanGeneratedEvent, result, steps, conversationService);
         }
         catch (Exception ex)
         {

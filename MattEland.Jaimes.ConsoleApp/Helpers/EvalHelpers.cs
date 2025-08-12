@@ -5,9 +5,9 @@ namespace AiTableTopGameMaster.ConsoleApp.Helpers;
 
 public static class EvalHelpers
 {
-    public static void DisplayEvaluationResultsTable(this IAnsiConsole console, EvaluationResult evalResult)
+    public static void DisplayEvaluationResults(this IAnsiConsole console, EvaluationResult evalResult, string title = "Evaluation Results")
     {
-        Table table = new Table().Title("Evaluation Results");
+        Table table = new Table().Title(title);
         table.AddColumns("Metric", "Value", "Reason");
         foreach (var kvp in evalResult.Metrics)
         {

@@ -31,6 +31,7 @@ public static class ServiceExtensions
         services.AddJaimesAppLogging(logFileName);
         services.AddSingleton<IModelFactory, ModelFactory>();
         services.AddSingleton<IPromptsService, PromptsService>();
+        services.AddSingleton<IEventsService, EventsService>();
         services.AddScoped<IConversationContextService, ConversationContextService>();
 
         // Load configuration settings and options

@@ -20,6 +20,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Reference Include="CommunityToolkit.Mvvm">
+        <HintPath>..\..\..\.nuget\packages\communitytoolkit.mvvm\8.4.0\lib\net8.0\CommunityToolkit.Mvvm.dll</HintPath>
+      </Reference>
       <Reference Include="Microsoft.Extensions.AI.Evaluation">
         <HintPath>..\..\..\.nuget\packages\microsoft.extensions.ai.evaluation\9.7.0\lib\net9.0\Microsoft.Extensions.AI.Evaluation.dll</HintPath>
       </Reference>

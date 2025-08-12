@@ -1,3 +1,4 @@
+using System.Text.Json;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
 using MattEland.Jaimes.Agents;
 using MattEland.Jaimes.Agents.Messages;
@@ -93,12 +94,15 @@ public class PlannerAgentEvaluationScenario(
             externalMessageChannel: new LoggingExternalMessageChannel(console));
         
         PlanCompleteMessage? result = conversation.GetContext<PlanCompleteMessage>();
-        string? json = console.WriteAsJson(result?.Plan);
+        
+        string? json = result is null 
+            ? null 
+            : JsonSerializer.Serialize(result.Plan);
 
         return new ChatResult
         {
             History = conversation.GetRequiredContext<ChatHistory>(PlannerStep.RenderedHistoryKey),
-            Response = json.AsChatResponse(),
+            Response = json.ToChatResponse(),
         };
     }
 }

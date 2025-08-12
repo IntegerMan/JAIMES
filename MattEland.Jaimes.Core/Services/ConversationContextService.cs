@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 
 namespace MattEland.Jaimes.Core.Services;
 
-public class ConversationContextService : IConversationContextService
+public class ConversationContextService(IEventsService events) : IConversationContextService
 {
     private readonly IDictionary<string, object?> _context = new ConcurrentDictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
     
@@ -57,4 +57,6 @@ public class ConversationContextService : IConversationContextService
         }
         return value as T ?? throw new InvalidCastException($"Context for key '{key}' is not of type {typeof(T).Name}.");
     }
+
+    public IEventsService Events => events;
 }
