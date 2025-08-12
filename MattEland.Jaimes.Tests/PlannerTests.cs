@@ -1,5 +1,7 @@
 ﻿using MattEland.Jaimes.Agents.Functions;
+using MattEland.Jaimes.Agents.Messages;
 using MattEland.Jaimes.Agents.Models;
+using MattEland.Jaimes.Core.Domain;
 using MattEland.Jaimes.Core.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
@@ -35,16 +37,44 @@ public class PlannerTests
         kernelBuilder.Services.AddScoped<IChatCompletionService>(_ => chatClientMock.Object);
         Kernel kernel = kernelBuilder.Build();
         PlannerAgent planner = new(kernel);
+        Character character = new Character
+        {
+            Name = "Test",
+            Specialization = "Testing",
+            CharacterSheet = "Stuff"
+        };
+        ConversationMessage message = new()
+        {
+            History = history,
+            Adventure = new Adventure
+            {
+                Name = "Test",
+                Author = "Test",
+                Version = "1.0",
+                Ruleset = "TEST",
+                Backstory = "Boring",
+                SettingDescription = "Awesome",
+                LocationsOverview = "Nothing to see here",
+                Locations = [],
+                EncountersOverview = "Players gunna die",
+                Encounters = [],
+                GameMasterNotes = "Don't forget to have fun",
+                NarrativeStructure = "Arrange / Act / Assert",
+                Characters = [character],
+                PlayerCharacter = character
+            },
+            Character = character
+        };
 
         // Act
-        (PlannerResponse response, _) = await planner.GenerateAsync(history);
+        PlanCompleteMessage response = await planner.GenerateAsync(message);
 
         // Assert
         response.ShouldNotBeNull();
-        response.Cautions.ShouldBe(plan.Cautions);
-        response.Checks.ShouldBe(plan.Checks);
-        response.KeyPoints.Count.ShouldBe(plan.KeyPoints.Count);
-        response.KeyPoints[0].ShouldBe(plan.KeyPoints[0]);
+        response.Plan.Cautions.ShouldBe(plan.Cautions);
+        response.Plan.Checks.ShouldBe(plan.Checks);
+        response.Plan.KeyPoints.Count.ShouldBe(plan.KeyPoints.Count);
+        response.Plan.KeyPoints[0].ShouldBe(plan.KeyPoints[0]);
         Mock.VerifyAll(chatClientMock);
     }
 }
