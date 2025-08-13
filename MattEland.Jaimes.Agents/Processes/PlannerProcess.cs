@@ -7,7 +7,7 @@ namespace MattEland.Jaimes.Agents.Processes;
 public class PlannerProcess
 {
     [Experimental("SKEXP0080")]
-    public static ProcessBuilder Create()
+    public static ProcessBuilder Create(bool includeEvaluation = true)
     {
         ProcessBuilder process = new("Planner");
 
@@ -15,7 +15,14 @@ public class PlannerProcess
 
         process.OnInputEvent(ProcessEvents.StartProcess)
             .SendEventTo(new ProcessFunctionTargetBuilder(plannerStep, parameterName: "conversation"));
-        
+
+        if (includeEvaluation)
+        {
+            ProcessStepBuilder planEvalStep = process.AddStepFromType<EvaluatePlanStep>();
+            plannerStep.OnFunctionResult()
+                .SendEventTo(new ProcessFunctionTargetBuilder(planEvalStep, parameterName: "plan"));
+        }
+
         return process;
     }
 }

@@ -71,7 +71,7 @@ public class PlannerAgentEvaluationScenario(
         ChatHistory history = [];
         history.AddUserMessage(message);
 
-        ProcessBuilder kernelProcess = PlanAndComposeProcess.Create();
+        ProcessBuilder kernelProcess = PlannerProcess.Create(includeEvaluation: true);
         KernelProcess process = kernelProcess.Build();
         events.SendMessage(new ProcessCreatedMessage(kernelProcess.Name, process));
         
