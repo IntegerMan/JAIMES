@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
 using CommunityToolkit.Mvvm.Messaging;
 using MattEland.Jaimes.Agents.Messages;
+using Microsoft.SemanticKernel.Agents.OpenAI;
 using Spectre.Console;
 
 namespace AiTableTopGameMaster.ConsoleApp.Infrastructure;
@@ -9,7 +10,8 @@ namespace AiTableTopGameMaster.ConsoleApp.Infrastructure;
 public class ConsoleMessageRecipient(IAnsiConsole console) : 
     IRecipient<PlanCompleteMessage>,
     IRecipient<ProcessCreatedMessage>,
-    IRecipient<PlanEvaluatedMessage>
+    IRecipient<PlanEvaluatedMessage>,
+    IRecipient<ResponseComposedMessage>
 {
     public void Listen()
     {
@@ -36,5 +38,13 @@ public class ConsoleMessageRecipient(IAnsiConsole console) :
     public void Receive(ProcessCreatedMessage message)
     {
         console.WriteMermaidNotation(message.Name, message.Process);
+    }
+
+    public void Receive(ResponseComposedMessage message)
+    {
+        console.WriteHistory(message.History);
+        
+        console.Markup("[Yellow]Composer[/]: ");
+        console.WriteLine(message.Response);
     }
 }

@@ -81,4 +81,24 @@ public static class DisplayHelpers
             .Expand()
             .BorderColor(Color.Aqua));
     }
+
+    public static void WriteHistory(this IAnsiConsole console, ChatHistory history)
+    {
+        foreach (var message in history)
+        {
+            if (message.Role == AuthorRole.User)
+            {
+                console.Markup($"{User}User: [/]");
+            }
+            else if (message.Role == AuthorRole.Assistant)
+            {
+                console.Markup($"{AI}AI[/]: ");
+            }
+            else
+            {
+                console.Markup($"[dim]{message.Role}[/]: ");
+            }
+            console.WriteLine(message.Content ?? "");
+        }
+    }
 }

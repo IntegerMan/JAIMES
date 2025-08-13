@@ -71,9 +71,7 @@ public class PlannerAgentEvaluationScenario(
         ChatHistory history = [];
         history.AddUserMessage(message);
 
-        ProcessBuilder kernelProcess = PlannerWithEvaluationProcess.Create();
-        ProcessProxyBuilder proxy = kernelProcess.AddProxyStep("FinalOutput", ["Output"]);
-        kernelProcess.OnEvent(PlannerStep.PlanGeneratedEvent).EmitExternalEvent(proxy, "Output");
+        ProcessBuilder kernelProcess = PlanAndComposeProcess.Create();
         KernelProcess process = kernelProcess.Build();
         events.SendMessage(new ProcessCreatedMessage(kernelProcess.Name, process));
         
