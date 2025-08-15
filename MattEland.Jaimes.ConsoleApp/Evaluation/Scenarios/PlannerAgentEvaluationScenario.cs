@@ -1,8 +1,6 @@
 using System.Text.Json;
-using AiTableTopGameMaster.ConsoleApp.Helpers;
 using MattEland.Jaimes.Agents;
 using MattEland.Jaimes.Agents.Messages;
-using MattEland.Jaimes.Agents.Models;
 using MattEland.Jaimes.Agents.Processes;
 using MattEland.Jaimes.Agents.Steps;
 using MattEland.Jaimes.Core.Cores;
@@ -71,7 +69,7 @@ public class PlannerAgentEvaluationScenario(
         ChatHistory history = [];
         history.AddUserMessage(message);
 
-        ProcessBuilder kernelProcess = PlannerProcess.Create(includeEvaluation: true);
+        ProcessBuilder kernelProcess = PlanComposeEditProcess.Create(includeEvaluation: true);
         KernelProcess process = kernelProcess.Build();
         events.SendMessage(new ProcessCreatedMessage(kernelProcess.Name, process));
         

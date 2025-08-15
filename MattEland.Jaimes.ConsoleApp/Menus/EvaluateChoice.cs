@@ -1,12 +1,8 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using AiTableTopGameMaster.ConsoleApp.Evaluation;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
 using MattEland.Jaimes.Core.Cores;
 using MattEland.Jaimes.Core.Evaluation;
-using Microsoft.Extensions.AI.Evaluation;
-using Microsoft.Extensions.AI.Evaluation.Quality;
-using Microsoft.Extensions.AI.Evaluation.Reporting;
 using Spectre.Console;
 
 namespace AiTableTopGameMaster.ConsoleApp.Menus;

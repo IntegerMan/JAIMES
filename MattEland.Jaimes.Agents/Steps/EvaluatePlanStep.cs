@@ -1,10 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using MattEland.Jaimes.Agents.Helpers;
 using MattEland.Jaimes.Agents.Messages;
-using MattEland.Jaimes.Agents.Models;
-using MattEland.Jaimes.Core.Domain;
 using MattEland.Jaimes.Core.Evaluation;
-using MattEland.Jaimes.Core.Services;
 using Microsoft.Extensions.AI.Evaluation;
 using Microsoft.Extensions.AI.Evaluation.Reporting;
 using Microsoft.Extensions.DependencyInjection;

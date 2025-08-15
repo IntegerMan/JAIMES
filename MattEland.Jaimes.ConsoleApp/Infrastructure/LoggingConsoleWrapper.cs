@@ -28,6 +28,7 @@ public class LoggingConsoleWrapper(IAnsiConsole console) : IAnsiConsole
             case Text _: // Typically an empty line. We can't easily get at the internal text.
             case ControlCode _:  // This is ignorable and is used for animations
             case JsonText _: // Ignorable, we're typically writing JSON to the console and it's hard to get out of the object
+            case Table _:
                 break;
             default:
                 Log.Debug("Unhandled Renderable: {Renderable}", renderable.ToString());

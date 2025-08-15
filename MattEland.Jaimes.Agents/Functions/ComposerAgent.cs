@@ -1,8 +1,6 @@
-﻿using System.Text.Json;
-using MattEland.Jaimes.Agents.Messages;
+﻿using MattEland.Jaimes.Agents.Messages;
 using MattEland.Jaimes.Agents.Models;
 using MattEland.Jaimes.Core.Helpers;
-using Microsoft.Extensions.AI;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 

@@ -2,7 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
 using CommunityToolkit.Mvvm.Messaging;
 using MattEland.Jaimes.Agents.Messages;
-using Microsoft.SemanticKernel.Agents.OpenAI;
 using Spectre.Console;
 
 namespace AiTableTopGameMaster.ConsoleApp.Infrastructure;
@@ -11,6 +10,7 @@ public class ConsoleMessageRecipient(IAnsiConsole console) :
     IRecipient<PlanCompleteMessage>,
     IRecipient<ProcessCreatedMessage>,
     IRecipient<PlanEvaluatedMessage>,
+    IRecipient<ResponseFinalizedMessage>,
     IRecipient<ResponseComposedMessage>
 {
     public void Listen()
@@ -42,9 +42,13 @@ public class ConsoleMessageRecipient(IAnsiConsole console) :
 
     public void Receive(ResponseComposedMessage message)
     {
-        console.WriteHistory(message.History);
-        
-        console.Markup("[Yellow]Composer[/]: ");
+        console.Markup("[Yellow]Draft[/]: ");
+        console.WriteLine(message.Response);
+    }
+
+    public void Receive(ResponseFinalizedMessage message)
+    {
+        console.Markup("[Yellow]AI[/]: ");
         console.WriteLine(message.Response);
     }
 }
