@@ -20,6 +20,13 @@ public class PlanAndComposeProcess
         plannerStep.OnFunctionResult()
                    .SendEventTo(new ProcessFunctionTargetBuilder(composerStep, parameterName: "plan"));
         
+        if (includeEvaluation)
+        {
+            ProcessStepBuilder planEvalStep = process.AddStepFromType<EvaluatePlanStep>();
+            plannerStep.OnFunctionResult()
+                .SendEventTo(new ProcessFunctionTargetBuilder(planEvalStep, parameterName: "plan"));
+        }
+        
         return process;
     }
 }

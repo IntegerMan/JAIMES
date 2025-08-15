@@ -24,6 +24,13 @@ public class PlanComposeEditProcess
         composerStep.OnFunctionResult()
                     .SendEventTo(new ProcessFunctionTargetBuilder(editorStep, parameterName: "draft"));
         
+        if (includeEvaluation)
+        {
+            ProcessStepBuilder planEvalStep = process.AddStepFromType<EvaluatePlanStep>();
+            plannerStep.OnFunctionResult()
+                .SendEventTo(new ProcessFunctionTargetBuilder(planEvalStep, parameterName: "plan"));
+        }
+        
         return process;
     }
 }
