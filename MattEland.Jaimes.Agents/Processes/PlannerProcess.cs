@@ -18,9 +18,21 @@ public class PlannerProcess
 
         if (includeEvaluation)
         {
+            ProcessStepBuilder beginEvalStep = process.AddStepFromType<BeginEvaluationMetricCollectionStep>();
             ProcessStepBuilder planEvalStep = process.AddStepFromType<EvaluatePlanStep>();
+            ProcessStepBuilder buildEvalReportStep = process.AddStepFromType<BuildEvaluationReportStep>();
+            
+            process.OnInputEvent(ProcessEvents.StartProcess)
+                .SendEventTo(new ProcessFunctionTargetBuilder(beginEvalStep));
+
+            beginEvalStep.OnFunctionResult() 
+                .SendEventTo(new ProcessFunctionTargetBuilder(planEvalStep));
+
             plannerStep.OnFunctionResult()
                 .SendEventTo(new ProcessFunctionTargetBuilder(planEvalStep, parameterName: "plan"));
+            
+            planEvalStep.OnFunctionResult()
+                .SendEventTo(new ProcessFunctionTargetBuilder(buildEvalReportStep));
         }
 
         return process;

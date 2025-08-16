@@ -22,9 +22,8 @@ public class EvaluateMessageStep : KernelProcessStep
 
         try
         {
-            EvaluationManager evaluationManager = kernel.Services.GetRequiredService<EvaluationManager>();
-            ReportingConfiguration config = evaluationManager.BuildReportingConfig(); // TODO: This would be good to get from an active eval context
-            EvaluationResult result = await EvaluationManager.EvaluateInteractionAsync(config, message.History, message.Response, stepName, iteration: "NA");
+            EvaluationManager eval = kernel.Services.GetRequiredService<EvaluationManager>();
+            EvaluationResult result = await eval.EvaluateInteractionAsync(message.History, message.Response, stepName, iteration: "NA");
             ResponseEvaluatedMessage evaluatedMessage = new(message.History, message.Response, result, message.StepName);
 
             return await steps.EmitAsync(EvaluatedEvent, evaluatedMessage, kernel);

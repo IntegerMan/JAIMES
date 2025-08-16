@@ -26,17 +26,35 @@ public class PlanComposeEditProcess
         
         if (includeEvaluation)
         {
+            ProcessStepBuilder beginEvalStep = process.AddStepFromType<BeginEvaluationMetricCollectionStep>();
             ProcessStepBuilder planEvalStep = process.AddStepFromType<EvaluatePlanStep>();
+            ProcessStepBuilder composeEvalStep = process.AddStepFromType<EvaluateMessageStep>(id: "ComposeEval");
+            ProcessStepBuilder editorEvalStep = process.AddStepFromType<EvaluateMessageStep>(id: "EditorEval");
+            ProcessStepBuilder buildEvalReportStep = process.AddStepFromType<BuildEvaluationReportStep>();
+            
+            process.OnInputEvent(ProcessEvents.StartProcess)
+                .SendEventTo(new ProcessFunctionTargetBuilder(beginEvalStep));
+
+            beginEvalStep.OnFunctionResult() 
+                .SendEventTo(new ProcessFunctionTargetBuilder(planEvalStep));
+
             plannerStep.OnFunctionResult()
                 .SendEventTo(new ProcessFunctionTargetBuilder(planEvalStep, parameterName: "plan"));
             
-            ProcessStepBuilder composeEvalStep = process.AddStepFromType<EvaluateMessageStep>(id: "ComposeEval");
+            planEvalStep.OnFunctionResult()
+                .SendEventTo(new ProcessFunctionTargetBuilder(composeEvalStep));
+            
             composerStep.OnFunctionResult()
                 .SendEventTo(new ProcessFunctionTargetBuilder(composeEvalStep, parameterName: "message"));
+                
+            composeEvalStep.OnFunctionResult()
+                .SendEventTo(new ProcessFunctionTargetBuilder(editorEvalStep));
             
-            ProcessStepBuilder editorEvalStep = process.AddStepFromType<EvaluateMessageStep>(id: "EditorEval");
             editorStep.OnFunctionResult()
                 .SendEventTo(new ProcessFunctionTargetBuilder(editorEvalStep, parameterName: "message"));
+
+            editorEvalStep.OnFunctionResult()
+                .SendEventTo(new ProcessFunctionTargetBuilder(buildEvalReportStep));
         }
         
         return process;

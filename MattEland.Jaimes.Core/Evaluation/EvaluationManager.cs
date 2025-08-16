@@ -16,9 +16,10 @@ namespace MattEland.Jaimes.Core.Evaluation;
 
 public class EvaluationManager([FromKeyedServices("Evaluation")] IChatClient chatClient)
 {
+    private ReportingConfiguration? _config;
     public ReportingConfiguration BuildReportingConfig()
     {
-        return DiskBasedReportingConfiguration.Create(
+        _config = DiskBasedReportingConfiguration.Create(
             Path.Combine(Environment.CurrentDirectory, "Evaluation"),
             evaluators: [
                 new CoherenceEvaluator(),
@@ -30,11 +31,15 @@ public class EvaluationManager([FromKeyedServices("Evaluation")] IChatClient cha
             executionName: $"{DateTime.Now:yyyyMMddTHHmmss}",
             tags: []
         );
+        
+        return _config;
     }
     
-    public static async Task<EvaluationResult> EvaluateInteractionAsync(ReportingConfiguration config, ChatHistory history, ChatResponse reply, string scenario, string iteration = "1")
+    public async Task<EvaluationResult> EvaluateInteractionAsync(ChatHistory history, ChatResponse reply, string scenario, string iteration = "1")
     {
-        await using ScenarioRun run = await config.CreateScenarioRunAsync(scenario, iteration);
+        ValidateConfig();
+        
+        await using ScenarioRun run = await _config!.CreateScenarioRunAsync(scenario, iteration);
         
         IEnumerable<ChatMessage> messages = history.Select(m => new ChatMessage(m.Role.ToChatRole(), m.Content));
         EvaluationResult result = await run.EvaluateAsync(messages, reply);
@@ -44,17 +49,26 @@ public class EvaluationManager([FromKeyedServices("Evaluation")] IChatClient cha
         
         return result;
     }
-    
-    public static Task<EvaluationResult> EvaluateInteractionAsync(ReportingConfiguration config, ChatHistory history, string reply, string scenario, string iteration = "1")
+
+    private void ValidateConfig()
+    {
+        if (_config == null)
+        {
+            throw new InvalidOperationException("Reporting configuration has not been built. Call BuildReportingConfig() first.");
+        }
+    }
+
+    public Task<EvaluationResult> EvaluateInteractionAsync(ChatHistory history, string reply, string scenario, string iteration = "1")
     {
         ChatMessage message = new(ChatRole.Assistant, reply);
         ChatResponse response = new(message);
-        return EvaluateInteractionAsync(config, history, response, scenario, iteration);
+        return EvaluateInteractionAsync(history, response, scenario, iteration);
     }
     
-    public static async Task<EvaluationResult> EvaluateScenarioAsync(ReportingConfiguration config, EvaluationScenario scenario, string iterationName, ChatResult reply)
+    public async Task<EvaluationResult> EvaluateScenarioAsync(EvaluationScenario scenario, string iterationName, ChatResult reply)
     {
-        await using ScenarioRun run = await config.CreateScenarioRunAsync(scenario.Name, iterationName, additionalTags: scenario.AdditionalTags);
+        ValidateConfig();
+        await using ScenarioRun run = await _config!.CreateScenarioRunAsync(scenario.Name, iterationName, additionalTags: scenario.AdditionalTags);
         
         IEnumerable<EvaluationContext> context = scenario.BuildContext(reply);
         ChatHistory history = reply.History;
@@ -86,8 +100,10 @@ public class EvaluationManager([FromKeyedServices("Evaluation")] IChatClient cha
                name.StartsWith("Relevance");
     }
 
-    public async Task ExportEvaluationReportAsync(ReportingConfiguration reportingConfiguration, string directory, bool openInBrowser = false)
+    public async Task ExportEvaluationReportAsync(string directory, bool openInBrowser = false)
     {
+        ValidateConfig();
+        
         string reportHtmlPath = Path.Combine(directory, "report.html");
         string reportJsonPath = Path.Combine(directory, "report.json");
         
@@ -95,9 +111,9 @@ public class EvaluationManager([FromKeyedServices("Evaluation")] IChatClient cha
         JsonReportWriter jsonWriter = new(reportJsonPath);
         
         List<ScenarioRunResult> results = new();
-        await foreach (string executionName in reportingConfiguration.ResultStore.GetLatestExecutionNamesAsync(count: 5))
+        await foreach (string executionName in _config!.ResultStore.GetLatestExecutionNamesAsync(count: 5))
         {
-            await foreach (ScenarioRunResult result in reportingConfiguration.ResultStore.ReadResultsAsync(executionName))
+            await foreach (ScenarioRunResult result in _config.ResultStore.ReadResultsAsync(executionName))
             {
                 results.Add(result);
             }
@@ -108,7 +124,7 @@ public class EvaluationManager([FromKeyedServices("Evaluation")] IChatClient cha
 
         if (openInBrowser)
         {
-            ProcessStartInfo info = new ProcessStartInfo
+            ProcessStartInfo info = new()
             {
                 FileName = reportHtmlPath,
                 UseShellExecute = true,

@@ -11,20 +11,15 @@ using Serilog;
 namespace MattEland.Jaimes.Agents.Steps;
 
 [Experimental("SKEXP0080")]
-public class EvaluatePlanStep : KernelProcessStep
+public class BeginEvaluationMetricCollectionStep : KernelProcessStep
 {
-    public static string EvaluatedEvent => "PlanEvaluated";
-    
     [KernelFunction("Execute")]
-    public async Task<PlanEvaluatedMessage> ExecuteAsync(Kernel kernel, KernelProcessStepContext steps, PlanCompleteMessage plan)
+    public void Execute(Kernel kernel, KernelProcessStepContext context)
     {
         try
         {
-            EvaluationManager eval = kernel.Services.GetRequiredService<EvaluationManager>();
-            EvaluationResult result = await eval.EvaluateInteractionAsync(plan.History, plan.Response, "PlannerEval", iteration: "NA");
-            PlanEvaluatedMessage evaluatedMessage = new(plan.Plan, result);
-
-            return await steps.EmitAsync(EvaluatedEvent, evaluatedMessage, kernel);
+            EvaluationManager evaluationManager = kernel.Services.GetRequiredService<EvaluationManager>();
+            evaluationManager.BuildReportingConfig();
         }
         catch (Exception ex)
         {
