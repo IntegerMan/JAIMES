@@ -30,7 +30,7 @@ public sealed class ComposerStep : KernelProcessStep
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "An error occurred while executing the composer step.");
+            steps.EmitError(GetType().Name, ex, kernel);
             throw;
         }
     }

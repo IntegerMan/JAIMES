@@ -12,6 +12,7 @@ public class ConsoleMessageRecipient(IAnsiConsole console) :
     IRecipient<PlanEvaluatedMessage>,
     IRecipient<ResponseFinalizedMessage>,
     IRecipient<ResponseComposedMessage>,
+    IRecipient<StepErrorMessage>, 
     IRecipient<ResponseEvaluatedMessage>
 {
     public void Listen()
@@ -57,5 +58,11 @@ public class ConsoleMessageRecipient(IAnsiConsole console) :
     {
         console.DisplayEvaluationResults(message.Evaluation, $"{message.StepName} Evaluation Results");
         // console.DisplayHistory(message.History);
+    }
+
+    public void Receive(StepErrorMessage message)
+    {
+        console.MarkupLine($"[red]Error in step '{message.StepName}':[/]");
+        console.WriteException(message.Error, ExceptionFormats.ShortenEverything);
     }
 }

@@ -28,7 +28,7 @@ public class EvaluatePlanStep : KernelProcessStep
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "An error occurred while executing the {StepName} step.", GetType().Name);
+            steps.EmitError(GetType().Name, ex, kernel);
             throw;
         }
     }

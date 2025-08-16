@@ -30,7 +30,7 @@ public sealed class EditorStep : KernelProcessStep
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "An error occurred while executing the editor step.");
+            steps.EmitError(GetType().Name, ex, kernel);
             throw;
         }
     }

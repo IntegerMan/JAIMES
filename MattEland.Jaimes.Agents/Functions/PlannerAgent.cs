@@ -5,6 +5,7 @@ using MattEland.Jaimes.Core.Helpers;
 using Microsoft.Extensions.AI;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 #pragma warning disable SKEXP0001
 
@@ -35,20 +36,33 @@ public class PlannerAgent(Kernel kernel)
                                   Ensure that the plan is clear, actionable, and takes into account any constraints or preferences mentioned by the user.
                                   """);
         conversation.History.CopyMessagesTo(messages, AuthorRole.Assistant, AuthorRole.User);
-        
+
+
+        // TODO: This should come from a generic factory so it's not tied to an implementation
+        PromptExecutionSettings executionSettings = new OpenAIPromptExecutionSettings()
+        {
+            ResponseFormat = typeof(PlannerResponse),
+        };
+
         IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
+        ChatMessageContent response = await chatService.GetChatMessageContentAsync(messages, kernel: kernel, executionSettings: executionSettings);
         
-        // NOTE: Ollama doesn't support structured output via the API in Semantic Kernel, but this way seems to work
-        // We're not using tools or Semantic Kernel in this, but it's viable for strongly-typed responses
-        IChatClient chatClient = chatService.AsChatClient();
-        ChatResponse<PlannerResponse> response = 
-            await chatClient.GetResponseAsync<PlannerResponse>(messages.ToChatMessages());
+        string json = response.Content!;
+        PlannerResponse? plan = JsonSerializer.Deserialize<PlannerResponse>(json, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+        
+        if (plan == null)
+        {
+            throw new InvalidOperationException($"The planner agent did not return a valid plan. Results: {json}");
+        }
 
         return new PlanCompleteMessage
         {
             History = messages,
-            Plan = response.Result,
-            Response = response
+            Plan = plan!,
+            Response = new ChatResponse(new ChatMessage(ChatRole.Assistant, json))
         };
     }
 }

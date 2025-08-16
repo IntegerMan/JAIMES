@@ -23,7 +23,7 @@ public class BeginEvaluationMetricCollectionStep : KernelProcessStep
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "An error occurred while executing the {StepName} step.", GetType().Name);
+            context.EmitError(GetType().Name, ex, kernel);
             throw;
         }
     }

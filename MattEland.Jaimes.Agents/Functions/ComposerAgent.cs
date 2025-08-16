@@ -31,7 +31,13 @@ public class ComposerAgent(Kernel kernel)
 
         IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
 
-        ChatMessageContent response = await chatService.GetChatMessageContentAsync(agentHistory, kernel: kernel);
+        PromptExecutionSettings settings = new()
+        {
+            ServiceId = "Main",
+            FunctionChoiceBehavior = FunctionChoiceBehavior.None() // No plugins provided 
+        };
+        
+        ChatMessageContent response = await chatService.GetChatMessageContentAsync(agentHistory, kernel: kernel, executionSettings: settings);
 
         return new ResponseComposedMessage
         {

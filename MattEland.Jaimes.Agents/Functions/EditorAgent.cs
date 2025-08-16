@@ -35,8 +35,14 @@ public class EditorAgent(Kernel kernel)
         agentHistory.AddSystemMessage("Here is the current draft response:");
         agentHistory.AddUserMessage(draft);
         
+        PromptExecutionSettings settings = new()
+        {
+            ServiceId = "Main",
+            FunctionChoiceBehavior = FunctionChoiceBehavior.None() // No plugins provided 
+        };
+        
         IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
-        ChatMessageContent response = await chatService.GetChatMessageContentAsync(agentHistory, kernel: kernel);
+        ChatMessageContent response = await chatService.GetChatMessageContentAsync(agentHistory, kernel: kernel, executionSettings: settings);
 
         return new ResponseFinalizedMessage
         {

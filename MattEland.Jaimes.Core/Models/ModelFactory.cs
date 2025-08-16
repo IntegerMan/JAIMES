@@ -77,7 +77,9 @@ public class ModelFactory : IModelFactory
         switch (model.Provider)
         {
             case ModelProvider.Ollama:
-                builder.AddOllamaChatCompletion(model.ModelId, new Uri(model.Endpoint));
+                // HACK: A temporary workaround for Ollama's signatures not supporting ResponseFormat in the SDK.
+                // See https://github.com/microsoft/semantic-kernel/issues/9919
+                builder.AddOpenAIChatCompletion(model.ModelId, new Uri($"{model.Endpoint}/v1"), apiKey: "ollama");
                 break;
             case ModelProvider.AzureOpenAI:
                 AzureOpenAIModelSettings azureSettings = _sp.GetRequiredService<AzureOpenAIModelSettings>();

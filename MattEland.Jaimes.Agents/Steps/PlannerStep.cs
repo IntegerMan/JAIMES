@@ -30,7 +30,7 @@ public sealed class PlannerStep : KernelProcessStep
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "An error occurred while executing the planner step.");
+            steps.EmitError(GetType().Name, ex, kernel);
             throw;
         }
     }

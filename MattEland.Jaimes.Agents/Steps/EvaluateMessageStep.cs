@@ -30,7 +30,7 @@ public class EvaluateMessageStep : KernelProcessStep
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "An error occurred while executing the {StepName} step.", stepName);
+            steps.EmitError(stepName, ex, kernel);
             throw;
         }
     }
