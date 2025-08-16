@@ -25,6 +25,10 @@ public class PlanAndComposeProcess
             ProcessStepBuilder planEvalStep = process.AddStepFromType<EvaluatePlanStep>();
             plannerStep.OnFunctionResult()
                 .SendEventTo(new ProcessFunctionTargetBuilder(planEvalStep, parameterName: "plan"));
+            
+            ProcessStepBuilder composeEvalStep = process.AddStepFromType<EvaluateMessageStep>();
+            composerStep.OnFunctionResult()
+                .SendEventTo(new ProcessFunctionTargetBuilder(composeEvalStep, parameterName: "message"));
         }
         
         return process;

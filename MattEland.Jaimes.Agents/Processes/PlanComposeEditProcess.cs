@@ -29,6 +29,14 @@ public class PlanComposeEditProcess
             ProcessStepBuilder planEvalStep = process.AddStepFromType<EvaluatePlanStep>();
             plannerStep.OnFunctionResult()
                 .SendEventTo(new ProcessFunctionTargetBuilder(planEvalStep, parameterName: "plan"));
+            
+            ProcessStepBuilder composeEvalStep = process.AddStepFromType<EvaluateMessageStep>(id: "ComposeEval");
+            composerStep.OnFunctionResult()
+                .SendEventTo(new ProcessFunctionTargetBuilder(composeEvalStep, parameterName: "message"));
+            
+            ProcessStepBuilder editorEvalStep = process.AddStepFromType<EvaluateMessageStep>(id: "EditorEval");
+            editorStep.OnFunctionResult()
+                .SendEventTo(new ProcessFunctionTargetBuilder(editorEvalStep, parameterName: "message"));
         }
         
         return process;

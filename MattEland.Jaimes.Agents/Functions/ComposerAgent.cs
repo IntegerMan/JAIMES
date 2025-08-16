@@ -36,7 +36,8 @@ public class ComposerAgent(Kernel kernel)
         return new ResponseComposedMessage
         {
             History = agentHistory,
-            Response = response.Content ?? "The system did not provide a response."
+            Response = response.Content ?? "The system did not provide a response.",
+            StepName = Name
         };
     }
 }

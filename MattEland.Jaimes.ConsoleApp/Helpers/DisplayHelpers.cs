@@ -32,6 +32,7 @@ public static class DisplayHelpers
 
     public static void DisplayHistory(this IAnsiConsole console, ChatHistory history)
     {
+        console.Write(new Rule("[blue]Chat History[/]"));
         foreach (var message in history)
         {
             if (message.Role == AuthorRole.User)

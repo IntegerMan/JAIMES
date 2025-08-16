@@ -11,7 +11,8 @@ public class ConsoleMessageRecipient(IAnsiConsole console) :
     IRecipient<ProcessCreatedMessage>,
     IRecipient<PlanEvaluatedMessage>,
     IRecipient<ResponseFinalizedMessage>,
-    IRecipient<ResponseComposedMessage>
+    IRecipient<ResponseComposedMessage>,
+    IRecipient<ResponseEvaluatedMessage>
 {
     public void Listen()
     {
@@ -50,5 +51,11 @@ public class ConsoleMessageRecipient(IAnsiConsole console) :
     {
         console.Markup("[Yellow]AI[/]: ");
         console.WriteLine(message.Response);
+    }
+
+    public void Receive(ResponseEvaluatedMessage message)
+    {
+        console.DisplayEvaluationResults(message.Evaluation, $"{message.StepName} Evaluation Results");
+        // console.DisplayHistory(message.History);
     }
 }

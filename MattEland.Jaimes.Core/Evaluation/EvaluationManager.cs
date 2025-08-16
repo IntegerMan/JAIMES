@@ -45,6 +45,13 @@ public class EvaluationManager([FromKeyedServices("Evaluation")] IChatClient cha
         return result;
     }
     
+    public static Task<EvaluationResult> EvaluateInteractionAsync(ReportingConfiguration config, ChatHistory history, string reply, string scenario, string iteration = "1")
+    {
+        ChatMessage message = new(ChatRole.Assistant, reply);
+        ChatResponse response = new(message);
+        return EvaluateInteractionAsync(config, history, response, scenario, iteration);
+    }
+    
     public static async Task<EvaluationResult> EvaluateScenarioAsync(ReportingConfiguration config, EvaluationScenario scenario, string iterationName, ChatResult reply)
     {
         await using ScenarioRun run = await config.CreateScenarioRunAsync(scenario.Name, iterationName, additionalTags: scenario.AdditionalTags);

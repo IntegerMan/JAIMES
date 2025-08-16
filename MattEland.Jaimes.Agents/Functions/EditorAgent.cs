@@ -32,7 +32,8 @@ public class EditorAgent(Kernel kernel)
                                       - Rolling dice instead of asking the player to roll specific checks
                                       """);
         
-        agentHistory.AddSystemMessage($"Here is the current draft response: {draft}");
+        agentHistory.AddSystemMessage("Here is the current draft response:");
+        agentHistory.AddUserMessage(draft);
         
         IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
         ChatMessageContent response = await chatService.GetChatMessageContentAsync(agentHistory, kernel: kernel);
@@ -41,7 +42,8 @@ public class EditorAgent(Kernel kernel)
         {
             History = agentHistory,
             Response = response.Content ?? draft,
-            Draft = draft
+            Draft = draft,
+            StepName = Name
         };
     }
 }
