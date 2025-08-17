@@ -14,7 +14,7 @@ try
     
     Log.Debug("Starting AI Table Top Game Master Console Application");
     
-    IServiceProvider services = ServiceExtensions.BuildServiceProvider<AppSettings>(console, "Adventure", args);
+    IServiceProvider services = ServiceExtensions.BuildServiceProvider(console, "Adventure", args);
     
     Log.Debug("Services configured successfully");
     

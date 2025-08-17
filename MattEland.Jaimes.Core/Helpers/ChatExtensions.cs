@@ -5,7 +5,6 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using FunctionResultContent = Microsoft.Extensions.AI.FunctionResultContent;
 
 #pragma warning disable SKEXP0001
 

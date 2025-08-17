@@ -19,7 +19,6 @@ using Spectre.Console;
 namespace AiTableTopGameMaster.ConsoleApp.Evaluation.Scenarios;
 
 public class PlannerAgentEvaluationScenario(
-    IModelFactory modelFactory,
     IAnsiConsole console,
     Adventure adventure,
     Character character,
@@ -77,7 +76,6 @@ public class PlannerAgentEvaluationScenario(
         kernelBuilder.Services.AddSingleton(events);
         kernelBuilder.Services.AddSingleton(conversation);
         
-        modelFactory.ConfigureKernel(kernelBuilder, Name, modelId, []);
         Kernel kernel = kernelBuilder.Build();
 
         await using LocalKernelProcessContext runningProcess = await process.StartAsync(
