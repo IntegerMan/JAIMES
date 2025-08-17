@@ -1,4 +1,5 @@
 using System.Collections.Frozen;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AiTableTopGameMaster.ConsoleApp.Clients;
@@ -11,14 +12,15 @@ using MattEland.Jaimes.Core.Evaluation;
 using MattEland.Jaimes.Core.Models;
 using MattEland.Jaimes.Core.Plugins.Sourcebooks;
 using MattEland.Jaimes.Core.Services;
-using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
 using Serilog;
 using Spectre.Console;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using KernelExtensions = MattEland.Jaimes.Core.Helpers.KernelExtensions;
+#pragma warning disable SKEXP0001
 
 namespace AiTableTopGameMaster.ConsoleApp.Infrastructure;
 
@@ -42,10 +44,16 @@ public static class ServiceExtensions
             AppSettings settings = sp.GetRequiredService<AppSettings>();
             
             IKernelBuilder builder = Kernel.CreateBuilder();
+            builder.Services.AddSingleton<AppSettings>(_ => sp.GetRequiredService<AppSettings>());
             builder.Services.AddSingleton<ILoggerFactory>(_ => sp.GetRequiredService<ILoggerFactory>());
             builder.Services.AddLogging(loggingBuilder => loggingBuilder.ConfigureSerilogLogging(disposeLogger: false));
             builder.Services.AddSingleton(sp.GetRequiredService<IAnsiConsole>());
             builder.Services.AddSingleton<IAutoFunctionInvocationFilter, FunctionInvocationLoggingFilter>();
+            builder.Services.AddChatClient(sp2 =>
+            {
+                IChatCompletionService chatService = sp2.GetRequiredService<IChatCompletionService>();
+                return chatService.AsChatClient();
+            });
             
             IDictionary<string, ModelProvider> modelProviders = 
                 settings.ModelProviders.ToFrozenDictionary(
@@ -60,26 +68,11 @@ public static class ServiceExtensions
                 string serviceId = $"{model.ProviderId}__{model.ModelId}";
                 
                 ModelProvider provider = modelProviders[model.ProviderId];
-                switch (provider.Type)
+                RegisterChatCompletion(provider, builder, model, serviceId);
+
+                if (serviceId == settings.EvaluationServiceId)
                 {
-                    case ModelProviderType.AzureOpenAI:
-                        string azKey = provider.ApiKey ?? throw new InvalidOperationException("Azure OpenAI key is not configured.");
-                        if (string.IsNullOrWhiteSpace(provider.Url))
-                        {
-                            throw new InvalidOperationException("Azure OpenAI URL is required.");
-                        }
-                        builder.AddAzureOpenAIChatCompletion(model.ModelId, provider.Url, azKey, serviceId: serviceId);
-                        break;
-                    case ModelProviderType.OpenAI:
-                        throw new NotImplementedException("OpenAI provider is not yet implemented in this version.");
-                        break;
-                    case ModelProviderType.Ollama:
-                        // HACK: A temporary workaround for Ollama's signatures not supporting ResponseFormat in the SDK.
-                        // See https://github.com/microsoft/semantic-kernel/issues/9919
-                        builder.AddOpenAIChatCompletion(model.ModelId, new Uri($"{provider.Url}/v1"), apiKey: "ollama", serviceId: serviceId);
-                        break;
-                    default:
-                        throw new NotSupportedException($"Model provider Type '{provider.Type}' is not supported.");
+                    RegisterChatCompletion(provider, builder, model, null);
                 }
             }
             
@@ -207,6 +200,39 @@ public static class ServiceExtensions
         });
 
         return services.BuildServiceProvider();
+    }
+
+    private static void RegisterChatCompletion(ModelProvider provider, IKernelBuilder builder, ModelConfiguration model, string? serviceId)
+    {
+        switch (provider.Type)
+        {
+            case ModelProviderType.AzureOpenAI:
+                string azKey = provider.ApiKey ?? throw new InvalidOperationException("Azure OpenAI key is not configured.");
+                if (string.IsNullOrWhiteSpace(provider.Url))
+                {
+                    throw new InvalidOperationException("Azure OpenAI URL is required.");
+                }
+                builder.AddAzureOpenAIChatCompletion(model.ModelId, provider.Url, azKey, serviceId: serviceId);
+                break;
+            case ModelProviderType.OpenAI:
+                throw new NotImplementedException("OpenAI provider is not yet implemented in this version.");
+                break;
+            case ModelProviderType.Ollama:
+                // HACK: A temporary workaround for Ollama's signatures not supporting ResponseFormat in the SDK.
+                // See https://github.com/microsoft/semantic-kernel/issues/9919
+                string url = provider.Url ?? "http://localhost:11434";
+                if (url.EndsWith('/'))
+                {
+                    url = url.TrimEnd('/');
+                }
+                builder.AddOpenAIChatCompletion(model.ModelId, new Uri($"{url}/v1"), apiKey: "ollama", serviceId: serviceId);
+                break;
+            default:
+                throw new NotSupportedException($"Model provider Type '{provider.Type}' is not supported.");
+        }
+        
+        Log.Information("Registered chat completion for model {ModelId} with provider {Provider} (Service ID: {ServiceId})",
+            model.ModelId, provider.Type, serviceId);
     }
 
     private static void DocumentIndexingCallback(IAnsiConsole console, IndexingInfo status)

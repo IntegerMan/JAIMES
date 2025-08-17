@@ -19,7 +19,7 @@ public class BeginEvaluationMetricCollectionStep : KernelProcessStep
         try
         {
             EvaluationManager evaluationManager = kernel.Services.GetRequiredService<EvaluationManager>();
-            evaluationManager.BuildReportingConfig();
+            evaluationManager.BuildReportingConfig(kernel);
         }
         catch (Exception ex)
         {

@@ -44,7 +44,12 @@ public class PlannerAgent(Kernel kernel)
             ResponseFormat = typeof(PlannerResponse),
         };
 
-        IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
+        string serviceId = "Ollama__qwen3:4b";
+        IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>(serviceKey: serviceId); // TODO: From config
+        if (chatService is null)
+        {
+            throw new InvalidOperationException($"The chat service is not configured. Please ensure that the '{serviceId}' service is registered in the kernel.");
+        }
         ChatMessageContent response = await chatService.GetChatMessageContentAsync(messages, kernel: kernel, executionSettings: executionSettings);
         
         string json = response.Content!;

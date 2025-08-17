@@ -9,16 +9,19 @@ using Microsoft.Extensions.AI.Evaluation.Reporting.Formats.Html;
 using Microsoft.Extensions.AI.Evaluation.Reporting.Formats.Json;
 using Microsoft.Extensions.AI.Evaluation.Reporting.Storage;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 #pragma warning disable AIEVAL001
 
 namespace MattEland.Jaimes.Core.Evaluation;
 
-public class EvaluationManager([FromKeyedServices("Evaluation")] IChatClient chatClient)
+public class EvaluationManager
 {
     private ReportingConfiguration? _config;
-    public ReportingConfiguration BuildReportingConfig()
+    public ReportingConfiguration BuildReportingConfig(Kernel kernel)
     {
+        IChatClient chatClient = kernel.GetRequiredService<IChatClient>();
+        
         _config = DiskBasedReportingConfiguration.Create(
             Path.Combine(Environment.CurrentDirectory, "Evaluation"),
             evaluators: [
