@@ -37,11 +37,11 @@ public class EditorAgent(Kernel kernel)
         
         PromptExecutionSettings settings = new()
         {
-            ServiceId = "Main",
             FunctionChoiceBehavior = FunctionChoiceBehavior.None() // No plugins provided 
         };
         
-        IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
+        string serviceId = "Ollama__qwen3:4b"; // TODO: From config
+        IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>(serviceKey: serviceId);
         ChatMessageContent response = await chatService.GetChatMessageContentAsync(agentHistory, kernel: kernel, executionSettings: settings);
 
         return new ResponseFinalizedMessage

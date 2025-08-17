@@ -29,11 +29,12 @@ public class ComposerAgent(Kernel kernel)
         
         history.CopyMessagesTo(agentHistory, AuthorRole.User, AuthorRole.Assistant);
 
-        IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
+        string serviceId = "Ollama__qwen3:4b"; // TODO: From config
+        
+        IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>(serviceKey: serviceId);
 
         PromptExecutionSettings settings = new()
         {
-            ServiceId = "Main",
             FunctionChoiceBehavior = FunctionChoiceBehavior.None() // No plugins provided 
         };
         
