@@ -1,9 +1,12 @@
 using AiTableTopGameMaster.ConsoleApp.Clients;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
+using AiTableTopGameMaster.ConsoleApp.Infrastructure;
+using MattEland.Jaimes.Agents.Processes;
 using MattEland.Jaimes.Core.Domain;
 using MattEland.Jaimes.Core.Helpers;
 using MattEland.Jaimes.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.SemanticKernel.ChatCompletion;
 using Serilog;
 using Spectre.Console;
 
@@ -28,12 +31,19 @@ public class StartAdventureChoice(IServiceProvider services, IAnsiConsole consol
         console.MarkupLine("The adventure begins! Type [bold green]'exit'[/] to quit at any time.");
         console.WriteLine();
     
-        IPromptsService promptsService = services.GetRequiredService<IPromptsService>();
-        ConsoleChatClient client = services.GetRequiredService<ConsoleChatClient>();
+        
+        PipelineRunner runner = services.GetRequiredService<PipelineRunner>();
 
+        IPromptsService promptsService = services.GetRequiredService<IPromptsService>();
         IDictionary<string, object> data = adventure.CreateChatData();
         string message = promptsService.GetInitialGreetingMessage(data);
-        await client.ChatIndefinitelyAsync(message, data);
+
+        ChatHistory history = new();
+        history.AddUserMessage(message);
+        
+        await runner.RunAsync(PlanComposeEditProcess.Create(includeEvaluation: false), history, adventure);
+        
+        // TODO: We'll want to do a conversation loop, either as part of the process or here.
 
         return ApplicationState.Running;
     }

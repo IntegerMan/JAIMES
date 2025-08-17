@@ -21,7 +21,7 @@ public abstract class EvaluationScenario
     protected abstract string CompletenessGroundTruth { get; }
     protected abstract string EquivalenceGroundTruth { get; }
 
-    public abstract Task<ChatResult> GetResponseAsync(string message, string modelId);
+    public abstract Task RunAsync(string message);
 
     public virtual IEnumerable<string> AdditionalTags { get; } = [];
 }

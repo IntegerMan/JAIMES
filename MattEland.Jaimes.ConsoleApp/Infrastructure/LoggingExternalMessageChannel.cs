@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.SemanticKernel;
 using Spectre.Console;
 
-namespace AiTableTopGameMaster.ConsoleApp.Evaluation.Scenarios;
+namespace AiTableTopGameMaster.ConsoleApp.Infrastructure;
 
 [Experimental("SKEXP0080")]
 public class LoggingExternalMessageChannel(IAnsiConsole console) : IExternalKernelProcessMessageChannel

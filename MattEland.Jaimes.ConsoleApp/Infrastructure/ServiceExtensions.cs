@@ -18,6 +18,7 @@ using Serilog;
 using Spectre.Console;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using KernelExtensions = MattEland.Jaimes.Core.Helpers.KernelExtensions;
+#pragma warning disable SKEXP0080
 #pragma warning disable SKEXP0001
 
 namespace AiTableTopGameMaster.ConsoleApp.Infrastructure;
@@ -32,6 +33,8 @@ public static class ServiceExtensions
         services.AddSingleton<IPromptsService, PromptsService>();
         services.AddSingleton<IEventsService, EventsService>();
         services.AddTransient<IConversationContextService, ConversationContextService>();
+        services.AddTransient<PipelineRunner>();
+        services.AddTransient<IExternalKernelProcessMessageChannel, LoggingExternalMessageChannel>();
 
         // Load configuration settings and options
         services.RegisterConfigurationAndSettings(args);
