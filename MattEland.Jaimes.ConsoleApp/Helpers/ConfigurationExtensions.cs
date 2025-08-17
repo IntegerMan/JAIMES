@@ -8,7 +8,7 @@ namespace AiTableTopGameMaster.ConsoleApp.Helpers;
 
 public static class ConfigurationExtensions
 {
-    public static TSettings RegisterConfigurationAndSettings<TSettings>(this ServiceCollection services, string[] args) where TSettings : class, ISettingsRoot
+    public static void RegisterConfigurationAndSettings(this ServiceCollection services, string[] args) 
     {
         Assembly entry = Assembly.GetEntryAssembly() ?? throw new InvalidOperationException("Entry assembly not found. Ensure this is called from the main application assembly.");
         
@@ -19,13 +19,10 @@ public static class ConfigurationExtensions
             .AddCommandLine(args)
             .Build();
 
-        TSettings settings = config.Get<TSettings>() ?? throw new InvalidOperationException("Settings are not configured properly.");
+        AppSettings settings = config.Get<AppSettings>() ?? throw new InvalidOperationException("Settings are not configured properly.");
 
-        services.Configure<TSettings>(config);
-        services.AddSingleton<ISettingsRoot>(settings);
-        services.AddSingleton(settings.AzureOpenAI);
-        services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<TSettings>>().Value);
-
-        return settings;
+        services.Configure<AppSettings>(config);
+        services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<AppSettings>>().Value);
+        services.AddKeyedSingleton(serviceKey: "ModelServiceAssignments", settings.ModelServiceAssignments);
     }
 }

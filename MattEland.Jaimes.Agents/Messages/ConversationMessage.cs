@@ -3,7 +3,7 @@ using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace MattEland.Jaimes.Agents.Messages;
 
-public record ConversationMessage
+public record ConversationMessage : JaimesMessage
 {
     public required ChatHistory History { get; init; }
     public required Adventure Adventure { get; init; }

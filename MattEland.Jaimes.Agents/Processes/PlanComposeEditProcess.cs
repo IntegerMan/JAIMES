@@ -1,12 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
 using MattEland.Jaimes.Agents.Steps;
 using Microsoft.SemanticKernel;
+#pragma warning disable SKEXP0080
 
 namespace MattEland.Jaimes.Agents.Processes;
 
 public class PlanComposeEditProcess
 {
-    [Experimental("SKEXP0080")]
     public static ProcessBuilder Create(bool includeEvaluation)
     {
         ProcessBuilder process = new("Plan-Compose-Edit");

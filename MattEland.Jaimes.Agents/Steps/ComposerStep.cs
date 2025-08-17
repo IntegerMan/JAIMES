@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using MattEland.Jaimes.Agents.Functions;
 using MattEland.Jaimes.Agents.Helpers;
 using MattEland.Jaimes.Agents.Messages;
+using MattEland.Jaimes.Agents.Models;
 using MattEland.Jaimes.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
@@ -21,7 +22,8 @@ public sealed class ComposerStep : KernelProcessStep
         try
         {
             ComposerAgent composer = new(kernel);
-            ResponseComposedMessage result = await composer.GenerateAsync(conversation.History, plan.Plan);
+            OrchestrationConfiguration configuration = kernel.GetRequiredService<OrchestrationConfiguration>();
+            ResponseComposedMessage result = await composer.GenerateAsync(conversation.History, plan.Plan, configuration);
             
             IConversationContextService conversationContext = kernel.Services.GetRequiredService<IConversationContextService>();
             conversationContext.SetContext(RenderedHistoryKey, result.History);

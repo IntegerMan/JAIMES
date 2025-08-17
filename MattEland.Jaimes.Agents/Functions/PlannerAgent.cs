@@ -16,7 +16,7 @@ public class PlannerAgent(Kernel kernel)
     public string Name => "Planner";
     public string[] Plugins => [];
     
-    public async Task<PlanCompleteMessage> GenerateAsync(ConversationMessage conversation)
+    public async Task<PlanCompleteMessage> GenerateAsync(ConversationMessage conversation, OrchestrationConfiguration configuration)
     {
         PlannerResponse sampleResponse = new()
         {
@@ -44,7 +44,12 @@ public class PlannerAgent(Kernel kernel)
             ResponseFormat = typeof(PlannerResponse),
         };
 
-        IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
+        string serviceId = configuration.ModelServiceAssignments["Planner"];
+        IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>(serviceKey: serviceId);
+        if (chatService is null)
+        {
+            throw new InvalidOperationException($"The chat service is not configured. Please ensure that the '{serviceId}' service is registered in the kernel.");
+        }
         ChatMessageContent response = await chatService.GetChatMessageContentAsync(messages, kernel: kernel, executionSettings: executionSettings);
         
         string json = response.Content!;
@@ -62,7 +67,9 @@ public class PlannerAgent(Kernel kernel)
         {
             History = messages,
             Plan = plan!,
-            Response = new ChatResponse(new ChatMessage(ChatRole.Assistant, json))
+            ServiceId = serviceId,
+            Response = new ChatResponse(new ChatMessage(ChatRole.Assistant, json)),
+            Configuration = configuration
         };
     }
 }

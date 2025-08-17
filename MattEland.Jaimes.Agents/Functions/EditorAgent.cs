@@ -1,4 +1,5 @@
 ﻿using MattEland.Jaimes.Agents.Messages;
+using MattEland.Jaimes.Agents.Models;
 using MattEland.Jaimes.Core.Helpers;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -12,7 +13,7 @@ public class EditorAgent(Kernel kernel)
     public string Name => "Editor";
     public string[] Plugins => [];
     
-    public async Task<ResponseFinalizedMessage> GenerateAsync(ChatHistory history, string draft)
+    public async Task<ResponseFinalizedMessage> GenerateAsync(ChatHistory history, string draft, OrchestrationConfiguration configuration)
     {
         ChatHistory agentHistory = [];
         agentHistory.AddSystemMessage("""
@@ -37,11 +38,11 @@ public class EditorAgent(Kernel kernel)
         
         PromptExecutionSettings settings = new()
         {
-            ServiceId = "Main",
             FunctionChoiceBehavior = FunctionChoiceBehavior.None() // No plugins provided 
         };
-        
-        IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>();
+
+        string serviceId = configuration.ModelServiceAssignments["Editor"];
+        IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>(serviceKey: serviceId);
         ChatMessageContent response = await chatService.GetChatMessageContentAsync(agentHistory, kernel: kernel, executionSettings: settings);
 
         return new ResponseFinalizedMessage
@@ -49,7 +50,9 @@ public class EditorAgent(Kernel kernel)
             History = agentHistory,
             Response = response.Content ?? draft,
             Draft = draft,
-            StepName = Name
+            StepName = Name,
+            ServiceId = serviceId,
+            Configuration = configuration
         };
     }
 }

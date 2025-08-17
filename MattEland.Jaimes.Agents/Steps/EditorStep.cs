@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using MattEland.Jaimes.Agents.Functions;
 using MattEland.Jaimes.Agents.Helpers;
 using MattEland.Jaimes.Agents.Messages;
+using MattEland.Jaimes.Agents.Models;
 using MattEland.Jaimes.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
@@ -21,7 +22,8 @@ public sealed class EditorStep : KernelProcessStep
         try
         {
             EditorAgent editor = new(kernel);
-            ResponseFinalizedMessage result = await editor.GenerateAsync(conversation.History, draft.Response);
+            OrchestrationConfiguration configuration = kernel.GetRequiredService<OrchestrationConfiguration>();
+            ResponseFinalizedMessage result = await editor.GenerateAsync(conversation.History, draft.Response, configuration);
             
             IConversationContextService conversationContext = kernel.Services.GetRequiredService<IConversationContextService>();
             conversationContext.SetContext(RenderedHistoryKey, result.History);

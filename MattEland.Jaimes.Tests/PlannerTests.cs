@@ -37,15 +37,26 @@ public class PlannerTests
         kernelBuilder.Services.AddScoped<IChatCompletionService>(_ => chatClientMock.Object);
         Kernel kernel = kernelBuilder.Build();
         PlannerAgent planner = new(kernel);
-        Character character = new Character
+        Character character = new()
         {
             Name = "Test",
             Specialization = "Testing",
             CharacterSheet = "Stuff"
         };
+        OrchestrationConfiguration configuration = new()
+        {
+            ModelServiceAssignments = new Dictionary<string, string>
+            {
+                { "Planner", "TestService" },
+                { "Composer", "TestService" },
+                { "Editor", "TestService" },
+                { "Evaluator", "TestService" },
+            }
+        };
         ConversationMessage message = new()
         {
             History = history,
+            Configuration = configuration,
             Adventure = new Adventure
             {
                 Name = "Test",
@@ -67,7 +78,7 @@ public class PlannerTests
         };
 
         // Act
-        PlanCompleteMessage response = await planner.GenerateAsync(message);
+        PlanCompleteMessage response = await planner.GenerateAsync(message, configuration);
 
         // Assert
         response.ShouldNotBeNull();
@@ -75,6 +86,6 @@ public class PlannerTests
         response.Plan.Checks.ShouldBe(plan.Checks);
         response.Plan.KeyPoints.Count.ShouldBe(plan.KeyPoints.Count);
         response.Plan.KeyPoints[0].ShouldBe(plan.KeyPoints[0]);
-        Mock.VerifyAll(chatClientMock);
+        Mock.Verify(chatClientMock);
     }
 }

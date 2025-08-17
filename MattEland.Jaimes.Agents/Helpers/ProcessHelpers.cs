@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using MattEland.Jaimes.Agents.Messages;
+using MattEland.Jaimes.Agents.Models;
 using MattEland.Jaimes.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
@@ -26,6 +27,11 @@ public static class ProcessHelpers
         Log.Error(ex, "An error occurred while executing the {StepName} step.", stepName);
 
         IEventsService events = kernel.Services.GetRequiredService<IEventsService>();
-        events.SendMessage(new StepErrorMessage(stepName, ex));
+        events.SendMessage(new StepErrorMessage
+        {
+            StepName = stepName,
+            Error = ex,
+            Configuration = kernel.GetRequiredService<OrchestrationConfiguration>()
+        });
     }
 }

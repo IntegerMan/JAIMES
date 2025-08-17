@@ -1,33 +1,21 @@
-using System.Text.Json;
-using MattEland.Jaimes.Agents;
-using MattEland.Jaimes.Agents.Messages;
+using AiTableTopGameMaster.ConsoleApp.Infrastructure;
 using MattEland.Jaimes.Agents.Processes;
-using MattEland.Jaimes.Agents.Steps;
-using MattEland.Jaimes.Core.Cores;
 using MattEland.Jaimes.Core.Domain;
 using MattEland.Jaimes.Core.Evaluation;
 using MattEland.Jaimes.Core.Helpers;
-using MattEland.Jaimes.Core.Models;
 using MattEland.Jaimes.Core.Services;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Spectre.Console;
 
 #pragma warning disable SKEXP0080
 
 namespace AiTableTopGameMaster.ConsoleApp.Evaluation.Scenarios;
 
 public class PlannerAgentEvaluationScenario(
-    IModelFactory modelFactory,
-    IAnsiConsole console,
     Adventure adventure,
     Character character,
-    IEventsService events,
-    EvaluationManager evaluationManager,
-    IConversationContextService conversation,
-    IPromptsService promptsService,
-    IKernelBuilder kernelBuilder) : EvaluationScenario
+    PipelineRunner runner,
+    IPromptsService promptsService) : EvaluationScenario
 {
     public override string Name => "PlannerAgent Evaluation";
 
@@ -62,7 +50,7 @@ public class PlannerAgentEvaluationScenario(
            Ask the player what they want to do, but do not provide a list of options or actions.
            """;
 
-    public override async Task<ChatResult> GetResponseAsync(string message, string modelId)
+    public override async Task RunAsync(string message)
     {
         adventure.PlayerCharacter = character;
 
@@ -70,41 +58,7 @@ public class PlannerAgentEvaluationScenario(
         history.AddUserMessage(message);
 
         ProcessBuilder kernelProcess = PlanComposeEditProcess.Create(includeEvaluation: true);
-        KernelProcess process = kernelProcess.Build();
-        events.SendMessage(new ProcessCreatedMessage(kernelProcess.Name, process));
         
-        kernelBuilder.Services.AddSingleton(evaluationManager);
-        kernelBuilder.Services.AddSingleton(events);
-        kernelBuilder.Services.AddSingleton(conversation);
-        
-        modelFactory.ConfigureKernel(kernelBuilder, Name, modelId, []);
-        Kernel kernel = kernelBuilder.Build();
-
-        await using LocalKernelProcessContext runningProcess = await process.StartAsync(
-            kernel,
-            new KernelProcessEvent
-            {
-                Id = ProcessEvents.StartProcess,
-                Visibility = KernelProcessEventVisibility.Public,
-                Data = new ConversationMessage
-                {
-                    History = history,
-                    Adventure = adventure,
-                    Character = character,
-                }
-            },
-            externalMessageChannel: new LoggingExternalMessageChannel(console));
-
-        PlanCompleteMessage? result = conversation.GetContext<PlanCompleteMessage>();
-        
-        string? json = result is null 
-            ? null 
-            : JsonSerializer.Serialize(result.Plan);
-
-        return new ChatResult
-        {
-            History = conversation.GetRequiredContext<ChatHistory>(PlannerStep.RenderedHistoryKey),
-            Response = json.ToChatResponse(),
-        };
+        await runner.RunAsync(kernelProcess, history, adventure);
     }
 }

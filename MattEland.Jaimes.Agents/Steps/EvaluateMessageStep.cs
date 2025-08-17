@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using MattEland.Jaimes.Agents.Helpers;
 using MattEland.Jaimes.Agents.Messages;
+using MattEland.Jaimes.Agents.Models;
 using MattEland.Jaimes.Core.Evaluation;
 using Microsoft.Extensions.AI.Evaluation;
 using Microsoft.Extensions.AI.Evaluation.Reporting;
@@ -22,9 +23,18 @@ public class EvaluateMessageStep : KernelProcessStep
 
         try
         {
+            OrchestrationConfiguration configuration = kernel.GetRequiredService<OrchestrationConfiguration>();
             EvaluationManager eval = kernel.Services.GetRequiredService<EvaluationManager>();
             EvaluationResult result = await eval.EvaluateInteractionAsync(message.History, message.Response, stepName, iteration: "NA");
-            ResponseEvaluatedMessage evaluatedMessage = new(message.History, message.Response, result, message.StepName);
+            ResponseEvaluatedMessage evaluatedMessage = new()
+            {
+                Configuration = configuration,
+                History = message.History,
+                Response = message.Response,
+                Evaluation = result,
+                StepName = stepName,
+                ServiceId = configuration.ModelServiceAssignments["Evaluator"]
+            };
 
             return await steps.EmitAsync(EvaluatedEvent, evaluatedMessage, kernel);
         }

@@ -1,7 +1,9 @@
 namespace MattEland.Jaimes.Core.Models;
 
-public enum ModelProvider
+public record ModelProvider
 {
-    Ollama,
-    AzureOpenAI
+    public required string ProviderId { get; init; }
+    public required ModelProviderType Type { get; init; }
+    public string? Url { get; init; }
+    public string? ApiKey { get; init; }
 }
