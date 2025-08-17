@@ -13,7 +13,7 @@ public class ComposerAgent(Kernel kernel)
     public string Name => "Composer";
     public string[] Plugins => [];
     
-    public async Task<ResponseComposedMessage> GenerateAsync(ChatHistory history, PlannerResponse plan)
+    public async Task<ResponseComposedMessage> GenerateAsync(ChatHistory history, PlannerResponse plan, OrchestrationConfiguration configuration)
     {
         ChatHistory agentHistory = [];
         agentHistory.AddSystemMessage("""
@@ -29,8 +29,7 @@ public class ComposerAgent(Kernel kernel)
         
         history.CopyMessagesTo(agentHistory, AuthorRole.User, AuthorRole.Assistant);
 
-        string serviceId = "Ollama__qwen3:4b"; // TODO: From config
-        
+        string serviceId = configuration.ModelServiceAssignments["Composer"];
         IChatCompletionService chatService = kernel.GetRequiredService<IChatCompletionService>(serviceKey: serviceId);
 
         PromptExecutionSettings settings = new()
@@ -44,7 +43,9 @@ public class ComposerAgent(Kernel kernel)
         {
             History = agentHistory,
             Response = response.Content ?? "The system did not provide a response.",
-            StepName = Name
+            StepName = Name,
+            ServiceId = serviceId,
+            Configuration = configuration
         };
     }
 }

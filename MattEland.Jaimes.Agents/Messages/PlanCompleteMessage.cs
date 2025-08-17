@@ -4,9 +4,10 @@ using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace MattEland.Jaimes.Agents.Messages;
 
-public record PlanCompleteMessage
+public record PlanCompleteMessage : JaimesMessage
 {
     public required ChatHistory History { get; init; }
     public required PlannerResponse Plan { get; init; }
     public required ChatResponse Response { get; init; }
+    public required string ServiceId { get; init; }
 }

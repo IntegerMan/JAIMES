@@ -3,4 +3,4 @@ using Microsoft.Extensions.AI.Evaluation;
 
 namespace MattEland.Jaimes.Agents.Messages;
 
-public record PlanEvaluatedMessage(PlannerResponse Plan, EvaluationResult Evaluation);
+public record PlanEvaluatedMessage(PlannerResponse Plan, EvaluationResult Evaluation, string ServiceId) : JaimesMessage;

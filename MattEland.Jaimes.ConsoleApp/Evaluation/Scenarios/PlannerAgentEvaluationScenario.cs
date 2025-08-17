@@ -1,13 +1,13 @@
 using System.Text.Json;
 using MattEland.Jaimes.Agents;
 using MattEland.Jaimes.Agents.Messages;
+using MattEland.Jaimes.Agents.Models;
 using MattEland.Jaimes.Agents.Processes;
 using MattEland.Jaimes.Agents.Steps;
 using MattEland.Jaimes.Core.Cores;
 using MattEland.Jaimes.Core.Domain;
 using MattEland.Jaimes.Core.Evaluation;
 using MattEland.Jaimes.Core.Helpers;
-using MattEland.Jaimes.Core.Models;
 using MattEland.Jaimes.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
@@ -24,9 +24,10 @@ public class PlannerAgentEvaluationScenario(
     Character character,
     IEventsService events,
     EvaluationManager evaluationManager,
+    AppSettings settings,
     IConversationContextService conversation,
     IPromptsService promptsService,
-    IKernelBuilder kernelBuilder) : EvaluationScenario
+    IServiceProvider services) : EvaluationScenario
 {
     public override string Name => "PlannerAgent Evaluation";
 
@@ -67,16 +68,27 @@ public class PlannerAgentEvaluationScenario(
 
         ChatHistory history = [];
         history.AddUserMessage(message);
-
-        ProcessBuilder kernelProcess = PlanComposeEditProcess.Create(includeEvaluation: true);
-        KernelProcess process = kernelProcess.Build();
-        events.SendMessage(new ProcessCreatedMessage(kernelProcess.Name, process));
         
+        OrchestrationConfiguration configuration = new()
+        {
+            ModelServiceAssignments = settings.ModelServiceAssignments
+        };
+        
+        IKernelBuilder kernelBuilder = services.GetRequiredService<IKernelBuilder>();
+        kernelBuilder.Services.AddSingleton(configuration);
         kernelBuilder.Services.AddSingleton(evaluationManager);
         kernelBuilder.Services.AddSingleton(events);
         kernelBuilder.Services.AddSingleton(conversation);
-        
         Kernel kernel = kernelBuilder.Build();
+
+        ProcessBuilder kernelProcess = PlanComposeEditProcess.Create(includeEvaluation: true);
+        KernelProcess process = kernelProcess.Build();
+        events.SendMessage(new ProcessCreatedMessage
+        {
+            Configuration = configuration,
+            Name = kernelProcess.Name,
+            Process = process
+        });
 
         await using LocalKernelProcessContext runningProcess = await process.StartAsync(
             kernel,
@@ -89,6 +101,7 @@ public class PlannerAgentEvaluationScenario(
                     History = history,
                     Adventure = adventure,
                     Character = character,
+                    Configuration = configuration
                 }
             },
             externalMessageChannel: new LoggingExternalMessageChannel(console));

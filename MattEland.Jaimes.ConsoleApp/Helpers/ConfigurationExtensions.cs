@@ -23,5 +23,6 @@ public static class ConfigurationExtensions
 
         services.Configure<AppSettings>(config);
         services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<AppSettings>>().Value);
+        services.AddKeyedSingleton(serviceKey: "ModelServiceAssignments", settings.ModelServiceAssignments);
     }
 }

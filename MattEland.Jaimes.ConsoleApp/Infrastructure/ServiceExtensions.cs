@@ -1,11 +1,9 @@
 using System.Collections.Frozen;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AiTableTopGameMaster.ConsoleApp.Clients;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
 using AiTableTopGameMaster.ConsoleApp.Menus;
-using MattEland.Jaimes.Core;
 using MattEland.Jaimes.Core.Cores;
 using MattEland.Jaimes.Core.Domain;
 using MattEland.Jaimes.Core.Evaluation;
@@ -54,6 +52,7 @@ public static class ServiceExtensions
                 IChatCompletionService chatService = sp2.GetRequiredService<IChatCompletionService>();
                 return chatService.AsChatClient();
             });
+            builder.Services.AddKeyedSingleton(serviceKey: "ModelServiceAssignments", settings.ModelServiceAssignments);
             
             IDictionary<string, ModelProvider> modelProviders = 
                 settings.ModelProviders.ToFrozenDictionary(
@@ -70,7 +69,8 @@ public static class ServiceExtensions
                 ModelProvider provider = modelProviders[model.ProviderId];
                 RegisterChatCompletion(provider, builder, model, serviceId);
 
-                if (serviceId == settings.EvaluationServiceId)
+                // The evaluation client comes out as the default service, so it will be the one model we don't register with a serviceId.
+                if (serviceId == settings.ModelServiceAssignments["Evaluator"])
                 {
                     RegisterChatCompletion(provider, builder, model, null);
                 }
