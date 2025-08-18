@@ -37,20 +37,23 @@ public class PipelineRunner(IServiceProvider services)
             Process = process
         });
 
+        ConversationMessage startMessage = new()
+        {
+            History = history,
+            Adventure = adventure,
+            Character = adventure.PlayerCharacter ?? throw new ArgumentException("Player character is required to run the process.", nameof(adventure)),
+            Configuration = configuration
+        };
+        KernelProcessEvent initialEvent = new()
+        {
+            Id = ProcessEvents.StartProcess,
+            Visibility = KernelProcessEventVisibility.Public,
+            Data = startMessage
+        };
+        
         await using LocalKernelProcessContext runningProcess = await process.StartAsync(
             kernel,
-            new KernelProcessEvent
-            {
-                Id = ProcessEvents.StartProcess,
-                Visibility = KernelProcessEventVisibility.Public,
-                Data = new ConversationMessage
-                {
-                    History = history,
-                    Adventure = adventure,
-                    Character = adventure.PlayerCharacter ?? throw new ArgumentException("Player character is required to run the process.", nameof(adventure)),
-                    Configuration = configuration
-                }
-            },
+            initialEvent,
             externalMessageChannel: services.GetService<IExternalKernelProcessMessageChannel>());
     }
 }

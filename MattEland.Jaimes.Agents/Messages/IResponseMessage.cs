@@ -1,10 +1,10 @@
-using Microsoft.SemanticKernel.ChatCompletion;
+using MattEland.Jaimes.Agents.Models;
 
 namespace MattEland.Jaimes.Agents.Messages;
 
-public interface IResponseMessage
+public interface IResponseMessage : IHasHistory
 {
     string Response { get; init; }
-    ChatHistory History { get; init; }
     string StepName { get; init; }
+    OrchestrationConfiguration Configuration { get; init; }
 }

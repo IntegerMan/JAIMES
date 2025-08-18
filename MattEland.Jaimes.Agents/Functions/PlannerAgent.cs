@@ -16,7 +16,7 @@ public class PlannerAgent(Kernel kernel)
     public string Name => "Planner";
     public string[] Plugins => [];
     
-    public async Task<PlanCompleteMessage> GenerateAsync(ConversationMessage conversation, OrchestrationConfiguration configuration)
+    public async Task<PlanCompleteMessage> GenerateAsync(OrchestrationConfiguration configuration, ChatHistory history)
     {
         PlannerResponse sampleResponse = new()
         {
@@ -35,7 +35,7 @@ public class PlannerAgent(Kernel kernel)
         messages.AddSystemMessage("""
                                   Ensure that the plan is clear, actionable, and takes into account any constraints or preferences mentioned by the user.
                                   """);
-        conversation.History.CopyMessagesTo(messages, AuthorRole.Assistant, AuthorRole.User);
+        history.CopyMessagesTo(messages, AuthorRole.Assistant, AuthorRole.User);
 
 
         // TODO: This should come from a generic factory so it's not tied to an implementation

@@ -78,7 +78,7 @@ public class PlannerTests
         };
 
         // Act
-        PlanCompleteMessage response = await planner.GenerateAsync(message, configuration);
+        PlanCompleteMessage response = await planner.GenerateAsync(message, configuration, message.History);
 
         // Assert
         response.ShouldNotBeNull();

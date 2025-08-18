@@ -64,8 +64,4 @@
       </Reference>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Clients\" />
-    </ItemGroup>
-
 </Project>

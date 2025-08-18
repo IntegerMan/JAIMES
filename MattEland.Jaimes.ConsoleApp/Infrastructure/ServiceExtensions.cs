@@ -1,8 +1,10 @@
 using System.Collections.Frozen;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using AiTableTopGameMaster.ConsoleApp.Clients;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
 using AiTableTopGameMaster.ConsoleApp.Menus;
+using MattEland.Jaimes.Core.Clients;
 using MattEland.Jaimes.Core.Domain;
 using MattEland.Jaimes.Core.Evaluation;
 using MattEland.Jaimes.Core.Models;
@@ -33,6 +35,7 @@ public static class ServiceExtensions
         services.AddTransient<IConversationContextService, ConversationContextService>();
         services.AddTransient<PipelineRunner>();
         services.AddTransient<IExternalKernelProcessMessageChannel, LoggingExternalMessageChannel>();
+        services.AddTransient<IChatInterface, SpectreConsoleChatClient>();
 
         // Load configuration settings and options
         services.RegisterConfigurationAndSettings(args);
@@ -48,6 +51,7 @@ public static class ServiceExtensions
             builder.Services.AddLogging(loggingBuilder => loggingBuilder.ConfigureSerilogLogging(disposeLogger: false));
             builder.Services.AddSingleton(sp.GetRequiredService<IAnsiConsole>());
             builder.Services.AddSingleton<IAutoFunctionInvocationFilter, FunctionInvocationLoggingFilter>();
+            builder.Services.AddSingleton<IChatInterface>(_ => sp.GetRequiredService<IChatInterface>());
             builder.Services.AddChatClient(sp2 =>
             {
                 IChatCompletionService chatService = sp2.GetRequiredService<IChatCompletionService>();

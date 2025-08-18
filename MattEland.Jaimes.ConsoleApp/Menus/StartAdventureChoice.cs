@@ -40,7 +40,7 @@ public class StartAdventureChoice(IServiceProvider services, IAnsiConsole consol
         ChatHistory history = new();
         history.AddUserMessage(message);
         
-        await runner.RunAsync(PlanComposeEditProcess.Create(includeEvaluation: false), history, adventure);
+        await runner.RunAsync(StandardAdventureProcess.Create(), history, adventure);
         
         // TODO: We'll want to do a conversation loop, either as part of the process or here.
 

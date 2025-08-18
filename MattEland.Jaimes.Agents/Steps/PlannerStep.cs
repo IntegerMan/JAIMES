@@ -17,13 +17,13 @@ public sealed class PlannerStep : KernelProcessStep
     public static string PlanGeneratedEvent => "Planner__PlanGenerated";
 
     [KernelFunction("Execute")]
-    public async Task<PlanCompleteMessage> ExecuteAsync(Kernel kernel, KernelProcessStepContext steps, ConversationMessage conversation)
+    public async Task<PlanCompleteMessage> ExecuteAsync(Kernel kernel, KernelProcessStepContext steps, IHasHistory conversation)
     {
         try
         {
             PlannerAgent planner = new(kernel);
             OrchestrationConfiguration configuration = kernel.GetRequiredService<OrchestrationConfiguration>();
-            PlanCompleteMessage result = await planner.GenerateAsync(conversation, configuration);
+            PlanCompleteMessage result = await planner.GenerateAsync(configuration, conversation.History);
             
             IConversationContextService conversationContext = kernel.Services.GetRequiredService<IConversationContextService>();
             conversationContext.SetContext(RenderedHistoryKey, result.History);
