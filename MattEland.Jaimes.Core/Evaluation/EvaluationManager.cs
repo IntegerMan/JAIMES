@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using MattEland.Jaimes.Core.Cores;
+using MattEland.Jaimes.Core.Domain;
 using MattEland.Jaimes.Core.Helpers;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.AI.Evaluation;

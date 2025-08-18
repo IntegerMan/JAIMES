@@ -1,10 +1,8 @@
 using System.Collections.Frozen;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AiTableTopGameMaster.ConsoleApp.Clients;
 using AiTableTopGameMaster.ConsoleApp.Helpers;
 using AiTableTopGameMaster.ConsoleApp.Menus;
-using MattEland.Jaimes.Core.Cores;
 using MattEland.Jaimes.Core.Domain;
 using MattEland.Jaimes.Core.Evaluation;
 using MattEland.Jaimes.Core.Models;
@@ -105,14 +103,6 @@ public static class ServiceExtensions
             options.Converters.Add(new JsonStringEnumConverter());
             return options;
         });
-        services.AddScoped<IEnumerable<CoreInfo>>(sp =>
-        {
-            string path = Path.Combine(Environment.CurrentDirectory, "ai", "cores.json");
-            Log.Debug("Reading AI Cores from {Filename}", path);
-            JsonSerializerOptions options = sp.GetRequiredService<JsonSerializerOptions>();
-            using FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read);
-            return JsonSerializer.Deserialize<List<CoreInfo>>(stream, options) ?? [];
-        });
         services.AddSingleton<StandardPrompts>(sp =>
         {
             string path = Path.Combine(Environment.CurrentDirectory, "ai", "prompts.json");
@@ -123,7 +113,6 @@ public static class ServiceExtensions
         });
 
         // Configure application dependencies
-        services.AddTransient<ConsoleChatClient>();
         services.AddSingleton<IAdventureLoader, AdventureLoader>();
 
         // Load adventure from JSON file

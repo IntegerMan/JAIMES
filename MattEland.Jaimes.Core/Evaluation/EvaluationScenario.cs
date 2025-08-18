@@ -1,4 +1,4 @@
-using MattEland.Jaimes.Core.Cores;
+using MattEland.Jaimes.Core.Domain;
 using Microsoft.Extensions.AI.Evaluation;
 using Microsoft.Extensions.AI.Evaluation.Quality;
 

@@ -1,7 +1,5 @@
 using System.ClientModel;
-using AiTableTopGameMaster.ConsoleApp;
 using Azure.AI.OpenAI;
-using MattEland.Jaimes.Core.Cores;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

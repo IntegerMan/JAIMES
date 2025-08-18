@@ -1,6 +1,4 @@
-using MattEland.Jaimes.Core.Models;
-
-namespace AiTableTopGameMaster.ConsoleApp;
+namespace MattEland.Jaimes.Core.Models;
 
 public record ModelConfiguration
 {

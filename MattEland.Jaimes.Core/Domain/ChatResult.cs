@@ -2,7 +2,7 @@ using MattEland.Jaimes.Core.Helpers;
 using Microsoft.Extensions.AI;
 using Microsoft.SemanticKernel.ChatCompletion;
 
-namespace MattEland.Jaimes.Core.Cores;
+namespace MattEland.Jaimes.Core.Domain;
 
 public record ChatResult
 {
