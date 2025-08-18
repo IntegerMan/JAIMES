@@ -17,7 +17,7 @@ public sealed class ComposerStep : KernelProcessStep
     public static string ReplyGeneratedEvent => "Composer__ReplyGenerated";
 
     [KernelFunction("Execute")]
-    public async Task<ResponseComposedMessage> ExecuteAsync(Kernel kernel, KernelProcessStepContext steps, ConversationMessage conversation, PlanCompleteMessage plan)
+    public async Task<ResponseComposedMessage> ExecuteAsync(Kernel kernel, KernelProcessStepContext steps, IHasHistory conversation, PlanCompleteMessage plan)
     {
         try
         {

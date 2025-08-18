@@ -28,10 +28,12 @@ public class StandardAdventureProcess
             .SendEventTo(new ProcessFunctionTargetBuilder(outputStep, parameterName: "message"));
         outputStep.OnFunctionResult()
             .SendEventTo(new ProcessFunctionTargetBuilder(inputStep, parameterName: "message"));
+        inputStep.OnEvent(GetPlayerInputStep.InputReceivedEvent)
+            .SendEventTo(new ProcessFunctionTargetBuilder(plannerStep, parameterName: "conversation"))
+            .SendEventTo(new ProcessFunctionTargetBuilder(composerStep, parameterName: "conversation"))
+            .SendEventTo(new ProcessFunctionTargetBuilder(editorStep, parameterName: "conversation"));
         inputStep.OnEvent(GetPlayerInputStep.ExitRequestedEvent)
             .StopProcess();
-        inputStep.OnEvent(GetPlayerInputStep.InputReceivedEvent)
-            .SendEventTo(new ProcessFunctionTargetBuilder(plannerStep, parameterName: "conversation"));
         
         return process;
     }

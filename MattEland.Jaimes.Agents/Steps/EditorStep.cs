@@ -17,7 +17,7 @@ public sealed class EditorStep : KernelProcessStep
     public static string ReplyGeneratedEvent => "Editor__ReplyGenerated";
 
     [KernelFunction("Execute")]
-    public async Task<ResponseFinalizedMessage> ExecuteAsync(Kernel kernel, KernelProcessStepContext steps, ConversationMessage conversation, ResponseComposedMessage draft)
+    public async Task<ResponseFinalizedMessage> ExecuteAsync(Kernel kernel, KernelProcessStepContext steps, IHasHistory conversation, ResponseComposedMessage draft)
     {
         try
         {
