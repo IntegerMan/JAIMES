@@ -3,11 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35931.197 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiTableTopGameMaster.ConsoleApp", "AiTableTopGameMaster.ConsoleApp\AiTableTopGameMaster.ConsoleApp.csproj", "{A20BC0AF-F198-4EFA-B9D2-32F593430A63}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MattEland.Jaimes.ConsoleApp", "MattEland.Jaimes.ConsoleApp\MattEland.Jaimes.ConsoleApp.csproj", "{A20BC0AF-F198-4EFA-B9D2-32F593430A63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiTableTopGameMaster.Core", "AiTableTopGameMaster.Core\AiTableTopGameMaster.Core.csproj", "{50AD4885-B9A1-4926-8603-D503D339A68C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiTableTopGameMaster.Tests", "AiTableTopGameMaster.Tests\AiTableTopGameMaster.Tests.csproj", "{1B9F8C8D-2E3A-4F5C-8A1B-9D5E6F7A8B2C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MattEland.Jaimes.Core", "MattEland.Jaimes.Core\MattEland.Jaimes.Core.csproj", "{50AD4885-B9A1-4926-8603-D503D339A68C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
@@ -15,9 +13,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.github\copilot-instructions.md = .github\copilot-instructions.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiTableTopGameMaster.EvaluationConsole", "AiTableTopGameMaster.EvaluationConsole\AiTableTopGameMaster.EvaluationConsole.csproj", "{251755B8-A3D0-44B8-8477-D98C2C7D0050}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MattEland.Jaimes.Agents", "MattEland.Jaimes.Agents\MattEland.Jaimes.Agents.csproj", "{82D476F8-088D-4A22-846B-AAEB819BA1DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiTableTopGameMaster.ConsoleShared", "AiTableTopGameMaster.ConsoleShared\AiTableTopGameMaster.ConsoleShared.csproj", "{38FBD24C-D272-473C-84CC-4ED44DEE70A9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MattEland.Jaimes.RAG", "MattEland.Jaimes.RAG\MattEland.Jaimes.RAG.csproj", "{B7EC4F61-9D86-46B7-B0C7-B3B9D19E8FE2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MattEland.Jaimes.Tests", "MattEland.Jaimes.Tests\MattEland.Jaimes.Tests.csproj", "{19EF226C-43FB-46EB-B9F9-74EA6345B0EF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{9E9AA409-1AC1-4857-8450-64EA0E8EC72D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{5CBE0362-2410-4E31-B0F4-7C405189D7E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{925CFE84-E7AB-4FC1-8FDA-A13128F3BC74}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,20 +39,27 @@ Global
 		{50AD4885-B9A1-4926-8603-D503D339A68C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50AD4885-B9A1-4926-8603-D503D339A68C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50AD4885-B9A1-4926-8603-D503D339A68C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1B9F8C8D-2E3A-4F5C-8A1B-9D5E6F7A8B2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1B9F8C8D-2E3A-4F5C-8A1B-9D5E6F7A8B2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1B9F8C8D-2E3A-4F5C-8A1B-9D5E6F7A8B2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1B9F8C8D-2E3A-4F5C-8A1B-9D5E6F7A8B2C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{251755B8-A3D0-44B8-8477-D98C2C7D0050}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{251755B8-A3D0-44B8-8477-D98C2C7D0050}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{251755B8-A3D0-44B8-8477-D98C2C7D0050}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{251755B8-A3D0-44B8-8477-D98C2C7D0050}.Release|Any CPU.Build.0 = Release|Any CPU
-		{38FBD24C-D272-473C-84CC-4ED44DEE70A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{38FBD24C-D272-473C-84CC-4ED44DEE70A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{38FBD24C-D272-473C-84CC-4ED44DEE70A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{38FBD24C-D272-473C-84CC-4ED44DEE70A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82D476F8-088D-4A22-846B-AAEB819BA1DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82D476F8-088D-4A22-846B-AAEB819BA1DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82D476F8-088D-4A22-846B-AAEB819BA1DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82D476F8-088D-4A22-846B-AAEB819BA1DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7EC4F61-9D86-46B7-B0C7-B3B9D19E8FE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7EC4F61-9D86-46B7-B0C7-B3B9D19E8FE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7EC4F61-9D86-46B7-B0C7-B3B9D19E8FE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7EC4F61-9D86-46B7-B0C7-B3B9D19E8FE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19EF226C-43FB-46EB-B9F9-74EA6345B0EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19EF226C-43FB-46EB-B9F9-74EA6345B0EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19EF226C-43FB-46EB-B9F9-74EA6345B0EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19EF226C-43FB-46EB-B9F9-74EA6345B0EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{82D476F8-088D-4A22-846B-AAEB819BA1DB} = {9E9AA409-1AC1-4857-8450-64EA0E8EC72D}
+		{A20BC0AF-F198-4EFA-B9D2-32F593430A63} = {5CBE0362-2410-4E31-B0F4-7C405189D7E8}
+		{50AD4885-B9A1-4926-8603-D503D339A68C} = {9E9AA409-1AC1-4857-8450-64EA0E8EC72D}
+		{B7EC4F61-9D86-46B7-B0C7-B3B9D19E8FE2} = {9E9AA409-1AC1-4857-8450-64EA0E8EC72D}
+		{19EF226C-43FB-46EB-B9F9-74EA6345B0EF} = {925CFE84-E7AB-4FC1-8FDA-A13128F3BC74}
 	EndGlobalSection
 EndGlobal

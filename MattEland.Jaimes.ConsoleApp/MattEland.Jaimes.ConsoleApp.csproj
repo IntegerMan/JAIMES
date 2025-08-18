@@ -1,0 +1,67 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <UserSecretsId>4b3bddb1-fe80-4e1e-95be-579a0acb2bbc</UserSecretsId>
+        <RootNamespace>AiTableTopGameMaster.ConsoleApp</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+      <PackageReference Include="JetBrains.Annotations" Version="2024.3.0" />
+      <PackageReference Include="Microsoft.Extensions.AI.Ollama" Version="9.7.0-preview.1.25356.2" />
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.7" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7" />
+      <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.7" />
+      <PackageReference Include="Microsoft.SemanticKernel" Version="1.61.0" />
+      <PackageReference Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="1.61.0-alpha" />
+      <PackageReference Include="Scrutor" Version="6.1.0" />
+      <PackageReference Include="Serilog" Version="4.3.0" />
+      <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.2" />
+      <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+      <PackageReference Include="Spectre.Console" Version="0.50.0" />
+      <PackageReference Include="Spectre.Console.Cli" Version="0.50.0" />
+      <PackageReference Include="Spectre.Console.Json" Version="0.50.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="appsettings.json" />
+      <Content Include="appsettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="../adventures/*.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Link>adventures/%(Filename)%(Extension)</Link>
+      </None>
+    </ItemGroup>
+    <ItemGroup>
+      <None Include="../ai/*.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Link>ai/%(Filename)%(Extension)</Link>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MattEland.Jaimes.Agents\MattEland.Jaimes.Agents.csproj" />
+      <ProjectReference Include="..\MattEland.Jaimes.Core\MattEland.Jaimes.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.Extensions.AI.Evaluation">
+        <HintPath>..\..\..\.nuget\packages\microsoft.extensions.ai.evaluation\9.7.0\lib\net9.0\Microsoft.Extensions.AI.Evaluation.dll</HintPath>
+      </Reference>
+      <Reference Include="Microsoft.Extensions.AI.Evaluation.Quality">
+        <HintPath>..\..\..\.nuget\packages\microsoft.extensions.ai.evaluation.quality\9.7.0\lib\net9.0\Microsoft.Extensions.AI.Evaluation.Quality.dll</HintPath>
+      </Reference>
+      <Reference Include="Microsoft.Extensions.AI.Evaluation.Reporting">
+        <HintPath>..\..\..\.nuget\packages\microsoft.extensions.ai.evaluation.reporting\9.7.0\lib\net9.0\Microsoft.Extensions.AI.Evaluation.Reporting.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+</Project>

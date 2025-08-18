@@ -5,6 +5,25 @@ This is a project to create an AI-powered tabletop game master that can run tabl
 
 This project was created by Matt Eland for demonstration and teaching purposes. It is not intended to be a complete game system, but rather a starting point for building AI-assisted tabletop games.
 
+## Agent Architecture
+
+Current architecture:
+
+```mermaid
+ flowchart LR                                                                   
+     Start["Start"]                                                             
+     End["End"]                                                                 
+     PlannerStep["PlannerStep"]                                                 
+     PlannerStep["PlannerStep"] --> ComposerStep["ComposerStep"]                
+     PlannerStep["PlannerStep"] --> EvaluatePlanStep["EvaluatePlanStep"]        
+     ComposerStep["ComposerStep"]                                               
+     ComposerStep["ComposerStep"] --> EditorStep["EditorStep"]                  
+     EditorStep["EditorStep"]                                                   
+     EvaluatePlanStep["EvaluatePlanStep"]                                       
+     Start --> PlannerStep["PlannerStep"]                                       
+     EvaluatePlanStep["EvaluatePlanStep"] --> End  
+```
+
 ## Tasks
 
 The following tasks are planned for the project:
@@ -20,16 +39,17 @@ The following tasks are planned for the project:
 - [x] Add encounter and encounter list plugin to Semantic Kernel
 - [x] Add a templating system
 - [x] Handle bad tool calls by retrying
+- [x] Add support for Azure OpenAI models
 
 ### AI Core System
 
 - [x] Design an agentic layout for the game's AI
 - [x] Implement the core of the AI system
 - [x] Add a planner core
-- [/] Ensure the initial history matches the prior initial history (pre-migration)
-- [/] Allow cores to track history
+- [x] Add a prompts file that contains the standard greeting prompt
+- [x] Ensure the initial history matches the prior initial history (pre-migration)
 - [x] Allow cores to customize which plugins they use
-- [ ] Allow cores to customize which models they use
+- [x] Allow cores to customize which models they use
 - [ ] Handle long context windows by summarizing or truncating history
 
 ### Kernel Memory and RAG
@@ -37,17 +57,27 @@ The following tasks are planned for the project:
 - [x] Add a RAG skill to the Semantic Kernel using Kernel Memory
 - [x] Have Kernel Memory index the free D&D ruleset
 - [x] Display more indexing progress in the console
+- [/] Restore service to the RAG Skill; use an embedding model
 - [ ] Host a free vector database locally for Kernel Memory instance
+- [ ] Persist indexes
+- [ ] Only index RAG sources if they're not already indexed
 - [ ] Index the transcript / past sessions on an ongoing or on-demand basis
 - [ ] Provide the transcript as a RAG source
 
 ### Quality and Testing
 
 - [x] Add unit test project
-- [ ] Generate sample transcripts for testing
-- [ ] Add in Unit Tests around Semantic Kernel
-- [ ] Add in Evaluation for common game scenarios
-- [ ] Add A/B Testing for Prompt Refinement and Model Selection
+- [x] Prototype A/B Testing for Prompt Refinement and Model Selection
+- [x] Include time metrics in eval results
+- [/] Add in contextual evaluators
+- [/] Use concrete evaluation scenario for Planner
+- [ ] Use concrete evaluation scenario for Storyteller
+- [ ] Use concrete evaluation scenario for Editor
+- [/] Use concrete evaluation scenario for full pipeline
+- [ ] Implement A/B Testing for Planner
+- [ ] Implement A/B Testing for Storyteller
+- [ ] Implement A/B Testing for Editor
+- [ ] Implement A/B Testing for full pipeline
 - [ ] Add content safety checks (optional)
 
 ### Content
@@ -56,7 +86,7 @@ The following tasks are planned for the project:
 - [ ] Add a second character to the beach game
 - [ ] Add a second adventure
 - [ ] Separate characters from adventures
-- [ ] Move greeting out of the adventure and into the game settings. Make it an array.
+- [x] Move greeting out of the adventure and into the game settings. Make it an array.
 
 ### User Interface
 
@@ -72,3 +102,4 @@ The following tasks are planned for the project:
 - [ ] Summarize sessions at session end
 - [ ] Add a Resume Game command that loads a game state
 - [x] Allow selecting a command on startup
+

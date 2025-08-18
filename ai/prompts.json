@@ -1,0 +1,7 @@
+{
+  "GameStart": [
+    "Please start a new adventure.",
+    "I'm playing {{$CharacterName}} the {{$CharacterSpecialization}}. This is important to the game master, so include it in your response.",
+    "Here is the adventure backstory: {{$AdventureBackstory}}. I don't know this, so include some key information as needed."
+  ]
+}
